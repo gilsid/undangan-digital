@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap");
+
+:root {
+  --sage: #8a9e8a;
+  --sage-light: #b5c4b5;
+  --ivory: #f8f4ef;
+  --gold: #c9a84c;
+  --gold-light: #e0c97c;
+  --charcoal: #2c2c2c;
+  --warm-gray: #6b6560;
+}
+
+body {
+  background: var(--ivory);
+  color: var(--charcoal);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

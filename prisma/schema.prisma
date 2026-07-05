@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  SUPERADMIN
+  COUPLE
+}
+
+enum Attendance {
+  HADIR
+  TIDAK_HADIR
+  RAGU
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  password    String
+  role        Role         @default(COUPLE)
+  invitations Invitation[]
+  createdAt   DateTime     @default(now())
+}
+
+model Invitation {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  ownerId       String
+  owner         User     @relation(fields: [ownerId], references: [id])
+
+  groomName     String
+  groomFullName String?
+  brideName     String
+  brideFullName String?
+  parentsInfo   Json?
+
+  weddingDate   DateTime
+  akadTime      String?
+  resepsiTime   String?
+  venueName     String
+  venueAddress  String
+  mapsEmbedUrl  String?
+
+  theme         String   @default("elegant")
+  heroImage     String?
+  gallery       String[]
+  loveStory     String?
+  bankAccounts  Json?
+  musicUrl      String?
+
+  isPublished   Boolean  @default(false)
+  guests        Guest[]
+  rsvps         Rsvp[]
+  wishes        Wish[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Guest {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id])
+
+  name         String
+  phone        String?
+  group        String?
+  uniqueCode   String     @unique @default(cuid())
+
+  isSent       Boolean    @default(false)
+  sentAt       DateTime?
+  openedAt     DateTime?
+
+  createdAt    DateTime   @default(now())
+}
+
+model Rsvp {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id])
+  guestName    String
+  attendance   Attendance
+  guestCount   Int        @default(1)
+  createdAt    DateTime   @default(now())
+}
+
+model Wish {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id])
+  name         String
+  message      String
+  createdAt    DateTime   @default(now())
+}
