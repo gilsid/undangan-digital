@@ -28,8 +28,10 @@ export async function PUT(
     data: {
       groomName: body.groomName,
       groomFullName: body.groomFullName || null,
+      groomImage: body.groomImage || null,
       brideName: body.brideName,
       brideFullName: body.brideFullName || null,
+      brideImage: body.brideImage || null,
       weddingDate: body.weddingDate ? new Date(body.weddingDate) : undefined,
       akadTime: body.akadTime || null,
       resepsiTime: body.resepsiTime || null,

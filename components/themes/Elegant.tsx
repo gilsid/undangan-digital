@@ -331,9 +331,10 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
               className="w-32 h-32 mx-auto rounded-full mb-4 overflow-hidden"
               style={{ border: "3px solid #c9a84c" }}
             >
-              <div
-                className="w-full h-full"
-                style={{ background: "linear-gradient(135deg, #8a9e8a, #b5c4b5)" }}
+              <img
+                src={invitation.groomImage || "/placeholders/elegant/groom.png"}
+                alt={invitation.groomName}
+                className="w-full h-full object-cover"
               />
             </div>
             <h3
@@ -358,9 +359,10 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
               className="w-32 h-32 mx-auto rounded-full mb-4 overflow-hidden"
               style={{ border: "3px solid #c9a84c" }}
             >
-              <div
-                className="w-full h-full"
-                style={{ background: "linear-gradient(135deg, #b5c4b5, #8a9e8a)" }}
+              <img
+                src={invitation.brideImage || "/placeholders/elegant/bride.png"}
+                alt={invitation.brideName}
+                className="w-full h-full object-cover"
               />
             </div>
             <h3

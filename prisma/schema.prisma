@@ -34,8 +34,10 @@ model Invitation {
 
   groomName     String
   groomFullName String?
+  groomImage    String?
   brideName     String
   brideFullName String?
+  brideImage    String?
   parentsInfo   Json?
 
   weddingDate   DateTime

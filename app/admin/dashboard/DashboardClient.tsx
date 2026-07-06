@@ -19,8 +19,10 @@ export default function DashboardClient({ invitation, userId }: Props) {
   const [form, setForm] = useState({
     groomName: invitation?.groomName ?? "",
     groomFullName: invitation?.groomFullName ?? "",
+    groomImage: invitation?.groomImage ?? "",
     brideName: invitation?.brideName ?? "",
     brideFullName: invitation?.brideFullName ?? "",
+    brideImage: invitation?.brideImage ?? "",
     weddingDate: invitation?.weddingDate
       ? new Date(invitation.weddingDate).toISOString().slice(0, 10)
       : "",
@@ -260,9 +262,48 @@ export default function DashboardClient({ invitation, userId }: Props) {
                   placeholder="https://..."
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
                 />
+                {form.heroImage.startsWith("/placeholders/") && (
+                  <p className="text-xs text-orange-500 font-medium mt-1">
+                    ⚠️ Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
+                  </p>
+                )}
                 <p className="text-xs text-[#6b6560] mt-1">
                   Upload ke Cloudflare R2 / Supabase Storage / UploadThing lalu tempel URL di sini.
                 </p>
+              </div>
+              <div>
+                <label className="block text-xs text-[#6b6560] mb-1">
+                  URL foto profil pria (Groom)
+                </label>
+                <input
+                  name="groomImage"
+                  value={form.groomImage}
+                  onChange={handleChange}
+                  placeholder="https://..."
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                />
+                {form.groomImage.startsWith("/placeholders/") && (
+                  <p className="text-xs text-orange-500 font-medium mt-1">
+                    ⚠️ Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs text-[#6b6560] mb-1">
+                  URL foto profil wanita (Bride)
+                </label>
+                <input
+                  name="brideImage"
+                  value={form.brideImage}
+                  onChange={handleChange}
+                  placeholder="https://..."
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                />
+                {form.brideImage.startsWith("/placeholders/") && (
+                  <p className="text-xs text-orange-500 font-medium mt-1">
+                    ⚠️ Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-xs text-[#6b6560] mb-1">

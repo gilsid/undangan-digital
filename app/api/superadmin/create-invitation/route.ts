@@ -37,15 +37,31 @@ export async function POST(req: NextRequest) {
     data: { email, password: hashed },
   });
 
+  const theme = "elegant";
+  const heroImage = `/placeholders/${theme}/hero.png`;
+  const groomImage = `/placeholders/${theme}/groom.png`;
+  const brideImage = `/placeholders/${theme}/bride.png`;
+  const gallery = [
+    `/placeholders/${theme}/gallery1.png`,
+    `/placeholders/${theme}/gallery2.png`,
+    `/placeholders/${theme}/gallery3.png`,
+    `/placeholders/${theme}/gallery4.png`,
+  ];
+
   const invitation = await prisma.invitation.create({
     data: {
       ownerId: user.id,
       slug,
       groomName,
+      groomImage,
       brideName,
+      brideImage,
       weddingDate: new Date(weddingDate),
       venueName: venueName ?? "",
       venueAddress: venueAddress ?? "",
+      theme,
+      heroImage,
+      gallery,
     },
   });
 
