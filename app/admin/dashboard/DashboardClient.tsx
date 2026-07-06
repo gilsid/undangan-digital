@@ -7,13 +7,16 @@ import Link from "next/link";
 
 interface Props {
   invitation: Invitation | null;
-  userId: string;
 }
 
-export default function DashboardClient({ invitation, userId }: Props) {
+export default function DashboardClient({ invitation }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
+  const [gallery, setGallery] = useState<string[]>(invitation?.gallery ?? []);
+  const [bankAccounts, setBankAccounts] = useState<{ bank: string; accountNumber: string; accountName: string }[]>(
+    (invitation?.bankAccounts as { bank: string; accountNumber: string; accountName: string }[] | null) ?? []
+  );
 
   // form state initialized from existing invitation or empty
   const [form, setForm] = useState({
@@ -34,6 +37,9 @@ export default function DashboardClient({ invitation, userId }: Props) {
     loveStory: invitation?.loveStory ?? "",
     heroImage: invitation?.heroImage ?? "",
     theme: invitation?.theme ?? "elegant",
+    musicUrl: invitation?.musicUrl ?? "",
+    quoteText: invitation?.quoteText ?? "",
+    quoteSource: invitation?.quoteSource ?? "",
     isPublished: invitation?.isPublished ?? false,
   });
 
@@ -52,18 +58,18 @@ export default function DashboardClient({ invitation, userId }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!invitation) return;
     setSaving(true);
     setMsg("");
 
-    const method = invitation ? "PUT" : "POST";
-    const url = invitation
-      ? `/api/invitations/${invitation.id}`
-      : "/api/invitations";
-
-    const res = await fetch(url, {
-      method,
+    const res = await fetch(`/api/invitations/${invitation.id}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        gallery,
+        bankAccounts,
+      }),
     });
 
     if (res.ok) {
@@ -87,6 +93,46 @@ export default function DashboardClient({ invitation, userId }: Props) {
     setForm((p) => ({ ...p, isPublished: !p.isPublished }));
     setSaving(false);
     router.refresh();
+  }
+
+  function addGalleryItem() {
+    setGallery((p) => [...p, ""]);
+  }
+
+  async function uploadFile(file: File): Promise<string | null> {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: fd,
+    });
+    if (res.ok) {
+      const d = await res.json();
+      return d.url;
+    }
+    return null;
+  }
+
+  function removeGalleryItem(index: number) {
+    setGallery((p) => p.filter((_, i) => i !== index));
+  }
+
+  function handleGalleryChange(index: number, val: string) {
+    setGallery((p) => p.map((item, i) => (i === index ? val : item)));
+  }
+
+  function addBankAccount() {
+    setBankAccounts((p) => [...p, { bank: "", accountNumber: "", accountName: "" }]);
+  }
+
+  function removeBankAccount(index: number) {
+    setBankAccounts((p) => p.filter((_, i) => i !== index));
+  }
+
+  function handleBankChange(index: number, field: string, val: string) {
+    setBankAccounts((p) =>
+      p.map((item, i) => (i === index ? { ...item, [field]: val } : item))
+    );
   }
 
   const navClass =
@@ -177,6 +223,7 @@ export default function DashboardClient({ invitation, userId }: Props) {
                     name={name}
                     value={(form as unknown as Record<string, string>)[name]}
                     onChange={handleChange}
+                    required={name === "groomName" || name === "brideName"}
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
                   />
                 </div>
@@ -235,70 +282,146 @@ export default function DashboardClient({ invitation, userId }: Props) {
 
           <section className="bg-white rounded-xl p-6 shadow-sm">
             <h2 className="font-medium mb-4">Tampilan & Konten</h2>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-xs text-[#6b6560] mb-1">
-                  Tema
+                <label className="block text-xs font-medium text-[#6b6560] mb-2">
+                  Tema Undangan
                 </label>
-                <select
-                  name="theme"
-                  value={form.theme}
-                  onChange={handleChange}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
-                >
-                  <option value="elegant">Elegant</option>
-                  <option value="rustic">Rustic</option>
-                  <option value="minimalist">Minimalist</option>
-                </select>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { id: "elegant", name: "Elegant", desc: "Dusty Sage & Gold", img: "/placeholders/elegant/hero.png" },
+                    { id: "rustic", name: "Rustic", desc: "Earthy Terracotta", img: "/placeholders/rustic/hero.png" },
+                    { id: "minimalist", name: "Minimalist", desc: "Clean Monochrome", img: "/placeholders/minimalist/hero.png" },
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setForm((prev) => ({ ...prev, theme: t.id }))}
+                      className={`text-left rounded-xl overflow-hidden border-2 transition-all p-1 bg-white ${
+                        form.theme === t.id
+                          ? "border-[#8a9e8a] ring-2 ring-[#8a9e8a]/20"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2">
+                        <img src={t.img} alt={t.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="px-1.5 pb-1.5">
+                        <p className="text-xs font-semibold text-gray-800">{t.name}</p>
+                        <p className="text-[10px] text-gray-500">{t.desc}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
+
               <div>
                 <label className="block text-xs text-[#6b6560] mb-1">
-                  URL foto hero/background
+                  Foto Hero / Latar Belakang
                 </label>
-                <input
-                  name="heroImage"
-                  value={form.heroImage}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
-                />
+                <div className="flex gap-2 items-center">
+                  <input
+                    name="heroImage"
+                    value={form.heroImage}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                  />
+                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-205 text-xs rounded-lg border border-gray-200 font-medium">
+                    Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await uploadFile(file);
+                          if (url) setForm((p) => ({ ...p, heroImage: url }));
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {form.heroImage && (
+                  <img src={form.heroImage} alt="Hero Preview" className="w-24 h-16 object-cover rounded-lg mt-2 border" />
+                )}
                 {form.heroImage.startsWith("/placeholders/") && (
                   <p className="text-xs text-orange-500 font-medium mt-1">
                     ⚠️ Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
                   </p>
                 )}
-                <p className="text-xs text-[#6b6560] mt-1">
-                  Upload ke Cloudflare R2 / Supabase Storage / UploadThing lalu tempel URL di sini.
-                </p>
               </div>
+
               <div>
                 <label className="block text-xs text-[#6b6560] mb-1">
-                  URL foto profil pria (Groom)
+                  Foto Profil Pria (Groom)
                 </label>
-                <input
-                  name="groomImage"
-                  value={form.groomImage}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
-                />
+                <div className="flex gap-2 items-center">
+                  <input
+                    name="groomImage"
+                    value={form.groomImage}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                  />
+                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-205 text-xs rounded-lg border border-gray-200 font-medium">
+                    Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await uploadFile(file);
+                          if (url) setForm((p) => ({ ...p, groomImage: url }));
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {form.groomImage && (
+                  <img src={form.groomImage} alt="Groom Preview" className="w-16 h-16 object-cover rounded-full mt-2 border" />
+                )}
                 {form.groomImage.startsWith("/placeholders/") && (
                   <p className="text-xs text-orange-500 font-medium mt-1">
                     ⚠️ Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
                   </p>
                 )}
               </div>
+
               <div>
                 <label className="block text-xs text-[#6b6560] mb-1">
-                  URL foto profil wanita (Bride)
+                  Foto Profil Wanita (Bride)
                 </label>
-                <input
-                  name="brideImage"
-                  value={form.brideImage}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
-                />
+                <div className="flex gap-2 items-center">
+                  <input
+                    name="brideImage"
+                    value={form.brideImage}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                  />
+                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-205 text-xs rounded-lg border border-gray-200 font-medium">
+                    Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await uploadFile(file);
+                          if (url) setForm((p) => ({ ...p, brideImage: url }));
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {form.brideImage && (
+                  <img src={form.brideImage} alt="Bride Preview" className="w-16 h-16 object-cover rounded-full mt-2 border" />
+                )}
                 {form.brideImage.startsWith("/placeholders/") && (
                   <p className="text-xs text-orange-500 font-medium mt-1">
                     ⚠️ Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
@@ -316,6 +439,160 @@ export default function DashboardClient({ invitation, userId }: Props) {
                   rows={4}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
                 />
+              </div>
+              <div>
+                <label className="block text-xs text-[#6b6560] mb-1">
+                  URL Musik Latar (opsional)
+                </label>
+                <input
+                  name="musicUrl"
+                  value={form.musicUrl}
+                  onChange={handleChange}
+                  placeholder="https://example.com/song.mp3"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-[#6b6560] mb-1">
+                    Kutipan Ayat/Kata Mutiara (opsional)
+                  </label>
+                  <textarea
+                    name="quoteText"
+                    value={form.quoteText}
+                    onChange={handleChange}
+                    rows={2}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-[#6b6560] mb-1">
+                    Sumber Kutipan (opsional, misal: QS. Ar-Rum: 21)
+                  </label>
+                  <input
+                    name="quoteSource"
+                    value={form.quoteSource}
+                    onChange={handleChange}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-medium text-[#6b6560]">
+                    Galeri Foto
+                  </label>
+                  <button
+                    type="button"
+                    onClick={addGalleryItem}
+                    className="text-xs text-[#8a9e8a] hover:underline"
+                  >
+                    + Tambah Foto
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {gallery.map((url, i) => (
+                    <div key={i} className="space-y-2 border border-gray-100 p-2.5 rounded-lg bg-gray-50/20">
+                      <div className="flex gap-2">
+                        <input
+                          value={url}
+                          onChange={(e) => handleGalleryChange(i, e.target.value)}
+                          placeholder="https://..."
+                          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
+                        />
+                        <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 text-xs rounded-lg border border-gray-200 font-medium flex items-center">
+                          Upload
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const url = await uploadFile(file);
+                                if (url) handleGalleryChange(i, url);
+                              }
+                            }}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => removeGalleryItem(i)}
+                          className="px-3 py-2 rounded-lg bg-red-50 text-red-500 text-sm hover:bg-red-100 transition-colors"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                      {url && (
+                        <img src={url} alt={`Gallery Preview ${i+1}`} className="w-16 h-16 object-cover rounded-lg border" />
+                      )}
+                    </div>
+                  ))}
+                  {gallery.length === 0 && (
+                    <p className="text-xs text-[#6b6560] italic">Belum ada foto galeri.</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-medium text-[#6b6560]">
+                    Amplop Digital / Info Rekening
+                  </label>
+                  <button
+                    type="button"
+                    onClick={addBankAccount}
+                    className="text-xs text-[#8a9e8a] hover:underline"
+                  >
+                    + Tambah Rekening
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {bankAccounts.map((acc, i) => (
+                    <div key={i} className="flex gap-2 items-end border border-gray-100 p-3 rounded-lg bg-gray-50/50">
+                      <div className="flex-1 grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="block text-[10px] text-[#6b6560] mb-0.5">Nama Bank</label>
+                          <input
+                            value={acc.bank}
+                            onChange={(e) => handleBankChange(i, "bank", e.target.value)}
+                            placeholder="BCA / Mandiri / GoPay"
+                            className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#8a9e8a] bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-[#6b6560] mb-0.5">No. Rekening / No. HP</label>
+                          <input
+                            value={acc.accountNumber}
+                            onChange={(e) => handleBankChange(i, "accountNumber", e.target.value)}
+                            placeholder="12345678"
+                            className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#8a9e8a] bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-[#6b6560] mb-0.5">Atas Nama</label>
+                          <input
+                            value={acc.accountName}
+                            onChange={(e) => handleBankChange(i, "accountName", e.target.value)}
+                            placeholder="Budi"
+                            className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#8a9e8a] bg-white"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeBankAccount(i)}
+                        className="px-3 py-1.5 rounded-lg bg-red-50 text-red-500 text-xs hover:bg-red-100 transition-colors"
+                      >
+                        Hapus
+                      </button>
+                    </div>
+                  ))}
+                  {bankAccounts.length === 0 && (
+                    <p className="text-xs text-[#6b6560] italic">Belum ada rekening/amplop digital.</p>
+                  )}
+                </div>
               </div>
             </div>
           </section>

@@ -14,17 +14,11 @@ interface Invitation {
   _count: { guests: number; rsvps: number };
 }
 
-interface User {
-  id: string;
-  email: string;
-}
-
 interface Props {
   invitations: Invitation[];
-  users: User[];
 }
 
-export default function SuperadminClient({ invitations, users }: Props) {
+export default function SuperadminClient({ invitations }: Props) {
   const router = useRouter();
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({

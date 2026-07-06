@@ -17,11 +17,5 @@ export default async function SuperadminPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const users = await prisma.user.findMany({
-    where: { role: "COUPLE" },
-    select: { id: true, email: true },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return <SuperadminClient invitations={invitations} users={users} />;
+  return <SuperadminClient invitations={invitations} />;
 }

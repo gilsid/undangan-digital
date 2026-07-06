@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import ElegantTheme from "@/components/themes/Elegant";
+import RusticTheme from "@/components/themes/Rustic";
+import MinimalistTheme from "@/components/themes/Minimalist";
 import TrackOpened from "./TrackOpened";
 import type { Wish } from "@prisma/client";
 
@@ -66,24 +68,26 @@ export default async function InvitationPage({ params, searchParams }: Props) {
     take: 50,
   });
 
-  const ThemeComponent = resolveTheme(invitation.theme);
+  const themeRenderer = resolveTheme(invitation.theme);
 
   return (
     <>
       {guestCode && <TrackOpened code={guestCode} />}
-      <ThemeComponent
-        invitation={invitation}
-        guestName={guestName}
-        wishes={wishes as Wish[]}
-      />
+      {themeRenderer({
+        invitation,
+        guestName,
+        wishes: wishes as Wish[],
+      })}
     </>
   );
 }
 
+const themes: Record<string, typeof ElegantTheme> = {
+  elegant: ElegantTheme,
+  rustic: RusticTheme,
+  minimalist: MinimalistTheme,
+};
+
 function resolveTheme(theme: string) {
-  // ponytail: add Rustic & Minimalist themes here when built
-  switch (theme) {
-    default:
-      return ElegantTheme;
-  }
+  return themes[theme] ?? ElegantTheme;
 }

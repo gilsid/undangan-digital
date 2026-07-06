@@ -40,7 +40,12 @@ export async function PUT(
       mapsEmbedUrl: body.mapsEmbedUrl || null,
       theme: body.theme,
       heroImage: body.heroImage || null,
+      gallery: body.gallery || [],
       loveStory: body.loveStory || null,
+      bankAccounts: body.bankAccounts || null,
+      musicUrl: body.musicUrl || null,
+      quoteText: body.quoteText || null,
+      quoteSource: body.quoteSource || null,
       isPublished: body.isPublished,
     },
   });
