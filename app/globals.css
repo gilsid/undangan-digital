@@ -2,25 +2,40 @@
 @import "tailwindcss";
 
 :root {
-  --sage: #8a9e8a;
-  --sage-light: #b5c4b5;
-  --ivory: #f8f4ef;
-  --gold: #c9a84c;
-  --gold-light: #e0c97c;
-  --charcoal: #2c2c2c;
-  --warm-gray: #6b6560;
+    --sage: #8a9e8a;
+    --sage-light: #b5c4b5;
+    --ivory: #f8f4ef;
+    --gold: #c9a84c;
+    --gold-light: #e0c97c;
+    --charcoal: #2c2c2c;
+    --warm-gray: #6b6560;
+
+    /* Admin UI tokens — dipakai khusus di dashboard & superadmin */
+    --admin-bg: #f4f6f5;
+    --admin-surface: #ffffff;
+    --admin-brand: #2d5f4c;
+    --admin-brand-light: #e8f2ed;
+    --admin-accent: #d97b3f;
+    --admin-primary: #2d5f4c;
+    --admin-primary-hover: #234a3c;
+    --admin-primary-active: #1a3e30;
+    --admin-success: #1e8e5a;
+    --admin-warning: #d97706;
+    --admin-danger: #c0392b;
+    --admin-danger-hover: #a53125;
+    --admin-info: #2563eb;
 }
 
 body {
-  background: var(--ivory);
-  color: var(--charcoal);
-  font-family: "Inter", system-ui, sans-serif;
+    background: var(--ivory);
+    color: var(--charcoal);
+    font-family: "Inter", system-ui, sans-serif;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
