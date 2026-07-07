@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /superadmin/
+
+# Undangan bersifat privat — hanya bisa diakses via link langsung, bukan pencarian.
+# Noindex juga diterapkan via meta robots di setiap halaman undangan.
+User-agent: *
+Disallow: /
+Allow: /$

@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 interface Props {
   invitation: Invitation;
@@ -316,11 +317,13 @@ export default function MinimalistTheme({ invitation, guestName, wishes: initial
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           {/* Groom */}
           <SectionReveal delay={0.05} className="flex flex-col gap-6">
-            <div className="aspect-square bg-neutral-50 grayscale hover:grayscale-0 transition-all duration-700 overflow-hidden">
-              <img
+            <div className="aspect-square bg-neutral-50 grayscale hover:grayscale-0 transition-all duration-700 overflow-hidden relative">
+              <Image
                 src={invitation.groomImage || "/placeholders/minimalist/groom.png"}
                 alt={invitation.groomName}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
             </div>
             <div>
@@ -340,11 +343,13 @@ export default function MinimalistTheme({ invitation, guestName, wishes: initial
 
           {/* Bride */}
           <SectionReveal delay={0.15} className="flex flex-col gap-6">
-            <div className="aspect-square bg-neutral-50 grayscale hover:grayscale-0 transition-all duration-700 overflow-hidden">
-              <img
+            <div className="aspect-square bg-neutral-50 grayscale hover:grayscale-0 transition-all duration-700 overflow-hidden relative">
+              <Image
                 src={invitation.brideImage || "/placeholders/minimalist/bride.png"}
                 alt={invitation.brideName}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
             </div>
             <div>
@@ -439,11 +444,13 @@ export default function MinimalistTheme({ invitation, guestName, wishes: initial
           </SectionReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {gallery.map((url, i) => (
-              <SectionReveal key={i} delay={i * 0.05} className="aspect-square overflow-hidden bg-neutral-50 grayscale hover:grayscale-0 transition-all duration-500">
-                <img
+              <SectionReveal key={i} delay={i * 0.05} className="aspect-square overflow-hidden bg-neutral-50 grayscale hover:grayscale-0 transition-all duration-500 relative">
+                <Image
                   src={url}
                   alt={`Photo ${i + 1}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  unoptimized
                 />
               </SectionReveal>
             ))}

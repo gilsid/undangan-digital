@@ -19,6 +19,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Undangan ${inv.groomName} & ${inv.brideName}`,
     description: `Bergabunglah dalam perayaan pernikahan ${inv.groomName} & ${inv.brideName}`,
+    robots: { index: false, follow: false },
+    openGraph: {
+      title: `Undangan ${inv.groomName} & ${inv.brideName}`,
+      description: `Bergabunglah dalam perayaan pernikahan ${inv.groomName} & ${inv.brideName}`,
+      images: [inv.heroImage ?? `/placeholders/${inv.theme}/hero.png`],
+    },
   };
 }
 
@@ -68,16 +74,16 @@ export default async function InvitationPage({ params, searchParams }: Props) {
     take: 50,
   });
 
-  const themeRenderer = resolveTheme(invitation.theme);
+  const ThemeComponent = resolveTheme(invitation.theme);
 
   return (
     <>
       {guestCode && <TrackOpened code={guestCode} />}
-      {themeRenderer({
-        invitation,
-        guestName,
-        wishes: wishes as Wish[],
-      })}
+      <ThemeComponent
+        invitation={invitation}
+        guestName={guestName}
+        wishes={wishes as Wish[]}
+      />
     </>
   );
 }

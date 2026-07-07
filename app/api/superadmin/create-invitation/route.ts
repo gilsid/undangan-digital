@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Data tidak lengkap" }, { status: 400 });
     }
 
+    if (password.length < 8) {
+      return NextResponse.json({ error: "Password minimal 8 karakter" }, { status: 400 });
+    }
+
     // Validate slug regex (lowercase, numbers, dash only)
     if (!/^[a-z0-9-]+$/.test(slug)) {
       return NextResponse.json({ error: "Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung (-)" }, { status: 400 });

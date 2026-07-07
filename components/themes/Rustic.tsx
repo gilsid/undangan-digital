@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 interface Props {
   invitation: Invitation;
@@ -335,10 +336,13 @@ export default function RusticTheme({ invitation, guestName, wishes: initialWish
             <div
               className="w-40 h-40 mx-auto rounded-full mb-6 overflow-hidden shadow-lg border-4 border-[#fbfbf9]"
             >
-              <img
+              <Image
                 src={invitation.groomImage || "/placeholders/rustic/groom.png"}
                 alt={invitation.groomName}
+                width={160}
+                height={160}
                 className="w-full h-full object-cover"
+                unoptimized
               />
             </div>
             <h3
@@ -362,10 +366,13 @@ export default function RusticTheme({ invitation, guestName, wishes: initialWish
             <div
               className="w-40 h-40 mx-auto rounded-full mb-6 overflow-hidden shadow-lg border-4 border-[#fbfbf9]"
             >
-              <img
+              <Image
                 src={invitation.brideImage || "/placeholders/rustic/bride.png"}
                 alt={invitation.brideName}
+                width={160}
+                height={160}
                 className="w-full h-full object-cover"
+                unoptimized
               />
             </div>
             <h3

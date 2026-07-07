@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 interface Props {
   invitation: Invitation;
@@ -346,10 +347,13 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
               className="w-32 h-32 mx-auto rounded-full mb-4 overflow-hidden"
               style={{ border: "3px solid #c9a84c" }}
             >
-              <img
+              <Image
                 src={invitation.groomImage || "/placeholders/elegant/groom.png"}
                 alt={invitation.groomName}
+                width={128}
+                height={128}
                 className="w-full h-full object-cover"
+                unoptimized
               />
             </div>
             <h3
@@ -374,10 +378,13 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
               className="w-32 h-32 mx-auto rounded-full mb-4 overflow-hidden"
               style={{ border: "3px solid #c9a84c" }}
             >
-              <img
+              <Image
                 src={invitation.brideImage || "/placeholders/elegant/bride.png"}
                 alt={invitation.brideName}
+                width={128}
+                height={128}
                 className="w-full h-full object-cover"
+                unoptimized
               />
             </div>
             <h3

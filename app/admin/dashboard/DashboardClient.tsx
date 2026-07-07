@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Invitation } from "@prisma/client";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Props {
   invitation: Invitation | null;
@@ -12,6 +13,8 @@ interface Props {
 export default function DashboardClient({ invitation }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
   const [msg, setMsg] = useState("");
   const [gallery, setGallery] = useState<string[]>(invitation?.gallery ?? []);
   const [bankAccounts, setBankAccounts] = useState<{ bank: string; accountNumber: string; accountName: string }[]>(
@@ -100,17 +103,22 @@ export default function DashboardClient({ invitation }: Props) {
   }
 
   async function uploadFile(file: File): Promise<string | null> {
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: fd,
-    });
-    if (res.ok) {
-      const d = await res.json();
-      return d.url;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: fd,
+      });
+      if (res.ok) {
+        const d = await res.json();
+        return d.url;
+      }
+      return null;
+    } finally {
+      setUploading(false);
     }
-    return null;
   }
 
   function removeGalleryItem(index: number) {
@@ -132,6 +140,24 @@ export default function DashboardClient({ invitation }: Props) {
   function handleBankChange(index: number, field: string, val: string) {
     setBankAccounts((p) =>
       p.map((item, i) => (i === index ? { ...item, [field]: val } : item))
+    );
+  }
+
+  if (!invitation) {
+    return (
+      <div className="min-h-screen bg-[#f8f4ef] flex items-center justify-center">
+        <div className="text-center px-6 bg-white rounded-xl p-8 max-w-md shadow-sm">
+          <p
+            className="text-2xl font-light mb-3"
+            style={{ fontFamily: "'Cormorant Garamond', serif", color: "#2c2c2c" }}
+          >
+            Belum Ada Undangan Aktif
+          </p>
+          <p className="text-sm text-[#6b6560]">
+            Anda belum memiliki undangan yang aktif. Silakan hubungi admin untuk membuatkan akun undangan Anda.
+          </p>
+        </div>
+      </div>
     );
   }
 
@@ -158,15 +184,13 @@ export default function DashboardClient({ invitation }: Props) {
           <Link href="/admin/dashboard/rsvp" className={navClass}>
             RSVP
           </Link>
-          {invitation && (
-            <Link
-              href={`/${invitation.slug}`}
-              target="_blank"
-              className={navClass}
-            >
-              Preview ↗
-            </Link>
-          )}
+          <Link
+            href={`/${invitation.slug}`}
+            target="_blank"
+            className={navClass}
+          >
+            Preview ↗
+          </Link>
         </nav>
       </header>
 
@@ -261,6 +285,7 @@ export default function DashboardClient({ invitation }: Props) {
                     name={name}
                     value={(form as unknown as Record<string, string>)[name]}
                     onChange={handleChange}
+                    required={name === "venueName" || name === "venueAddress"}
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
                   />
                 </div>
@@ -303,8 +328,8 @@ export default function DashboardClient({ invitation }: Props) {
                           : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
-                      <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2">
-                        <img src={t.img} alt={t.name} className="w-full h-full object-cover" />
+                      <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2 relative">
+                        <Image src={t.img} alt={t.name} fill className="object-cover" unoptimized />
                       </div>
                       <div className="px-1.5 pb-1.5">
                         <p className="text-xs font-semibold text-gray-800">{t.name}</p>
@@ -327,8 +352,8 @@ export default function DashboardClient({ invitation }: Props) {
                     placeholder="https://..."
                     className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
                   />
-                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-205 text-xs rounded-lg border border-gray-200 font-medium">
-                    Upload
+                  <label className={`cursor-pointer px-3 py-2 text-xs rounded-lg border font-medium ${uploading ? "bg-gray-200 text-gray-400 pointer-events-none" : "bg-gray-100 hover:bg-gray-200 border-gray-200"}`}>
+                    {uploading ? "..." : "Upload"}
                     <input
                       type="file"
                       accept="image/*"
@@ -344,7 +369,7 @@ export default function DashboardClient({ invitation }: Props) {
                   </label>
                 </div>
                 {form.heroImage && (
-                  <img src={form.heroImage} alt="Hero Preview" className="w-24 h-16 object-cover rounded-lg mt-2 border" />
+                  <Image src={form.heroImage} alt="Hero Preview" width={96} height={64} className="object-cover rounded-lg mt-2 border" unoptimized />
                 )}
                 {form.heroImage.startsWith("/placeholders/") && (
                   <p className="text-xs text-orange-500 font-medium mt-1">
@@ -365,8 +390,8 @@ export default function DashboardClient({ invitation }: Props) {
                     placeholder="https://..."
                     className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
                   />
-                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-205 text-xs rounded-lg border border-gray-200 font-medium">
-                    Upload
+                  <label className={`cursor-pointer px-3 py-2 text-xs rounded-lg border font-medium ${uploading ? "bg-gray-200 text-gray-400 pointer-events-none" : "bg-gray-100 hover:bg-gray-200 border-gray-200"}`}>
+                    {uploading ? "..." : "Upload"}
                     <input
                       type="file"
                       accept="image/*"
@@ -382,7 +407,7 @@ export default function DashboardClient({ invitation }: Props) {
                   </label>
                 </div>
                 {form.groomImage && (
-                  <img src={form.groomImage} alt="Groom Preview" className="w-16 h-16 object-cover rounded-full mt-2 border" />
+                  <Image src={form.groomImage} alt="Groom Preview" width={64} height={64} className="object-cover rounded-full mt-2 border" unoptimized />
                 )}
                 {form.groomImage.startsWith("/placeholders/") && (
                   <p className="text-xs text-orange-500 font-medium mt-1">
@@ -403,8 +428,8 @@ export default function DashboardClient({ invitation }: Props) {
                     placeholder="https://..."
                     className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
                   />
-                  <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-205 text-xs rounded-lg border border-gray-200 font-medium">
-                    Upload
+                  <label className={`cursor-pointer px-3 py-2 text-xs rounded-lg border font-medium ${uploading ? "bg-gray-200 text-gray-400 pointer-events-none" : "bg-gray-100 hover:bg-gray-200 border-gray-200"}`}>
+                    {uploading ? "..." : "Upload"}
                     <input
                       type="file"
                       accept="image/*"
@@ -420,7 +445,7 @@ export default function DashboardClient({ invitation }: Props) {
                   </label>
                 </div>
                 {form.brideImage && (
-                  <img src={form.brideImage} alt="Bride Preview" className="w-16 h-16 object-cover rounded-full mt-2 border" />
+                  <Image src={form.brideImage} alt="Bride Preview" width={64} height={64} className="object-cover rounded-full mt-2 border" unoptimized />
                 )}
                 {form.brideImage.startsWith("/placeholders/") && (
                   <p className="text-xs text-orange-500 font-medium mt-1">
@@ -501,8 +526,8 @@ export default function DashboardClient({ invitation }: Props) {
                           placeholder="https://..."
                           className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8a9e8a]"
                         />
-                        <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 text-xs rounded-lg border border-gray-200 font-medium flex items-center">
-                          Upload
+                        <label className={`cursor-pointer px-3 py-2 text-xs rounded-lg border font-medium flex items-center ${uploading ? "bg-gray-200 text-gray-400 pointer-events-none" : "bg-gray-100 hover:bg-gray-200 border-gray-200"}`}>
+                          {uploading ? "..." : "Upload"}
                           <input
                             type="file"
                             accept="image/*"
@@ -525,7 +550,7 @@ export default function DashboardClient({ invitation }: Props) {
                         </button>
                       </div>
                       {url && (
-                        <img src={url} alt={`Gallery Preview ${i+1}`} className="w-16 h-16 object-cover rounded-lg border" />
+                        <Image src={url} alt={`Gallery Preview ${i+1}`} width={64} height={64} className="object-cover rounded-lg border" unoptimized />
                       )}
                     </div>
                   ))}

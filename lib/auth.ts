@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { isRateLimited } from "@/lib/rateLimit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -10,8 +11,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
+
+        const forwarded = req?.headers?.get("x-forwarded-for");
+        const ip = forwarded?.split(",")[0] ?? "127.0.0.1";
+        if (isRateLimited(`login:${ip}:${credentials.email}`, 10, 60000)) {
+          throw new Error("Terlalu banyak percobaan login. Silakan coba lagi nanti.");
+        }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
