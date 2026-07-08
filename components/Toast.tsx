@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { XCircle, CheckCircle2, AlertTriangle, Info, X } from "lucide-react";
 
 type ToastType = "success" | "error" | "warning" | "info";
@@ -35,12 +36,17 @@ useEffect(() => {
 if (!toast) return;
 const t = setTimeout(onClose, duration);
 return () => clearTimeout(t);
-}, [toast, onClose, duration]);
-
-if (!toast) return null;
+  }, [toast, onClose, duration]);
 
 return (
-<div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 fade-in">
+<AnimatePresence>
+{toast && (
+<motion.div
+initial={{ opacity: 0, y: -10 }}
+animate={{ opacity: 1, y: 0 }}
+exit={{ opacity: 0, y: -10 }}
+className="fixed top-4 right-4 z-50"
+>
 <div className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border shadow-lg ${bgClasses[toast.type]}`}>
 {icons[toast.type]}
 <p className="text-sm text-gray-800">{toast.message}</p>
@@ -48,6 +54,8 @@ return (
 <X size={16} />
 </button>
 </div>
-</div>
+</motion.div>
+)}
+</AnimatePresence>
 );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -25,7 +25,12 @@ if (result?.error) {
 setError("Email atau password salah.");
 setLoading(false);
 } else {
+const session = await getSession();
+if (session?.user?.role === "SUPERADMIN") {
+router.push("/superadmin");
+} else {
 router.push("/admin/dashboard");
+}
 }
 }
 

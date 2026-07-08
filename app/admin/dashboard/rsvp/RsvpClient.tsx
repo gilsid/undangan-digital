@@ -1,9 +1,10 @@
 "use client";
 
 import type { Invitation, Rsvp, Wish } from "@prisma/client";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FileEdit, Users, MessageSquareHeart, ExternalLink, CheckCircle2, XCircle, HelpCircle, Inbox } from "lucide-react";
+import Sidebar from "@/components/admin/Sidebar";
+import type { SidebarNavItem } from "@/components/admin/Sidebar";
 
 interface Props {
 invitation: Invitation;
@@ -41,56 +42,28 @@ document.body.removeChild(link);
 
 const pathname = usePathname();
 
-const navClass =
-"px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2";
-
-function isActive(path: string) {
-return pathname === path;
-}
+const navItems: SidebarNavItem[] = [
+  { href: "/admin/dashboard", label: "Konten", icon: FileEdit },
+  { href: "/admin/dashboard/guests", label: "Tamu", icon: Users },
+  { href: "/admin/dashboard/rsvp", label: "RSVP", icon: MessageSquareHeart },
+  { href: `/${invitation.slug}`, label: "Preview ↗", icon: ExternalLink, external: true },
+];
 
 return (
-<div className="min-h-screen bg-[var(--admin-bg)]">
-<header className="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between">
+<div className="min-h-screen flex bg-[var(--admin-bg)]">
+<Sidebar navItems={navItems} activePath={pathname} />
+
+<main className="flex-1 min-w-0">
+<header className="px-10 py-6 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]">
 <h1
-className="text-xl font-light"
 style={{ fontFamily: "'Cormorant Garamond', serif" }}
+className="text-2xl text-[var(--admin-ink)]"
 >
-Undangan Digital
+RSVP & Ucapan
 </h1>
-<nav className="flex gap-2">
-<Link
-href="/admin/dashboard"
-className={`${navClass} ${isActive("/admin/dashboard") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<FileEdit size={16} />
-Konten
-</Link>
-<Link
-href="/admin/dashboard/guests"
-className={`${navClass} ${isActive("/admin/dashboard/guests") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<Users size={16} />
-Tamu
-</Link>
-<Link
-href="/admin/dashboard/rsvp"
-className={`${navClass} ${isActive("/admin/dashboard/rsvp") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<MessageSquareHeart size={16} />
-RSVP
-</Link>
-<Link
-href={`/${invitation.slug}`}
-target="_blank"
-className={`${navClass} text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]`}
->
-<ExternalLink size={16} />
-Preview ↗
-</Link>
-</nav>
 </header>
 
-<main className="max-w-4xl mx-auto p-6 space-y-6">
+<div className="px-10 py-8 space-y-6">
 {/* Stats */}
 <div className="grid grid-cols-3 gap-4">
 {[
@@ -98,7 +71,7 @@ Preview ↗
 { label: "Tidak Hadir", count: tidakHadir.length, sub: "", color: "text-red-500" },
 { label: "Ragu-ragu", count: ragu.length, sub: "", color: "text-orange-500" },
 ].map((s) => (
-<div key={s.label} className="bg-white rounded-xl p-5 shadow-sm text-center">
+<div key={s.label} className="bg-white rounded-xl p-5 border border-[var(--admin-border)] text-center">
 <p className={`text-3xl font-light ${s.color}`}>{s.count}</p>
 <p className="text-sm font-medium mt-1">{s.label}</p>
 {s.sub && <p className="text-xs text-[#6b6560]">{s.sub}</p>}
@@ -107,8 +80,8 @@ Preview ↗
 </div>
 
 {/* RSVP list */}
-<section className="bg-white rounded-xl shadow-sm overflow-hidden">
-<div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+<section className="bg-white rounded-xl border border-[var(--admin-border)] overflow-hidden">
+<div className="px-6 py-4 border-b border-[var(--admin-border)] flex items-center justify-between">
 <h2 className="font-medium">Konfirmasi Kehadiran ({rsvps.length})</h2>
 {rsvps.length > 0 && (
 <button
@@ -121,7 +94,7 @@ Unduh CSV
 </div>
 <div className="overflow-x-auto">
 <table className="w-full text-sm">
-<thead className="bg-gray-50 border-b border-gray-100">
+<thead className="bg-[var(--admin-surface-alt)] border-b border-[var(--admin-border)]">
 <tr>
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Nama</th>
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Status</th>
@@ -129,9 +102,9 @@ Unduh CSV
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Waktu</th>
 </tr>
 </thead>
-<tbody className="divide-y divide-gray-100">
+<tbody className="divide-y divide-[var(--admin-border)]">
 {rsvps.map((r) => (
-<tr key={r.id} className="hover:bg-gray-50 transition-colors">
+<tr key={r.id} className="hover:bg-[var(--admin-surface-alt)] transition-colors">
 <td className="px-4 py-3 font-medium">{r.guestName}</td>
 <td className="px-4 py-3">
 <span
@@ -179,8 +152,8 @@ minute: "2-digit",
 </section>
 
 {/* Wishes */}
-<section className="bg-white rounded-xl shadow-sm overflow-hidden">
-<div className="px-6 py-4 border-b border-gray-100">
+<section className="bg-white rounded-xl border border-[var(--admin-border)] overflow-hidden">
+<div className="px-6 py-4 border-b border-[var(--admin-border)]">
 <h2 className="font-medium">Ucapan & Doa ({wishes.length})</h2>
 </div>
 <div className="divide-y divide-gray-50">
@@ -205,6 +178,7 @@ year: "numeric",
 )}
 </div>
 </section>
+</div>
 </main>
 </div>
 );

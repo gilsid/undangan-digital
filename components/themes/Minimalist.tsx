@@ -407,7 +407,7 @@ export default function MinimalistTheme({ invitation, guestName, wishes: initial
             </SectionReveal>
           </div>
 
-          {invitation.mapsEmbedUrl && (
+          {invitation.mapsEmbedUrl?.includes("/maps/embed") && (
             <SectionReveal delay={0.2} className="w-full bg-[#fcfcfc] border border-neutral-100 p-2">
               <iframe
                 src={invitation.mapsEmbedUrl}

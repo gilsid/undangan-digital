@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import type { Invitation } from "@prisma/client";
-import Link from "next/link";
 import Image from "next/image";
 import { Users, Calendar, Palette, FileEdit, MessageSquareHeart, ExternalLink, ImageIcon, Banknote } from "lucide-react";
 import Toast from "@/components/Toast";
+import Sidebar from "@/components/admin/Sidebar";
+import type { SidebarNavItem } from "@/components/admin/Sidebar";
 
 interface Props {
 invitation: Invitation | null;
@@ -163,57 +164,28 @@ Anda belum memiliki undangan yang aktif. Silakan hubungi admin untuk membuatkan 
 );
 }
 
-const navClass =
-"px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2";
-
-function isActive(path: string) {
-return pathname === path;
-}
+const navItems: SidebarNavItem[] = [
+  { href: "/admin/dashboard", label: "Konten", icon: FileEdit },
+  { href: "/admin/dashboard/guests", label: "Tamu", icon: Users },
+  { href: "/admin/dashboard/rsvp", label: "RSVP", icon: MessageSquareHeart },
+  { href: `/${invitation.slug}`, label: "Preview ↗", icon: ExternalLink, external: true },
+];
 
 return (
-<div className="min-h-screen bg-[var(--admin-bg)]">
-{/* Top nav */}
-<header className="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between">
+<div className="min-h-screen flex bg-[var(--admin-bg)]">
+<Sidebar navItems={navItems} activePath={pathname} />
+
+<main className="flex-1 min-w-0">
+<header className="px-10 py-6 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]">
 <h1
-className="text-xl font-light"
 style={{ fontFamily: "'Cormorant Garamond', serif" }}
+className="text-2xl text-[var(--admin-ink)]"
 >
-Undangan Digital
+Konten Undangan
 </h1>
-<nav className="flex gap-2">
-<Link
-href="/admin/dashboard"
-className={`${navClass} ${isActive("/admin/dashboard") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<FileEdit size={16} />
-Konten
-</Link>
-<Link
-href="/admin/dashboard/guests"
-className={`${navClass} ${isActive("/admin/dashboard/guests") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<Users size={16} />
-Tamu
-</Link>
-<Link
-href="/admin/dashboard/rsvp"
-className={`${navClass} ${isActive("/admin/dashboard/rsvp") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<MessageSquareHeart size={16} />
-RSVP
-</Link>
-<Link
-href={`/${invitation.slug}`}
-target="_blank"
-className={`${navClass} text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]`}
->
-<ExternalLink size={16} />
-Preview ↗
-</Link>
-</nav>
 </header>
 
-<main className="max-w-2xl mx-auto p-6">
+<div className="px-10 py-8">
 {/* Publish toggle */}
 {invitation && (
 <div className="mb-6 bg-gradient-to-r from-[var(--admin-brand)] to-[var(--admin-brand)]/80 text-white rounded-xl p-5 flex items-center justify-between">
@@ -250,7 +222,7 @@ form.isPublished
 )}
 
 <form onSubmit={handleSubmit} className="space-y-6">
-<section className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-l-[var(--admin-brand)]">
+<section className="bg-white rounded-xl p-6 border border-[var(--admin-border)]">
 <div className="flex items-center gap-3 mb-4">
 <div className="w-9 h-9 rounded-lg bg-[var(--admin-brand-light)] flex items-center justify-center">
 <Users size={18} className="text-[var(--admin-brand)]" />
@@ -273,14 +245,14 @@ name={name}
 value={(form as unknown as Record<string, string>)[name]}
 onChange={handleChange}
 required={name === "groomName" || name === "brideName"}
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 ))}
 </div>
 </section>
 
-<section className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-l-[var(--admin-accent)]">
+<section className="bg-white rounded-xl p-6 border border-[var(--admin-border)]">
 <div className="flex items-center gap-3 mb-4">
 <div className="w-9 h-9 rounded-lg bg-[var(--admin-accent)]/10 flex items-center justify-center">
 <Calendar size={18} className="text-[var(--admin-accent)]" />
@@ -298,7 +270,7 @@ name="weddingDate"
 value={form.weddingDate}
 onChange={handleChange}
 required
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 {[
@@ -316,7 +288,7 @@ name={name}
 value={(form as unknown as Record<string, string>)[name]}
 onChange={handleChange}
 required={name === "venueName" || name === "venueAddress"}
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 ))}
@@ -329,13 +301,13 @@ name="mapsEmbedUrl"
 value={form.mapsEmbedUrl}
 onChange={handleChange}
 placeholder="https://maps.google.com/maps?..."
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 </div>
 </section>
 
-<section className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-l-[var(--admin-info)]">
+<section className="bg-white rounded-xl p-6 border border-[var(--admin-border)]">
 <div className="flex items-center gap-3 mb-4">
 <div className="w-9 h-9 rounded-lg bg-[var(--admin-info)]/10 flex items-center justify-center">
 <Palette size={18} className="text-[var(--admin-info)]" />
@@ -497,7 +469,7 @@ name="loveStory"
 value={form.loveStory}
 onChange={handleChange}
 rows={4}
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 <div>
@@ -509,7 +481,7 @@ name="musicUrl"
 value={form.musicUrl}
 onChange={handleChange}
 placeholder="https://example.com/song.mp3"
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 <div className="grid grid-cols-2 gap-4">
@@ -522,7 +494,7 @@ name="quoteText"
 value={form.quoteText}
 onChange={handleChange}
 rows={2}
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 <div>
@@ -533,7 +505,7 @@ Sumber Kutipan (opsional, misal: QS. Ar-Rum: 21)
 name="quoteSource"
 value={form.quoteSource}
 onChange={handleChange}
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 </div>
@@ -673,6 +645,7 @@ className="w-full py-3 rounded-xl text-white font-medium transition-all duration
 {saving ? "Menyimpan..." : "Simpan"}
 </button>
 </form>
+</div>
 </main>
 </div>
 );

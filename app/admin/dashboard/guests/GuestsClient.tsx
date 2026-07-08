@@ -3,10 +3,11 @@
 import { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import type { Invitation, Guest } from "@prisma/client";
-import Link from "next/link";
 import { FileEdit, Users, MessageSquareHeart, ExternalLink, XCircle, Send, Eye, MailOpen, MoreVertical } from "lucide-react";
 import { generateWaLink, generateInviteMessage } from "@/lib/whatsapp";
 import Papa from "papaparse";
+import Sidebar from "@/components/admin/Sidebar";
+import type { SidebarNavItem } from "@/components/admin/Sidebar";
 
 interface Props {
 invitation: Invitation;
@@ -21,6 +22,8 @@ const [newPhone, setNewPhone] = useState("");
 const [newGroup, setNewGroup] = useState("");
 const [adding, setAdding] = useState(false);
 const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
+const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 const [importMsg, setImportMsg] = useState("");
 const [search, setSearch] = useState("");
 const [selectedGroup, setSelectedGroup] = useState("");
@@ -119,6 +122,23 @@ g.id === id ? { ...g, isSent: true, sentAt: new Date() } : g
 );
 }
 
+function handleOpenDropdown(guestId: string) {
+if (openDropdown === guestId) {
+setOpenDropdown(null);
+setDropdownPos(null);
+return;
+}
+const btn = buttonRefs.current[guestId];
+if (btn) {
+const rect = btn.getBoundingClientRect();
+setDropdownPos({
+top: rect.bottom + 4,
+left: rect.right - 140,
+});
+}
+setOpenDropdown(guestId);
+}
+
 async function importCSV(e: React.ChangeEvent<HTMLInputElement>) {
 const file = e.target.files?.[0];
 if (!file) return;
@@ -168,58 +188,30 @@ setImportMsg("Gagal membaca file: " + err.message);
 
 const pathname = usePathname();
 
-const navClass =
-"px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2";
-
-function isActive(path: string) {
-return pathname === path;
-}
+const navItems: SidebarNavItem[] = [
+  { href: "/admin/dashboard", label: "Konten", icon: FileEdit },
+  { href: "/admin/dashboard/guests", label: "Tamu", icon: Users },
+  { href: "/admin/dashboard/rsvp", label: "RSVP", icon: MessageSquareHeart },
+  { href: `/${invitation.slug}`, label: "Preview ↗", icon: ExternalLink, external: true },
+];
 
 return (
-<div className="min-h-screen bg-[var(--admin-bg)]">
-<header className="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between">
+<div className="min-h-screen flex bg-[var(--admin-bg)]">
+<Sidebar navItems={navItems} activePath={pathname} />
+
+<main className="flex-1 min-w-0">
+<header className="px-10 py-6 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]">
 <h1
-className="text-xl font-light"
 style={{ fontFamily: "'Cormorant Garamond', serif" }}
+className="text-2xl text-[var(--admin-ink)]"
 >
-Undangan Digital
+Daftar Tamu
 </h1>
-<nav className="flex gap-2">
-<Link
-href="/admin/dashboard"
-className={`${navClass} ${isActive("/admin/dashboard") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<FileEdit size={16} />
-Konten
-</Link>
-<Link
-href="/admin/dashboard/guests"
-className={`${navClass} ${isActive("/admin/dashboard/guests") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<Users size={16} />
-Tamu
-</Link>
-<Link
-href="/admin/dashboard/rsvp"
-className={`${navClass} ${isActive("/admin/dashboard/rsvp") ? "bg-[var(--admin-brand-light)] text-[var(--admin-brand)] font-semibold" : "text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]"}`}
->
-<MessageSquareHeart size={16} />
-RSVP
-</Link>
-<Link
-href={`/${invitation.slug}`}
-target="_blank"
-className={`${navClass} text-gray-600 hover:bg-[var(--admin-brand-light)]/50 hover:text-[var(--admin-brand)]`}
->
-<ExternalLink size={16} />
-Preview ↗
-</Link>
-</nav>
 </header>
 
-<main className="max-w-4xl mx-auto p-6 space-y-6">
+<div className="px-10 py-8 space-y-6">
 {/* Add guest */}
-<section className="bg-white rounded-xl p-6 shadow-sm">
+<section className="bg-white rounded-xl p-6 border border-[var(--admin-border)]">
 <h2 className="font-medium mb-4">Tambah Tamu</h2>
 <form onSubmit={addGuest} className="flex gap-3 flex-wrap">
 <input
@@ -227,19 +219,19 @@ value={newName}
 onChange={(e) => setNewName(e.target.value)}
 placeholder="Nama tamu"
 required
-className="flex-1 min-w-[150px] border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="flex-1 min-w-[150px] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 <input
 value={newPhone}
 onChange={(e) => setNewPhone(e.target.value)}
 placeholder="No. WA (misal: 08123...)"
-className="flex-1 min-w-[150px] border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="flex-1 min-w-[150px] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 <input
 value={newGroup}
 onChange={(e) => setNewGroup(e.target.value)}
 placeholder="Grup (opsional)"
-className="w-32 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-32 border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 <button
 type="submit"
@@ -252,7 +244,7 @@ className="px-5 py-2 rounded-lg text-white text-sm transition-all duration-150 h
 </section>
 
 {/* Import CSV */}
-<section className="bg-white rounded-xl p-6 shadow-sm">
+<section className="bg-white rounded-xl p-6 border border-[var(--admin-border)]">
 <h2 className="font-medium mb-2">Import Bulk via CSV</h2>
 <p className="text-xs text-[#6b6560] mb-3">
 Format: <code>name,phone,group</code> (header wajib ada, group opsional)
@@ -278,8 +270,8 @@ className="hidden"
 </section>
 
 {/* Guest table */}
-<section className="bg-white rounded-xl shadow-sm overflow-hidden">
-<div className="px-6 py-4 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<section className="bg-white rounded-xl border border-[var(--admin-border)] overflow-hidden">
+<div className="px-6 py-4 border-b border-[var(--admin-border)] flex flex-col md:flex-row md:items-center justify-between gap-4">
 <div>
 <h2 className="font-medium">
 Daftar Tamu ({filteredGuests.length})
@@ -290,12 +282,12 @@ Daftar Tamu ({filteredGuests.length})
 value={search}
 onChange={(e) => setSearch(e.target.value)}
 placeholder="Cari nama..."
-className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="border border-[var(--admin-border)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 <select
 value={selectedGroup}
 onChange={(e) => setSelectedGroup(e.target.value)}
-className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2 bg-white"
+className="border border-[var(--admin-border)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2 bg-white"
 >
 <option value="">Semua Grup</option>
 {uniqueGroups.map((g) => (
@@ -305,7 +297,7 @@ className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline
 <select
 value={selectedStatus}
 onChange={(e) => setSelectedStatus(e.target.value)}
-className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2 bg-white"
+className="border border-[var(--admin-border)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2 bg-white"
 >
 <option value="">Semua Status</option>
 <option value="sent">Link Disiapkan</option>
@@ -325,7 +317,7 @@ Unduh CSV
 </div>
 <div className="overflow-x-auto">
 <table className="w-full text-sm">
-<thead className="bg-gray-50 border-b border-gray-100">
+<thead className="bg-[var(--admin-surface-alt)] border-b border-[var(--admin-border)]">
 <tr>
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Nama</th>
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">No. WA</th>
@@ -334,9 +326,9 @@ Unduh CSV
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Aksi</th>
 </tr>
 </thead>
-<tbody className="divide-y divide-gray-100">
+<tbody className="divide-y divide-[var(--admin-border)]">
 {filteredGuests.map((g) => (
-<tr key={g.id} className="hover:bg-gray-50 transition-colors">
+<tr key={g.id} className="hover:bg-[var(--admin-surface-alt)] transition-colors">
 <td className="px-4 py-3 font-medium">{g.name}</td>
 <td className="px-4 py-3 text-[#6b6560]">{g.phone ?? "-"}</td>
 <td className="px-4 py-3 text-[#6b6560]">{g.group ?? "-"}</td>
@@ -361,17 +353,20 @@ g.openedAt
 </div>
 </td>
 <td className="px-4 py-3">
-<div className="relative">
 <button
-onClick={() => setOpenDropdown(openDropdown === g.id ? null : g.id)}
+ref={(el) => { buttonRefs.current[g.id] = el; }}
+onClick={() => handleOpenDropdown(g.id)}
 className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
 >
 <MoreVertical size={16} />
 </button>
-{openDropdown === g.id && (
+{openDropdown === g.id && dropdownPos && (
 <>
-<div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
-<div className="absolute right-0 top-8 z-20 bg-white rounded-lg shadow-lg border border-gray-100 py-1 min-w-[140px]">
+<div className="fixed inset-0 z-40" onClick={() => { setOpenDropdown(null); setDropdownPos(null); }} />
+<div
+className="fixed z-50 bg-white rounded-lg shadow-lg border border-gray-100 py-1 min-w-[140px]"
+style={{ top: dropdownPos.top, left: dropdownPos.left }}
+>
 {g.phone && (
 <a
 href={waLink(g)}
@@ -399,13 +394,12 @@ onClick={() => { deleteGuest(g.id); setOpenDropdown(null); }}
 className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors"
 >
 <XCircle size={14} />
-Hapus
-</button>
-</div>
-</>
-)}
-</div>
-</td>
+                              Hapus
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </td>
 </tr>
 ))}
 {filteredGuests.length === 0 && (
@@ -422,6 +416,7 @@ Hapus
 </table>
 </div>
 </section>
+</div>
 </main>
 </div>
 );

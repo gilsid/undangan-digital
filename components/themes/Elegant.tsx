@@ -454,7 +454,7 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
           )}
         </SectionReveal>
 
-        {invitation.mapsEmbedUrl && (
+          {invitation.mapsEmbedUrl?.includes("/maps/embed") && (
           <SectionReveal delay={0.4} className="mt-8 max-w-2xl mx-auto rounded-2xl overflow-hidden" style={{ height: 240 }}>
             <iframe
               src={invitation.mapsEmbedUrl}
@@ -465,7 +465,7 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
               loading="lazy"
             />
           </SectionReveal>
-        )}
+          )}
       </section>
 
       {/* 6. Cerita Cinta */}

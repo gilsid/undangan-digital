@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Mail, Plus, List, Users, MessageSquareHeart, CheckCircle2, XCircle } from "lucide-react";
 import Toast from "@/components/Toast";
+import Sidebar from "@/components/admin/Sidebar";
+import type { SidebarNavItem } from "@/components/admin/Sidebar";
 
 interface Invitation {
 id: string;
@@ -22,6 +24,7 @@ invitations: Invitation[];
 
 export default function SuperadminClient({ invitations }: Props) {
 const router = useRouter();
+const pathname = usePathname();
 const [creating, setCreating] = useState(false);
 const [form, setForm] = useState({
 email: "",
@@ -62,34 +65,41 @@ setToast({ message: d.error ?? "Gagal membuat invitation.", type: "error" });
 setCreating(false);
 }
 
+const navItems: SidebarNavItem[] = [
+  { href: "/superadmin", label: "Kelola Klien", icon: Mail },
+];
+
 return (
-<div className="min-h-screen bg-[#f8f4ef]">
-<header className="bg-white border-b border-gray-100 px-6 py-4">
+<div className="min-h-screen flex bg-[var(--admin-bg)]">
+<Sidebar navItems={navItems} activePath={pathname} />
+
+<main className="flex-1 min-w-0">
+<header className="px-10 py-6 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]">
 <h1
-className="text-2xl font-light"
 style={{ fontFamily: "'Cormorant Garamond', serif" }}
+className="text-2xl text-[var(--admin-ink)]"
 >
-Superadmin — Undangan Digital
+Kelola Klien
 </h1>
 </header>
 
-<main className="max-w-5xl mx-auto p-6 space-y-8">
+<div className="px-10 py-8 space-y-8">
 {/* Stats cards */}
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 {[
-{ label: "Total Undangan", value: invitations.length, icon: Mail, color: "bg-[var(--admin-brand-light)] text-[var(--admin-brand)]" },
-{ label: "Total Tamu", value: invitations.reduce((s, i) => s + i._count.guests, 0), icon: Users, color: "bg-blue-50 text-blue-600" },
-{ label: "Total RSVP", value: invitations.reduce((s, i) => s + i._count.rsvps, 0), icon: MessageSquareHeart, color: "bg-purple-50 text-purple-600" },
-{ label: "Terpublikasi", value: invitations.filter((i) => i.isPublished).length, icon: CheckCircle2, color: "bg-green-50 text-green-600" },
+{ label: "Total Undangan", value: invitations.length, icon: Mail, color: "bg-[var(--admin-brand-light)] text-[var(--admin-brand)]", border: "border-t-[var(--admin-brand)]" },
+{ label: "Total Tamu", value: invitations.reduce((s, i) => s + i._count.guests, 0), icon: Users, color: "bg-blue-50 text-blue-600", border: "border-t-blue-500" },
+{ label: "Total RSVP", value: invitations.reduce((s, i) => s + i._count.rsvps, 0), icon: MessageSquareHeart, color: "bg-purple-50 text-purple-600", border: "border-t-purple-500" },
+{ label: "Terpublikasi", value: invitations.filter((i) => i.isPublished).length, icon: CheckCircle2, color: "bg-green-50 text-green-600", border: "border-t-green-500" },
 ].map((stat) => {
 const Icon = stat.icon;
 return (
-<div key={stat.label} className="bg-white rounded-xl p-5 shadow-sm flex items-center gap-4">
+<div key={stat.label} className={`bg-white rounded-xl p-5 border-t-2 ${stat.border} flex items-center gap-4`}>
 <div className={`w-10 h-10 rounded-lg ${stat.color} flex items-center justify-center`}>
 <Icon size={20} />
 </div>
 <div>
-<p className="text-2xl font-semibold text-gray-800">{stat.value}</p>
+<p className="text-2xl font-semibold text-[var(--admin-ink)]">{stat.value}</p>
 <p className="text-xs text-[#6b6560]">{stat.label}</p>
 </div>
 </div>
@@ -98,12 +108,12 @@ return (
 </div>
 
 {/* Create invitation */}
-<section className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-l-[var(--admin-brand)]">
+<section className="bg-white rounded-xl p-6 border border-[var(--admin-border)]">
 <div className="flex items-center gap-3 mb-4">
 <div className="w-9 h-9 rounded-lg bg-[var(--admin-brand-light)] flex items-center justify-center">
 <Plus size={18} className="text-[var(--admin-brand)]" />
 </div>
-<h2 className="font-semibold text-gray-800">Buat Invitation Baru</h2>
+<h2 className="font-semibold text-[var(--admin-ink)]">Buat Invitation Baru</h2>
 </div>
 <form onSubmit={createInvitation} className="grid grid-cols-2 gap-4">
 {[
@@ -124,7 +134,7 @@ type={name === "weddingDate" ? "date" : name === "email" ? "email" : "text"}
 value={(form as unknown as Record<string, string>)[name]}
 onChange={handleChange}
 required
-className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
+className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
 />
 </div>
 ))}
@@ -140,16 +150,16 @@ className="col-span-2 py-2 rounded-lg text-white text-sm transition-all duration
 </section>
 
 {/* Invitation list */}
-<section className="bg-white rounded-xl shadow-sm overflow-hidden border-l-4 border-l-[var(--admin-accent)]">
-<div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+<section className="bg-white rounded-xl border border-[var(--admin-border)] overflow-hidden">
+<div className="px-6 py-4 border-b border-[var(--admin-border)] flex items-center gap-3">
 <div className="w-9 h-9 rounded-lg bg-[var(--admin-accent)]/10 flex items-center justify-center">
 <List size={18} className="text-[var(--admin-accent)]" />
 </div>
-<h2 className="font-semibold text-gray-800">Semua Invitation ({invitations.length})</h2>
+<h2 className="font-semibold text-[var(--admin-ink)]">Semua Invitation ({invitations.length})</h2>
 </div>
 <div className="overflow-x-auto">
 <table className="w-full text-sm">
-<thead className="bg-gray-50 border-b border-gray-100">
+<thead className="bg-[var(--admin-surface-alt)] border-b border-[var(--admin-border)]">
 <tr>
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Mempelai</th>
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Slug</th>
@@ -159,9 +169,9 @@ className="col-span-2 py-2 rounded-lg text-white text-sm transition-all duration
 <th className="text-left px-4 py-3 text-xs uppercase tracking-wide text-gray-500 font-medium">Status</th>
 </tr>
 </thead>
-<tbody className="divide-y divide-gray-100">
+<tbody className="divide-y divide-[var(--admin-border)]">
 {invitations.map((inv) => (
-<tr key={inv.id} className="hover:bg-gray-50 transition-colors">
+<tr key={inv.id} className="hover:bg-[var(--admin-surface-alt)] transition-colors">
 <td className="px-4 py-3 font-medium">
 {inv.groomName} & {inv.brideName}
 </td>
@@ -187,6 +197,7 @@ inv.isPublished
 </table>
 </div>
 </section>
+</div>
 </main>
 </div>
 );

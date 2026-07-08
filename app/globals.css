@@ -10,12 +10,15 @@
     --charcoal: #2c2c2c;
     --warm-gray: #6b6560;
 
-    /* Admin UI tokens — dipakai khusus di dashboard & superadmin */
-    --admin-bg: #f4f6f5;
+    /* Admin UI tokens — Atelier Ledger */
+    --admin-bg: #f5f1e9;
     --admin-surface: #ffffff;
+    --admin-surface-alt: #faf7f0;
+    --admin-border: #e5ded0;
     --admin-brand: #2d5f4c;
     --admin-brand-light: #e8f2ed;
-    --admin-accent: #d97b3f;
+    --admin-accent: #c2703f;
+    --admin-ink: #2b2a26;
     --admin-primary: #2d5f4c;
     --admin-primary-hover: #234a3c;
     --admin-primary-active: #1a3e30;
