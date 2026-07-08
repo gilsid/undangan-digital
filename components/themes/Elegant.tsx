@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
 import { useState, useEffect, useRef } from "react";
+import MapsEmbed, { getMapsSrc } from "@/components/MapsEmbed";
 import Image from "next/image";
 
 interface Props {
@@ -441,9 +442,9 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
             {invitation.venueName}
           </p>
           <p className="text-white/60 text-sm mt-1">{invitation.venueAddress}</p>
-          {invitation.mapsEmbedUrl && !invitation.mapsEmbedUrl.includes("/maps/embed") && (
+          {getMapsSrc(invitation.mapsEmbedUrl) && !getMapsSrc(invitation.mapsEmbedUrl)!.includes("/maps/embed") && (
             <a
-              href={invitation.mapsEmbedUrl}
+              href={getMapsSrc(invitation.mapsEmbedUrl)!}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-4 px-5 py-2 rounded-full text-sm transition-opacity hover:opacity-80"
@@ -454,18 +455,14 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
           )}
         </SectionReveal>
 
-          {invitation.mapsEmbedUrl?.includes("/maps/embed") && (
-          <SectionReveal delay={0.4} className="mt-8 max-w-2xl mx-auto rounded-2xl overflow-hidden" style={{ height: 240 }}>
-            <iframe
-              src={invitation.mapsEmbedUrl}
-              width="100%"
-              height="240"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-            />
-          </SectionReveal>
-          )}
+        {getMapsSrc(invitation.mapsEmbedUrl)?.includes("/maps/embed") && (
+        <SectionReveal delay={0.4} className="mt-8 max-w-2xl mx-auto rounded-2xl overflow-hidden" style={{ height: 240 }}>
+          <MapsEmbed
+            mapsEmbedUrl={invitation.mapsEmbedUrl}
+            iframeHeight={240}
+          />
+        </SectionReveal>
+        )}
       </section>
 
       {/* 6. Cerita Cinta */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import type { Invitation, Guest } from "@prisma/client";
 import { FileEdit, Users, MessageSquareHeart, ExternalLink, XCircle, Send, Eye, MailOpen, MoreVertical } from "lucide-react";
@@ -132,13 +132,37 @@ return;
 const btn = buttonRefs.current[guestId];
 if (btn) {
 const rect = btn.getBoundingClientRect();
-setDropdownPos({
-top: rect.bottom + 4,
-left: rect.right - 140,
-});
+const menuHeight = 120;
+const spaceBelow = window.innerHeight - rect.bottom;
+const spaceRight = window.innerWidth - rect.right;
+const top = spaceBelow < menuHeight ? rect.top - menuHeight + 4 : rect.bottom + 4;
+const left = Math.min(rect.right - 140, Math.max(8, window.innerWidth - 148));
+setDropdownPos({ top, left });
 }
 setOpenDropdown(guestId);
 }
+
+useEffect(() => {
+if (!openDropdown) return;
+function onScrollOrResize() {
+setOpenDropdown(null);
+setDropdownPos(null);
+}
+function onKeyDown(e: KeyboardEvent) {
+if (e.key === "Escape") {
+setOpenDropdown(null);
+setDropdownPos(null);
+}
+}
+window.addEventListener("scroll", onScrollOrResize, true);
+window.addEventListener("resize", onScrollOrResize);
+window.addEventListener("keydown", onKeyDown);
+return () => {
+window.removeEventListener("scroll", onScrollOrResize, true);
+window.removeEventListener("resize", onScrollOrResize);
+window.removeEventListener("keydown", onKeyDown);
+};
+}, [openDropdown]);
 
 async function importCSV(e: React.ChangeEvent<HTMLInputElement>) {
 const file = e.target.files?.[0];
@@ -357,6 +381,9 @@ g.openedAt
 <button
 ref={(el) => { buttonRefs.current[g.id] = el; }}
 onClick={() => handleOpenDropdown(g.id)}
+aria-label="Aksi tamu"
+aria-haspopup="true"
+aria-expanded={openDropdown === g.id}
 className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
 >
 <MoreVertical size={16} />

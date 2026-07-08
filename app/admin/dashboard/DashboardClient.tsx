@@ -8,6 +8,7 @@ import { Users, Calendar, Palette, FileEdit, MessageSquareHeart, ExternalLink, I
 import Toast from "@/components/Toast";
 import Sidebar from "@/components/admin/Sidebar";
 import type { SidebarNavItem } from "@/components/admin/Sidebar";
+import { extractMapsEmbedSrc } from "@/lib/maps";
 
 interface Props {
 invitation: Invitation | null;
@@ -20,6 +21,7 @@ const pathname = usePathname();
 const [saving, setSaving] = useState(false);
 const [uploading, setUploading] = useState(false);
 const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+const [mapsError, setMapsError] = useState("");
 const [gallery, setGallery] = useState<string[]>(invitation?.gallery ?? []);
 const [bankAccounts, setBankAccounts] = useState<{ bank: string; accountNumber: string; accountName: string }[]>(
 (invitation?.bankAccounts as { bank: string; accountNumber: string; accountName: string }[] | null) ?? []
@@ -56,6 +58,14 @@ HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 >
 ) {
 const { name, value, type } = e.target;
+if (name === "mapsEmbedUrl") {
+setMapsError("");
+const extracted = extractMapsEmbedSrc(value);
+if (value && extracted) {
+setForm((prev) => ({ ...prev, mapsEmbedUrl: extracted }));
+return;
+}
+}
 setForm((prev) => ({
 ...prev,
 [name]:
@@ -66,6 +76,13 @@ type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
 async function handleSubmit(e: React.FormEvent) {
 e.preventDefault();
 if (!invitation) return;
+
+if (form.mapsEmbedUrl && !extractMapsEmbedSrc(form.mapsEmbedUrl)) {
+setMapsError("URL embed tidak valid. Tempel URL embed atau kode <iframe> dari Google Maps.");
+setToast({ message: "Perbaiki error di form sebelum menyimpan.", type: "error" });
+return;
+}
+setMapsError("");
 setSaving(true);
 setToast(null);
 
@@ -296,18 +313,24 @@ className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-
 />
 </div>
 ))}
-<div className="col-span-2">
-<label className="block text-xs text-[#6b6560] mb-1">
-URL embed Google Maps (opsional)
-</label>
-<input
-name="mapsEmbedUrl"
-value={form.mapsEmbedUrl}
-onChange={handleChange}
-placeholder="https://maps.google.com/maps?..."
-className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2"
-/>
-</div>
+          <div className="col-span-2">
+            <label className="block text-xs text-[#6b6560] mb-1">
+              URL embed Google Maps (opsional)
+            </label>
+            <input
+              name="mapsEmbedUrl"
+              value={form.mapsEmbedUrl}
+              onChange={handleChange}
+              placeholder="https://www.google.com/maps/embed?pb=..."
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-primary)] focus-visible:ring-offset-2 ${mapsError ? "border-red-300 bg-red-50" : "border-[var(--admin-border)]"}`}
+            />
+            <p className="text-xs text-[#6b6560] mt-1">
+              Tempel URL embed atau seluruh kode <code className="text-[10px] bg-gray-100 px-1 rounded">{'<iframe src="...">'}</code> — URL akan otomatis diekstrak.
+            </p>
+            {mapsError && (
+              <p className="text-xs text-red-500 mt-1">{mapsError}</p>
+            )}
+          </div>
 </div>
 </section>
 

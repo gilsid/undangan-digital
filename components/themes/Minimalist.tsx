@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
 import { useState, useEffect, useRef } from "react";
+import MapsEmbed, { getMapsSrc } from "@/components/MapsEmbed";
 import Image from "next/image";
 
 interface Props {
@@ -394,9 +395,9 @@ export default function MinimalistTheme({ invitation, guestName, wishes: initial
               <p className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold mb-2">Location</p>
               <p className="text-lg font-light tracking-wide uppercase">{invitation.venueName}</p>
               <p className="text-xs text-[#777777] mt-1 tracking-wide">{invitation.venueAddress}</p>
-              {invitation.mapsEmbedUrl && !invitation.mapsEmbedUrl.includes("/maps/embed") && (
+              {getMapsSrc(invitation.mapsEmbedUrl) && !getMapsSrc(invitation.mapsEmbedUrl)!.includes("/maps/embed") && (
                 <a
-                  href={invitation.mapsEmbedUrl}
+                  href={getMapsSrc(invitation.mapsEmbedUrl)!}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 mt-4 text-[10px] uppercase tracking-[0.2em] font-semibold border-b border-[#111111] pb-1 hover:text-[#777777] hover:border-neutral-300 transition-colors"
@@ -407,15 +408,12 @@ export default function MinimalistTheme({ invitation, guestName, wishes: initial
             </SectionReveal>
           </div>
 
-          {invitation.mapsEmbedUrl?.includes("/maps/embed") && (
+          {getMapsSrc(invitation.mapsEmbedUrl)?.includes("/maps/embed") && (
             <SectionReveal delay={0.2} className="w-full bg-[#fcfcfc] border border-neutral-100 p-2">
-              <iframe
-                src={invitation.mapsEmbedUrl}
-                width="100%"
-                height="280"
-                style={{ border: 0, filter: "grayscale(1) contrast(1.1)" }}
-                allowFullScreen
-                loading="lazy"
+              <MapsEmbed
+                mapsEmbedUrl={invitation.mapsEmbedUrl}
+                iframeHeight={280}
+                iframeStyle={{ filter: "grayscale(1) contrast(1.1)" }}
               />
             </SectionReveal>
           )}
