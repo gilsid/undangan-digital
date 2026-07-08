@@ -10,9 +10,10 @@ interface Props {
 invitation: Invitation;
 rsvps: Rsvp[];
 wishes: Wish[];
+accountEmail?: string;
 }
 
-export default function RsvpClient({ invitation, rsvps, wishes }: Props) {
+export default function RsvpClient({ invitation, rsvps, wishes, accountEmail }: Props) {
 const hadir = rsvps.filter((r) => r.attendance === "HADIR");
 const tidakHadir = rsvps.filter((r) => r.attendance === "TIDAK_HADIR");
 const ragu = rsvps.filter((r) => r.attendance === "RAGU");
@@ -51,7 +52,7 @@ const navItems: SidebarNavItem[] = [
 
 return (
 <div className="min-h-screen flex bg-[var(--admin-bg)]">
-<Sidebar navItems={navItems} activePath={pathname} />
+<Sidebar navItems={navItems} activePath={pathname} accountEmail={accountEmail} />
 
 <main className="flex-1 min-w-0">
 <header className="px-10 py-6 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]">

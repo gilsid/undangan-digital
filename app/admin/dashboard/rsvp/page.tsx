@@ -23,6 +23,7 @@ export default async function RSVPPage() {
       invitation={invitation}
       rsvps={invitation.rsvps as Rsvp[]}
       wishes={invitation.wishes as Wish[]}
+      accountEmail={session.user.email ?? undefined}
     />
   );
 }

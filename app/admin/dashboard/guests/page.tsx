@@ -18,6 +18,7 @@ export default async function GuestsPage() {
     <GuestsClient
       invitation={invitation}
       guests={invitation.guests}
+      accountEmail={session.user.email ?? undefined}
     />
   );
 }

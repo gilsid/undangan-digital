@@ -394,7 +394,7 @@ export default function MinimalistTheme({ invitation, guestName, wishes: initial
               <p className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold mb-2">Location</p>
               <p className="text-lg font-light tracking-wide uppercase">{invitation.venueName}</p>
               <p className="text-xs text-[#777777] mt-1 tracking-wide">{invitation.venueAddress}</p>
-              {invitation.mapsEmbedUrl && (
+              {invitation.mapsEmbedUrl && !invitation.mapsEmbedUrl.includes("/maps/embed") && (
                 <a
                   href={invitation.mapsEmbedUrl}
                   target="_blank"

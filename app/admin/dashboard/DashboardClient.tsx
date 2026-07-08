@@ -11,9 +11,10 @@ import type { SidebarNavItem } from "@/components/admin/Sidebar";
 
 interface Props {
 invitation: Invitation | null;
+accountEmail?: string;
 }
 
-export default function DashboardClient({ invitation }: Props) {
+export default function DashboardClient({ invitation, accountEmail }: Props) {
 const router = useRouter();
 const pathname = usePathname();
 const [saving, setSaving] = useState(false);
@@ -146,9 +147,18 @@ p.map((item, i) => (i === index ? { ...item, [field]: val } : item))
 );
 }
 
+const navItems: SidebarNavItem[] = [
+  { href: "/admin/dashboard", label: "Konten", icon: FileEdit },
+  { href: "/admin/dashboard/guests", label: "Tamu", icon: Users },
+  { href: "/admin/dashboard/rsvp", label: "RSVP", icon: MessageSquareHeart },
+  ...(invitation ? [{ href: `/${invitation.slug}`, label: "Preview ↗", icon: ExternalLink as SidebarNavItem["icon"], external: true }] : []),
+];
+
 if (!invitation) {
 return (
-<div className="min-h-screen bg-[#f8f4ef] flex items-center justify-center">
+<div className="min-h-screen flex bg-[var(--admin-bg)]">
+<Sidebar navItems={navItems} activePath={pathname} accountEmail={accountEmail} />
+<main className="flex-1 min-w-0 flex items-center justify-center">
 <div className="text-center px-6 bg-white rounded-xl p-8 max-w-md shadow-sm">
 <p
 className="text-2xl font-light mb-3"
@@ -160,20 +170,14 @@ Belum Ada Undangan Aktif
 Anda belum memiliki undangan yang aktif. Silakan hubungi admin untuk membuatkan akun undangan Anda.
 </p>
 </div>
+</main>
 </div>
 );
 }
 
-const navItems: SidebarNavItem[] = [
-  { href: "/admin/dashboard", label: "Konten", icon: FileEdit },
-  { href: "/admin/dashboard/guests", label: "Tamu", icon: Users },
-  { href: "/admin/dashboard/rsvp", label: "RSVP", icon: MessageSquareHeart },
-  { href: `/${invitation.slug}`, label: "Preview ↗", icon: ExternalLink, external: true },
-];
-
 return (
 <div className="min-h-screen flex bg-[var(--admin-bg)]">
-<Sidebar navItems={navItems} activePath={pathname} />
+<Sidebar navItems={navItems} activePath={pathname} accountEmail={accountEmail} />
 
 <main className="flex-1 min-w-0">
 <header className="px-10 py-6 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]">

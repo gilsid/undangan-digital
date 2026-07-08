@@ -441,7 +441,7 @@ export default function ElegantTheme({ invitation, guestName, wishes: initialWis
             {invitation.venueName}
           </p>
           <p className="text-white/60 text-sm mt-1">{invitation.venueAddress}</p>
-          {invitation.mapsEmbedUrl && (
+          {invitation.mapsEmbedUrl && !invitation.mapsEmbedUrl.includes("/maps/embed") && (
             <a
               href={invitation.mapsEmbedUrl}
               target="_blank"

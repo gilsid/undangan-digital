@@ -12,9 +12,10 @@ import type { SidebarNavItem } from "@/components/admin/Sidebar";
 interface Props {
 invitation: Invitation;
 guests: Guest[];
+accountEmail?: string;
 }
 
-export default function GuestsClient({ invitation, guests: initialGuests }: Props) {
+export default function GuestsClient({ invitation, guests: initialGuests, accountEmail }: Props) {
 const router = useRouter();
 const [guests, setGuests] = useState<Guest[]>(initialGuests);
 const [newName, setNewName] = useState("");
@@ -197,7 +198,7 @@ const navItems: SidebarNavItem[] = [
 
 return (
 <div className="min-h-screen flex bg-[var(--admin-bg)]">
-<Sidebar navItems={navItems} activePath={pathname} />
+<Sidebar navItems={navItems} activePath={pathname} accountEmail={accountEmail} />
 
 <main className="flex-1 min-w-0">
 <header className="px-10 py-6 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]">

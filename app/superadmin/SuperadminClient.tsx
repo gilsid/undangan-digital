@@ -20,9 +20,10 @@ _count: { guests: number; rsvps: number };
 
 interface Props {
 invitations: Invitation[];
+accountEmail?: string;
 }
 
-export default function SuperadminClient({ invitations }: Props) {
+export default function SuperadminClient({ invitations, accountEmail }: Props) {
 const router = useRouter();
 const pathname = usePathname();
 const [creating, setCreating] = useState(false);
@@ -71,7 +72,7 @@ const navItems: SidebarNavItem[] = [
 
 return (
 <div className="min-h-screen flex bg-[var(--admin-bg)]">
-<Sidebar navItems={navItems} activePath={pathname} />
+<Sidebar navItems={navItems} activePath={pathname} accountEmail={accountEmail} />
 
 <main className="flex-1 min-w-0">
 <header className="px-10 py-6 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]">

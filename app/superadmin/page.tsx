@@ -17,5 +17,5 @@ export default async function SuperadminPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  return <SuperadminClient invitations={invitations} />;
+  return <SuperadminClient invitations={invitations} accountEmail={session.user.email ?? undefined} />;
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import type { LucideIcon } from "lucide-react";
 
 export interface SidebarNavItem {
@@ -19,8 +19,7 @@ interface Props {
 }
 
 export default function Sidebar({ navItems, activePath, accountEmail }: Props) {
-const { data: session } = useSession();
-const email = accountEmail ?? session?.user?.email;
+const email = accountEmail;
   return (
     <aside className="w-64 shrink-0 bg-[var(--admin-brand)] text-white flex flex-col min-h-screen">
       <div className="px-6 py-6 border-b border-white/10">

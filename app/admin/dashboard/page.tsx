@@ -11,5 +11,5 @@ export default async function DashboardPage() {
     where: { ownerId: session.user.id },
   });
 
-  return <DashboardClient invitation={invitation} />;
+  return <DashboardClient invitation={invitation} accountEmail={session.user.email ?? undefined} />;
 }
