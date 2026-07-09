@@ -110,6 +110,7 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
     if (res.ok) {
       setInvitations((p) => p.filter((i) => i.id !== deleteTarget.id));
       setToast({ message: "Invitation berhasil dihapus.", type: "success" });
+      router.refresh();
     } else {
       const data = await res.json().catch(() => null);
       setToast({ message: data?.error ?? "Gagal menghapus invitation.", type: "error" });
@@ -298,14 +299,14 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
             <DialogTitle>Hapus Invitation</DialogTitle>
             <DialogDescription>
               Menghapus <span className="font-medium text-[var(--text-primary)]">{deleteTarget?.groomName} & {deleteTarget?.brideName}</span> ({deleteTarget?.slug}) akan menghapus PERMANEN:
-              <ul className="list-disc list-inside mt-2 space-y-1">
-                <li>{deleteTarget?.guestCount} data tamu</li>
-                <li>{deleteTarget?.rsvpCount} data RSVP & ucapan</li>
-                <li>Halaman undangan publik di /{deleteTarget?.slug}</li>
-              </ul>
-              Tindakan ini tidak dapat dibatalkan.
             </DialogDescription>
           </DialogHeader>
+          <ul className="list-disc list-inside -mt-2 space-y-1 px-1 text-sm text-muted-foreground">
+            <li>{deleteTarget?.guestCount} data tamu</li>
+            <li>{deleteTarget?.rsvpCount} data RSVP & ucapan</li>
+            <li>Halaman undangan publik di /{deleteTarget?.slug}</li>
+          </ul>
+          <p className="text-sm text-muted-foreground px-1 -mt-1">Tindakan ini tidak dapat dibatalkan.</p>
           <Input
             placeholder={`Ketik "${deleteTarget?.slug}" untuk konfirmasi`}
             value={confirmSlugInput}
