@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Mail, Plus, List, Users, MessageSquareHeart, CheckCircle2, XCircle } from "lucide-react";
+import { Mail, Plus, List, Users, MessageSquareHeart, CheckCircle2, XCircle, Trash2, Archive, RotateCcw, MoreVertical } from "lucide-react";
 import Toast from "@/components/Toast";
 import Sidebar from "@/components/admin/Sidebar";
 import type { SidebarNavItem } from "@/components/admin/Sidebar";
@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { StatusStamp } from "@/components/ui/status-stamp";
 import { IconBadge } from "@/components/ui/icon-badge";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 interface Invitation {
   id: string;
@@ -20,6 +22,7 @@ interface Invitation {
   groomName: string;
   brideName: string;
   isPublished: boolean;
+  isArchived: boolean;
   createdAt: Date;
   owner: { email: string };
   _count: { guests: number; rsvps: number };
@@ -30,10 +33,21 @@ interface Props {
   accountEmail?: string;
 }
 
-export default function SuperadminClient({ invitations, accountEmail }: Props) {
+export default function SuperadminClient({ invitations: initialInvitations, accountEmail }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const [invitations, setInvitations] = useState(initialInvitations);
   const [creating, setCreating] = useState(false);
+  const [archivingId, setArchivingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    slug: string;
+    groomName: string;
+    brideName: string;
+    guestCount: number;
+    rsvpCount: number;
+  } | null>(null);
+  const [confirmSlugInput, setConfirmSlugInput] = useState("");
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -72,6 +86,38 @@ export default function SuperadminClient({ invitations, accountEmail }: Props) {
     setCreating(false);
   }
 
+  async function toggleArchive(id: string, archive: boolean) {
+    setArchivingId(id);
+    const res = await fetch(`/api/superadmin/invitations/${id}/archive`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ archived: archive }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setInvitations((p) => p.map((i) => (i.id === id ? { ...i, ...updated } : i)));
+      setToast({ message: archive ? "Invitation dinonaktifkan." : "Invitation diaktifkan kembali.", type: "success" });
+    } else {
+      const data = await res.json().catch(() => null);
+      setToast({ message: data?.error ?? "Gagal mengubah status.", type: "error" });
+    }
+    setArchivingId(null);
+  }
+
+  async function deleteInvitation() {
+    if (!deleteTarget) return;
+    const res = await fetch(`/api/superadmin/invitations/${deleteTarget.id}`, { method: "DELETE" });
+    if (res.ok) {
+      setInvitations((p) => p.filter((i) => i.id !== deleteTarget.id));
+      setToast({ message: "Invitation berhasil dihapus.", type: "success" });
+    } else {
+      const data = await res.json().catch(() => null);
+      setToast({ message: data?.error ?? "Gagal menghapus invitation.", type: "error" });
+    }
+    setDeleteTarget(null);
+    setConfirmSlugInput("");
+  }
+
   const navItems: SidebarNavItem[] = [
     { href: "/superadmin", label: "Kelola Klien", icon: Mail },
   ];
@@ -80,7 +126,7 @@ export default function SuperadminClient({ invitations, accountEmail }: Props) {
     { label: "Total Undangan", value: invitations.length, icon: Mail, color: "text-[var(--foil-gold)]" },
     { label: "Total Tamu", value: invitations.reduce((s, i) => s + i._count.guests, 0), icon: Users, color: "text-[var(--text-primary)]" },
     { label: "Total RSVP", value: invitations.reduce((s, i) => s + i._count.rsvps, 0), icon: MessageSquareHeart, color: "text-[var(--dusty-rose)]" },
-    { label: "Terpublikasi", value: invitations.filter((i) => i.isPublished).length, icon: CheckCircle2, color: "text-[var(--status-success)]" },
+    { label: "Terpublikasi", value: invitations.filter((i) => i.isPublished && !i.isArchived).length, icon: CheckCircle2, color: "text-[var(--status-success)]" },
   ];
 
   return (
@@ -174,6 +220,7 @@ export default function SuperadminClient({ invitations, accountEmail }: Props) {
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Tamu</TableHead>
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">RSVP</TableHead>
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Status</TableHead>
+                  <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs w-12">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -188,11 +235,52 @@ export default function SuperadminClient({ invitations, accountEmail }: Props) {
                     <TableCell className="text-center" style={{ fontFamily: "var(--font-mono)" }}>{inv._count.rsvps}</TableCell>
                     <TableCell>
                       <StatusStamp
-                        tone={inv.isPublished ? "success" : "warning"}
-                        icon={inv.isPublished ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
+                        tone={inv.isArchived ? "warning" : inv.isPublished ? "success" : "neutral"}
+                        icon={inv.isArchived ? <Archive size={10} /> : inv.isPublished ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
                       >
-                        {inv.isPublished ? "Published" : "Draft"}
+                        {inv.isArchived ? "Diarsipkan" : inv.isPublished ? "Published" : "Draft"}
                       </StatusStamp>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <button
+                              aria-label="Aksi invitation"
+                              className="p-1.5 rounded-lg hover:bg-[var(--ink-surface-raised)] transition-colors text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                            />
+                          }
+                        >
+                          <MoreVertical size={16} />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="bottom" align="end" sideOffset={4}>
+                          {inv.isArchived ? (
+                            <DropdownMenuItem onClick={() => toggleArchive(inv.id, false)} disabled={archivingId === inv.id}>
+                              <RotateCcw size={14} className="text-[var(--status-success)]" />
+                              Aktifkan Kembali
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem onClick={() => toggleArchive(inv.id, true)} disabled={archivingId === inv.id}>
+                              <Archive size={14} className="text-[var(--status-warning)]" />
+                              Nonaktifkan
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem
+                            onClick={() => setTimeout(() => setDeleteTarget({
+                              id: inv.id,
+                              slug: inv.slug,
+                              groomName: inv.groomName,
+                              brideName: inv.brideName,
+                              guestCount: inv._count.guests,
+                              rsvpCount: inv._count.rsvps,
+                            }), 0)}
+                            className="text-[var(--status-danger)] focus:text-[var(--status-danger)]"
+                          >
+                            <Trash2 size={14} />
+                            Hapus Permanen
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -201,6 +289,40 @@ export default function SuperadminClient({ invitations, accountEmail }: Props) {
           </LedgerCard>
         </div>
       </main>
+
+      <Toast toast={toast} onClose={() => setToast(null)} />
+
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) { setDeleteTarget(null); setConfirmSlugInput(""); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hapus Invitation</DialogTitle>
+            <DialogDescription>
+              Menghapus <span className="font-medium text-[var(--text-primary)]">{deleteTarget?.groomName} & {deleteTarget?.brideName}</span> ({deleteTarget?.slug}) akan menghapus PERMANEN:
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>{deleteTarget?.guestCount} data tamu</li>
+                <li>{deleteTarget?.rsvpCount} data RSVP & ucapan</li>
+                <li>Halaman undangan publik di /{deleteTarget?.slug}</li>
+              </ul>
+              Tindakan ini tidak dapat dibatalkan.
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            placeholder={`Ketik "${deleteTarget?.slug}" untuk konfirmasi`}
+            value={confirmSlugInput}
+            onChange={(e) => setConfirmSlugInput(e.target.value)}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setDeleteTarget(null); setConfirmSlugInput(""); }}>Batal</Button>
+            <Button
+              variant="destructive"
+              disabled={confirmSlugInput !== deleteTarget?.slug}
+              onClick={deleteInvitation}
+            >
+              Hapus Permanen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

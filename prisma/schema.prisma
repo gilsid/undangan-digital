@@ -58,6 +58,8 @@ model Invitation {
   quoteSource   String?
 
   isPublished   Boolean  @default(false)
+  isArchived    Boolean  @default(false)
+  archivedAt    DateTime?
   guests        Guest[]
   rsvps         Rsvp[]
   wishes        Wish[]

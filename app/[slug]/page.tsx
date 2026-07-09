@@ -37,7 +37,7 @@ export default async function InvitationPage({ params, searchParams }: Props) {
   });
 
   if (!invitation) notFound();
-  if (!invitation.isPublished) {
+  if (!invitation.isPublished || invitation.isArchived) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f8f4ef]">
         <div className="text-center px-6">
