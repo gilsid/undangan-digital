@@ -10,7 +10,7 @@ import { LedgerCard } from "@/components/ui/ledger-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { StatusStamp } from "@/components/ui/status-stamp";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 
 interface Invitation {
@@ -186,17 +186,12 @@ export default function SuperadminClient({ invitations, accountEmail }: Props) {
                     <TableCell className="text-center" style={{ fontFamily: "var(--font-mono)" }}>{inv._count.guests}</TableCell>
                     <TableCell className="text-center" style={{ fontFamily: "var(--font-mono)" }}>{inv._count.rsvps}</TableCell>
                     <TableCell>
-                      <Badge
-                        variant={inv.isPublished ? "default" : "outline"}
-                        className={
-                          inv.isPublished
-                            ? "bg-[var(--status-success)]/15 text-[var(--status-success)] border-[var(--status-success)]/30 w-fit"
-                            : "bg-[var(--status-warning)]/15 text-[var(--status-warning)] border-[var(--status-warning)]/30 w-fit"
-                        }
+                      <StatusStamp
+                        tone={inv.isPublished ? "success" : "warning"}
+                        icon={inv.isPublished ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
                       >
-                        {inv.isPublished ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
                         {inv.isPublished ? "Published" : "Draft"}
-                      </Badge>
+                      </StatusStamp>
                     </TableCell>
                   </TableRow>
                 ))}

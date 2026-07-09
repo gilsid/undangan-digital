@@ -11,11 +11,11 @@ import type { SidebarNavItem } from "@/components/admin/Sidebar";
 import { LedgerCard } from "@/components/ui/ledger-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { StatusStamp } from "@/components/ui/status-stamp";
 
 interface Props {
   invitation: Invitation;
@@ -313,29 +313,21 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
                     <TableCell className="text-[var(--text-secondary)]">{g.group ?? "-"}</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <Badge
-                          variant={g.isSent ? "default" : "outline"}
-                          className={g.isSent
-                            ? "bg-[var(--status-success)]/15 text-[var(--status-success)] border-[var(--status-success)]/30 w-fit"
-                            : "bg-[var(--ink-surface-raised)] text-[var(--text-muted)] border-[var(--ink-border)] w-fit"
-                          }
-                        >
-                          {g.isSent ? <Send size={10} /> : <XCircle size={10} />}
-                          {g.isSent ? "Link disiapkan" : "Belum disiapkan"}
-                        </Badge>
-                        <Badge
-                          variant={g.openedAt ? "default" : "outline"}
-                          className={g.openedAt
-                            ? "bg-[var(--status-success)]/15 text-[var(--status-success)] border-[var(--status-success)]/30 w-fit"
-                            : "bg-[var(--ink-surface-raised)] text-[var(--text-muted)] border-[var(--ink-border)] w-fit"
-                          }
-                        >
-                          {g.openedAt ? <Eye size={10} /> : <MailOpen size={10} />}
-                          {g.openedAt
-                            ? `Dibuka ${new Date(g.openedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`
-                            : "Belum dibuka"
-                          }
-                        </Badge>
+                          <StatusStamp
+                            tone={g.isSent ? "success" : "warning"}
+                            icon={g.isSent ? <Send size={10} /> : <XCircle size={10} />}
+                          >
+                            {g.isSent ? "Link disiapkan" : "Belum disiapkan"}
+                          </StatusStamp>
+                          <StatusStamp
+                            tone={g.openedAt ? "success" : "neutral"}
+                            icon={g.openedAt ? <Eye size={10} /> : <MailOpen size={10} />}
+                          >
+                            {g.openedAt
+                              ? `Dibuka ${new Date(g.openedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`
+                              : "Belum dibuka"
+                            }
+                          </StatusStamp>
                       </div>
                     </TableCell>
                     <TableCell>

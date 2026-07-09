@@ -71,10 +71,12 @@
   --warm-gray: #6b6560;
 }
 
-body {
+/* Dashboard shell — scoped, not global */
+.dashboard-shell {
   background: var(--ink-bg);
   color: var(--text-primary);
   font-family: var(--font-sans), system-ui, sans-serif;
+  min-height: 100vh;
 }
 
 /* Registration-mark card */
@@ -107,13 +109,6 @@ body {
   right: -1px;
   border-left: none;
   border-top: none;
-}
-
-/* Public theme body (for undangan pages) */
-[data-theme="public"] body,
-.public-page body {
-  background: var(--ivory);
-  color: var(--charcoal);
 }
 
 @media (prefers-reduced-motion: reduce) {

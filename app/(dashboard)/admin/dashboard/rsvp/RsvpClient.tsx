@@ -7,8 +7,8 @@ import Sidebar from "@/components/admin/Sidebar";
 import type { SidebarNavItem } from "@/components/admin/Sidebar";
 import { LedgerCard } from "@/components/ui/ledger-card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
+import { StatusStamp } from "@/components/ui/status-stamp";
 
 interface Props {
   invitation: Invitation;
@@ -111,23 +111,16 @@ export default function RsvpClient({ invitation, rsvps, wishes, accountEmail }: 
                   <TableRow key={r.id} className="border-b border-[var(--ink-border)]">
                     <TableCell className="font-medium text-[var(--text-primary)]">{r.guestName}</TableCell>
                     <TableCell>
-                      <Badge
-                        variant={r.attendance === "HADIR" ? "default" : "outline"}
-                        className={
-                          r.attendance === "HADIR"
-                            ? "bg-[var(--status-success)]/15 text-[var(--status-success)] border-[var(--status-success)]/30 w-fit"
-                            : r.attendance === "TIDAK_HADIR"
-                            ? "bg-[var(--status-danger)]/15 text-[var(--status-danger)] border-[var(--status-danger)]/30 w-fit"
-                            : "bg-[var(--status-warning)]/15 text-[var(--status-warning)] border-[var(--status-warning)]/30 w-fit"
-                        }
+                      <StatusStamp
+                        tone={r.attendance === "HADIR" ? "success" : r.attendance === "TIDAK_HADIR" ? "danger" : "warning"}
+                        icon={r.attendance === "HADIR" ? <CheckCircle2 size={10} /> : r.attendance === "TIDAK_HADIR" ? <XCircle size={10} /> : <HelpCircle size={10} />}
                       >
-                        {r.attendance === "HADIR" ? <CheckCircle2 size={10} /> : r.attendance === "TIDAK_HADIR" ? <XCircle size={10} /> : <HelpCircle size={10} />}
                         {r.attendance === "HADIR"
                           ? "Hadir"
                           : r.attendance === "TIDAK_HADIR"
                           ? "Tidak Hadir"
                           : "Ragu-ragu"}
-                      </Badge>
+                      </StatusStamp>
                     </TableCell>
                     <TableCell className="text-center" style={{ fontFamily: "var(--font-mono)" }}>{r.guestCount}</TableCell>
                     <TableCell className="text-[var(--text-muted)] text-xs">
