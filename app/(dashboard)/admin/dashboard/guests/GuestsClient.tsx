@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { StatusStamp } from "@/components/ui/status-stamp";
+import Toast from "@/components/Toast";
 
 interface Props {
   invitation: Invitation;
@@ -36,6 +37,7 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -312,7 +314,7 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
                     <TableCell className="text-[var(--text-secondary)]" style={{ fontFamily: "var(--font-mono)" }}>{g.phone ?? "-"}</TableCell>
                     <TableCell className="text-[var(--text-secondary)]">{g.group ?? "-"}</TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col items-start gap-1">
                           <StatusStamp
                             tone={g.isSent ? "success" : "warning"}
                             icon={g.isSent ? <Send size={10} /> : <XCircle size={10} />}
@@ -345,9 +347,12 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
                         <DropdownMenuContent side="bottom" align="end" sideOffset={4}>
                           {g.phone && (
                             <DropdownMenuItem
-                              onSelect={() => {
+                              onClick={() => {
                                 markSent(g.id);
-                                window.open(waLink(g), "_blank");
+                                const win = window.open(waLink(g), "_blank");
+                                if (!win) {
+                                  setToast({ message: "Popup diblokir. Izinkan popup untuk situs ini atau klik ulang.", type: "error" });
+                                }
                               }}
                             >
                               <Send size={14} className="text-[var(--status-success)]" />
@@ -355,15 +360,21 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem
-                            onSelect={() => {
-                              navigator.clipboard.writeText(inviteUrl(g.uniqueCode));
+                            onClick={async () => {
+                              try {
+                                await navigator.clipboard.writeText(inviteUrl(g.uniqueCode));
+                                setToast({ message: "Link disalin!", type: "success" });
+                              } catch (err) {
+                                console.error("Clipboard write failed:", err);
+                                setToast({ message: "Gagal menyalin link. Coba salin manual.", type: "error" });
+                              }
                             }}
                           >
                             <FileEdit size={14} className="text-[var(--foil-gold)]" />
                             Copy Link
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onSelect={() => setDeleteTarget({ id: g.id, name: g.name })}
+                            onClick={() => setTimeout(() => setDeleteTarget({ id: g.id, name: g.name }), 0)}
                             className="text-[var(--status-danger)] focus:text-[var(--status-danger)]"
                           >
                             <XCircle size={14} />
@@ -389,6 +400,8 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
           </LedgerCard>
         </div>
       </main>
+
+      <Toast toast={toast} onClose={() => setToast(null)} />
 
       <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
         <DialogContent>

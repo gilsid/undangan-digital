@@ -18,17 +18,17 @@ duration?: number;
 }
 
 const icons: Record<ToastType, React.ReactNode> = {
-success: <CheckCircle2 size={18} className="text-green-500" />,
-error: <XCircle size={18} className="text-red-500" />,
-warning: <AlertTriangle size={18} className="text-yellow-500" />,
-info: <Info size={18} className="text-blue-500" />,
+  success: <CheckCircle2 size={18} style={{ color: "var(--status-success)" }} />,
+  error: <XCircle size={18} style={{ color: "var(--status-danger)" }} />,
+  warning: <AlertTriangle size={18} style={{ color: "var(--status-warning)" }} />,
+  info: <Info size={18} style={{ color: "var(--foil-gold)" }} />,
 };
 
 const bgClasses: Record<ToastType, string> = {
-success: "border-green-200 bg-green-50",
-error: "border-red-200 bg-red-50",
-warning: "border-yellow-200 bg-yellow-50",
-info: "border-blue-200 bg-blue-50",
+  success: "border-[var(--status-success)]/30 bg-[var(--ink-surface-raised)]",
+  error: "border-[var(--status-danger)]/30 bg-[var(--ink-surface-raised)]",
+  warning: "border-[var(--status-warning)]/30 bg-[var(--ink-surface-raised)]",
+  info: "border-[var(--foil-gold)]/30 bg-[var(--ink-surface-raised)]",
 };
 
 export default function Toast({ toast, onClose, duration = 4000 }: Props) {
@@ -49,8 +49,8 @@ className="fixed top-4 right-4 z-50"
 >
 <div className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border shadow-lg ${bgClasses[toast.type]}`}>
 {icons[toast.type]}
-<p className="text-sm text-gray-800">{toast.message}</p>
-<button onClick={onClose} className="ml-2 text-gray-400 hover:text-gray-600">
+<p className="text-sm text-[var(--text-primary)]">{toast.message}</p>
+<button onClick={onClose} className="ml-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
 <X size={16} />
 </button>
 </div>

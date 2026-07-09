@@ -26,7 +26,7 @@ function StatusStamp({ tone = "neutral", icon, className, children, ...props }: 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium -rotate-[1.5deg]",
+        "self-start inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium -rotate-1",
         toneMap[tone],
         className
       )}

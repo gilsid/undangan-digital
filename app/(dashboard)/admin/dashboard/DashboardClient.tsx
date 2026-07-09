@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { IconBadge } from "@/components/ui/icon-badge";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -256,9 +257,9 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
           <form onSubmit={handleSubmit} className="space-y-6">
             <LedgerCard>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-[var(--foil-gold)]/10 flex items-center justify-center">
-                  <Users size={18} className="text-[var(--foil-gold)]" />
-                </div>
+                <IconBadge>
+                  <Users size={18} />
+                </IconBadge>
                 <h2 className="font-semibold text-[var(--text-primary)]">Mempelai</h2>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -285,9 +286,9 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
 
             <LedgerCard>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-[var(--dusty-rose)]/10 flex items-center justify-center">
-                  <Calendar size={18} className="text-[var(--dusty-rose)]" />
-                </div>
+                <IconBadge className="border-[var(--dusty-rose)]/60 text-[var(--dusty-rose)]">
+                  <Calendar size={18} />
+                </IconBadge>
                 <h2 className="font-semibold text-[var(--text-primary)]">Acara</h2>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -364,9 +365,9 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
 
             <LedgerCard>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-[var(--foil-gold)]/10 flex items-center justify-center">
-                  <Palette size={18} className="text-[var(--foil-gold)]" />
-                </div>
+                <IconBadge>
+                  <Palette size={18} />
+                </IconBadge>
                 <h2 className="font-semibold text-[var(--text-primary)]">Tampilan & Konten</h2>
               </div>
               <div className="space-y-6">

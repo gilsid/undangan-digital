@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { isRateLimited } from "@/lib/rateLimit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
