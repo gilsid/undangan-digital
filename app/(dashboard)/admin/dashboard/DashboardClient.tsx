@@ -380,6 +380,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                       { id: "elegant", name: "Elegant", desc: "Dusty Sage & Gold", img: "/placeholders/elegant/hero.png" },
                       { id: "rustic", name: "Rustic", desc: "Earthy Terracotta", img: "/placeholders/rustic/hero.png" },
                       { id: "minimalist", name: "Minimalist", desc: "Clean Monochrome", img: "/placeholders/minimalist/hero.png" },
+                      { id: "foil-blueprint", name: "Foil Blueprint", desc: "Navy & Champagne", img: "/placeholders/elegant/hero.png" },
                     ].map((t) => (
                       <button
                         key={t.id}

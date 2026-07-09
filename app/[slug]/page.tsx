@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import ElegantTheme from "@/components/themes/Elegant";
 import RusticTheme from "@/components/themes/Rustic";
 import MinimalistTheme from "@/components/themes/Minimalist";
+import FoilBlueprintTheme from "@/components/themes/FoilBlueprint";
 import TrackOpened from "./TrackOpened";
 import type { Wish } from "@prisma/client";
 
@@ -92,6 +93,7 @@ const themes: Record<string, typeof ElegantTheme> = {
   elegant: ElegantTheme,
   rustic: RusticTheme,
   minimalist: MinimalistTheme,
+  "foil-blueprint": FoilBlueprintTheme,
 };
 
 function resolveTheme(theme: string) {
