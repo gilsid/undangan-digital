@@ -6,15 +6,20 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ code: string }> }
 ) {
-  const { code } = await params;
+  try {
+    const { code } = await params;
 
-  const guest = await prisma.guest.findUnique({ where: { uniqueCode: code } });
-  if (guest && !guest.openedAt) {
-    await prisma.guest.update({
-      where: { uniqueCode: code },
-      data: { openedAt: new Date() },
-    });
+    const guest = await prisma.guest.findUnique({ where: { uniqueCode: code } });
+    if (guest && !guest.openedAt) {
+      await prisma.guest.update({
+        where: { uniqueCode: code },
+        data: { openedAt: new Date() },
+      });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch {
+    // Public endpoint — never expose errors to the guest
+    return NextResponse.json({ ok: false });
   }
-
-  return NextResponse.json({ ok: true });
 }

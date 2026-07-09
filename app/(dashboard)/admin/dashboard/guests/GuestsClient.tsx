@@ -109,17 +109,33 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
       setNewName("");
       setNewPhone("");
       setNewGroup("");
+    } else {
+      const data = await res.json().catch(() => null);
+      setToast({ message: data?.error ?? "Gagal menambahkan tamu.", type: "error" });
     }
     setAdding(false);
   }
 
   async function deleteGuest(id: string) {
-    await fetch(`/api/guests/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/guests/${id}`, { method: "DELETE" });
+    if (!res.ok && res.status !== 404) {
+      const data = await res.json().catch(() => null);
+      setToast({ message: data?.error ?? "Gagal menghapus tamu.", type: "error" });
+      return;
+    }
     setGuests((p) => p.filter((g) => g.id !== id));
   }
 
   async function markSent(id: string) {
-    await fetch(`/api/guests/${id}/sent`, { method: "POST" });
+    const res = await fetch(`/api/guests/${id}/sent`, { method: "POST" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      setToast({ message: data?.error ?? "Gagal menandai tamu.", type: "error" });
+      if (res.status === 404) {
+        setGuests((p) => p.filter((g) => g.id !== id));
+      }
+      return;
+    }
     setGuests((p) =>
       p.map((g) => (g.id === id ? { ...g, isSent: true, sentAt: new Date() } : g))
     );
