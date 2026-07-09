@@ -19,13 +19,12 @@ interface Props {
 }
 
 export default function Sidebar({ navItems, activePath, accountEmail }: Props) {
-const email = accountEmail;
   return (
-    <aside className="w-64 shrink-0 bg-[var(--admin-brand)] text-white flex flex-col min-h-screen">
-      <div className="px-6 py-6 border-b border-white/10">
+    <aside className="w-64 shrink-0 bg-[var(--ink-bg)] text-[var(--text-primary)] flex flex-col min-h-screen border-r border-[var(--foil-gold)]/40">
+      <div className="px-6 py-6 border-b border-[var(--ink-border)]">
         <p
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
-          className="text-xl"
+          className="text-xl text-[var(--foil-gold)]"
+          style={{ fontFamily: "var(--font-display)" }}
         >
           Undangan Digital
         </p>
@@ -43,8 +42,8 @@ const email = accountEmail;
               rel={item.external ? "noopener noreferrer" : undefined}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 active
-                  ? "bg-white/15 text-white"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
+                  ? "bg-[var(--foil-gold)]/10 text-[var(--text-primary)] border-l-[3px] border-l-[var(--foil-gold)]"
+                  : "text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)]"
               }`}
             >
               <Icon size={18} />
@@ -54,14 +53,14 @@ const email = accountEmail;
         })}
       </nav>
 
-      <div className="px-4 py-4 border-t border-white/10 space-y-3">
-        {email && (
-          <p className="text-xs text-white/50 truncate">{email}</p>
+      <div className="px-4 py-4 border-t border-[var(--ink-border)] space-y-3">
+        {accountEmail && (
+          <p className="text-xs text-[var(--text-muted)] truncate">{accountEmail}</p>
         )}
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/admin/login" })}
-          className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
+          className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
           <LogOut size={16} />
           Logout

@@ -1,44 +1,125 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap");
 @import "tailwindcss";
+@plugin "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--ink-bg);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--ink-surface);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--ink-surface-raised);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--foil-gold);
+  --color-primary-foreground: var(--ink-bg);
+  --color-secondary: var(--ink-surface-raised);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--ink-surface-raised);
+  --color-muted-foreground: var(--text-secondary);
+  --color-accent: var(--ink-surface-raised);
+  --color-accent-foreground: var(--text-primary);
+  --color-destructive: var(--status-danger);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--ink-border);
+  --color-input: var(--ink-border);
+  --color-ring: var(--foil-gold);
+  --color-chart-1: var(--foil-gold);
+  --color-chart-2: var(--dusty-rose);
+  --color-chart-3: var(--status-success);
+  --color-chart-4: var(--status-warning);
+  --color-chart-5: var(--status-danger);
+  --color-sidebar: var(--ink-bg);
+  --color-sidebar-foreground: var(--text-primary);
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-sm: 6px;
+  --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
 
 :root {
-    --sage: #8a9e8a;
-    --sage-light: #b5c4b5;
-    --ivory: #f8f4ef;
-    --gold: #c9a84c;
-    --gold-light: #e0c97c;
-    --charcoal: #2c2c2c;
-    --warm-gray: #6b6560;
+  /* Foil Blueprint — dark navy-ink palette */
+  --ink-bg: #12151c;
+  --ink-surface: #1a1e27;
+  --ink-surface-raised: #20242f;
 
-    /* Admin UI tokens — Atelier Ledger */
-    --admin-bg: #f5f1e9;
-    --admin-surface: #ffffff;
-    --admin-surface-alt: #faf7f0;
-    --admin-border: #e5ded0;
-    --admin-brand: #2d5f4c;
-    --admin-brand-light: #e8f2ed;
-    --admin-accent: #c2703f;
-    --admin-ink: #2b2a26;
-    --admin-primary: #2d5f4c;
-    --admin-primary-hover: #234a3c;
-    --admin-primary-active: #1a3e30;
-    --admin-success: #1e8e5a;
-    --admin-warning: #d97706;
-    --admin-danger: #c0392b;
-    --admin-danger-hover: #a53125;
-    --admin-info: #2563eb;
+  --ink-border: rgba(216, 185, 120, 0.18);
+  --ink-border-strong: rgba(216, 185, 120, 0.35);
+
+  --foil-gold: #d8b978;
+  --foil-gold-muted: #b89a5e;
+  --dusty-rose: #c98b85;
+
+  --text-primary: #ede9e1;
+  --text-secondary: #a9a296;
+  --text-muted: #736c60;
+
+  --status-success: #8fb49b;
+  --status-danger: #c97a6a;
+  --status-warning: #d8b978;
+
+  /* Legacy public theme tokens — untouched */
+  --sage: #8a9e8a;
+  --sage-light: #b5c4b5;
+  --ivory: #f8f4ef;
+  --gold: #c9a84c;
+  --gold-light: #e0c97c;
+  --charcoal: #2c2c2c;
+  --warm-gray: #6b6560;
 }
 
 body {
-    background: var(--ivory);
-    color: var(--charcoal);
-    font-family: "Inter", system-ui, sans-serif;
+  background: var(--ink-bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Registration-mark card */
+.ledger-card {
+  position: relative;
+  background: var(--ink-surface);
+  border: 1px solid var(--ink-border);
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.ledger-card::before,
+.ledger-card::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--foil-gold);
+}
+
+.ledger-card::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.ledger-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Public theme body (for undangan pages) */
+[data-theme="public"] body,
+.public-page body {
+  background: var(--ivory);
+  color: var(--charcoal);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
