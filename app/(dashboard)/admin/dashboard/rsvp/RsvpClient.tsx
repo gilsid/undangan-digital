@@ -87,7 +87,7 @@ export default function RsvpClient({ invitation, rsvps, wishes, accountEmail }: 
           </div>
 
           {/* RSVP list */}
-          <LedgerCard className="p-0 overflow-hidden">
+          <LedgerCard className="p-0">
             <div className="px-6 py-4 border-b border-[var(--ink-border)] flex items-center justify-between">
               <h2 className="font-medium text-[var(--text-primary)]">Konfirmasi Kehadiran ({rsvps.length})</h2>
               {rsvps.length > 0 && (
@@ -102,7 +102,7 @@ export default function RsvpClient({ invitation, rsvps, wishes, accountEmail }: 
                 <TableRow className="border-b border-[var(--ink-border)] hover:bg-transparent">
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Nama</TableHead>
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Status</TableHead>
-                  <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Jml Tamu</TableHead>
+                  <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs text-center">Jml Tamu</TableHead>
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Waktu</TableHead>
                 </TableRow>
               </TableHeader>
@@ -149,7 +149,7 @@ export default function RsvpClient({ invitation, rsvps, wishes, accountEmail }: 
           </LedgerCard>
 
           {/* Wishes */}
-          <LedgerCard className="p-0 overflow-hidden">
+          <LedgerCard className="p-0">
             <div className="px-6 py-4 border-b border-[var(--ink-border)]">
               <h2 className="font-medium text-[var(--text-primary)]">Ucapan & Doa ({wishes.length})</h2>
             </div>

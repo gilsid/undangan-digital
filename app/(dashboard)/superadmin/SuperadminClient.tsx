@@ -205,7 +205,7 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
           </LedgerCard>
 
           {/* Invitation list */}
-          <LedgerCard className="p-0 overflow-hidden">
+          <LedgerCard className="p-0">
             <div className="px-6 py-4 border-b border-[var(--ink-border)] flex items-center gap-3">
               <IconBadge className="border-[var(--dusty-rose)]/60 text-[var(--dusty-rose)]">
                 <List size={18} />
@@ -218,8 +218,8 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Mempelai</TableHead>
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Slug</TableHead>
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Email</TableHead>
-                  <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Tamu</TableHead>
-                  <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">RSVP</TableHead>
+                  <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs text-center">Tamu</TableHead>
+                  <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs text-center">RSVP</TableHead>
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs">Status</TableHead>
                   <TableHead className="text-[var(--text-muted)] uppercase tracking-wide text-xs w-12">Aksi</TableHead>
                 </TableRow>

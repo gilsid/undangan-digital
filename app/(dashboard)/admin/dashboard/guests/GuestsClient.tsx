@@ -266,7 +266,7 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
           </LedgerCard>
 
           {/* Guest table */}
-          <LedgerCard className="p-0 overflow-hidden">
+          <LedgerCard className="p-0">
             <div className="px-6 py-4 border-b border-[var(--ink-border)] flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h2 className="font-medium text-[var(--text-primary)]">Daftar Tamu ({filteredGuests.length})</h2>
@@ -329,8 +329,8 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
                     <TableCell className="font-medium text-[var(--text-primary)]">{g.name}</TableCell>
                     <TableCell className="text-[var(--text-secondary)]" style={{ fontFamily: "var(--font-mono)" }}>{g.phone ?? "-"}</TableCell>
                     <TableCell className="text-[var(--text-secondary)]">{g.group ?? "-"}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col items-start gap-1">
+                    <TableCell className="py-2.5 align-top">
+                      <div className="flex flex-col items-start gap-1.5">
                           <StatusStamp
                             tone={g.isSent ? "success" : "warning"}
                             icon={g.isSent ? <Send size={10} /> : <XCircle size={10} />}
