@@ -208,4 +208,18 @@ pnpm build        # Production build
 pnpm start        # Start production server
 pnpm lint         # Run ESLint
 pnpm prisma       # Prisma CLI
+
+## Deploy ke Vercel
+
+### Yang sudah siap dari kode
+
+- Upload foto → Cloudflare R2 (S3-compatible)
+- Rate limiter → Upstash Redis (shared across serverless instances)
+- Security headers (X-Frame-Options, X-Content-Type, dll.)
+- Import tamu dibatasi maks 1000 baris
+- `.env.example` sudah berisi semua variable yang dibutuhkan
+
+### Yang harus kamu lakukan manual
+
+Buka panduan lengkap: [`tutorial-deploy-vercel.md`](./tutorial-deploy-vercel.md)
 ```
