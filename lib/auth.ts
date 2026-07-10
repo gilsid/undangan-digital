@@ -19,7 +19,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // (pesan error tidak akan sampai ke UI — itu ditangani oleh client endpoint)
         const forwarded = req?.headers?.get("x-forwarded-for");
         const ip = forwarded?.split(",")[0] ?? "127.0.0.1";
-        if (isRateLimited(`login:${ip}:${credentials.email}`, 10, 60000)) {
+        if (await isRateLimited(`login:${ip}:${credentials.email}`, 10, 60000)) {
           throw new Error("RateLimited");
         }
 

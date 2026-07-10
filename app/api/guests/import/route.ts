@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+const MAX_IMPORT_ROWS = 1000;
+
 // POST /api/guests/import — bulk import guests
 export async function POST(req: NextRequest) {
   try {
@@ -37,6 +39,13 @@ export async function POST(req: NextRequest) {
 
     if (data.length === 0) {
       return NextResponse.json({ error: "Tidak ada data tamu yang valid untuk diimpor" }, { status: 400 });
+    }
+
+    if (data.length > MAX_IMPORT_ROWS) {
+      return NextResponse.json(
+        { error: `Maksimum ${MAX_IMPORT_ROWS} tamu per-import. File kamu berisi ${data.length} baris.` },
+        { status: 400 }
+      );
     }
 
     await prisma.guest.createMany({ data });

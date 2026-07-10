@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const forwarded = req.headers.get("x-forwarded-for");
   const ip = forwarded?.split(",")[0] ?? "127.0.0.1";
 
-  if (isRateLimited(`login:${ip}:${email}`, 10, 60000)) {
+  if (await isRateLimited(`login:${ip}:${email}`, 10, 60000)) {
     return NextResponse.json(
       { limited: true, message: "Terlalu banyak percobaan login. Silakan coba lagi nanti." },
       { status: 429 }

@@ -1,27 +1,17 @@
-// ponytail: IN-MEMORY rate limiter — resets on server restart, not shared across instances.
-// Upgrade path: replace the store with Redis (ioredis) for multi-instance deployments.
+import { Redis } from "@upstash/redis";
 
-interface Entry {
-  count: number;
-  resetAt: number;
-}
-
-const store = new Map<string, Entry>();
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
 /**
  * Returns true if the key has exceeded `max` requests within `windowMs`.
- * Key is typically `${ip}:${route}`.
  */
-export function isRateLimited(key: string, max: number, windowMs: number): boolean {
-  const now = Date.now();
-  const entry = store.get(key);
-
-  if (!entry || now > entry.resetAt) {
-    store.set(key, { count: 1, resetAt: now + windowMs });
-    return false;
+export async function isRateLimited(key: string, max: number, windowMs: number): Promise<boolean> {
+  const count = await redis.incr(key);
+  if (count === 1) {
+    await redis.pexpire(key, windowMs);
   }
-
-  entry.count += 1;
-  if (entry.count > max) return true;
-  return false;
+  return count > max;
 }

@@ -6,7 +6,7 @@ import { isRateLimited } from "@/lib/rateLimit";
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0] ?? "127.0.0.1";
-    if (isRateLimited(`${ip}:wishes`, 5, 60000)) {
+    if (await isRateLimited(`${ip}:wishes`, 5, 60000)) {
       return NextResponse.json(
         { error: "Terlalu banyak permintaan. Silakan coba lagi nanti." },
         { status: 429 }
