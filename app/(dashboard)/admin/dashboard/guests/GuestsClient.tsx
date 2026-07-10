@@ -45,7 +45,7 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
 
   const filteredGuests = guests.filter((g) => {
     const matchesSearch = g.name.toLowerCase().includes(search.toLowerCase());
-    const matchesGroup = !selectedGroup || g.group === selectedGroup;
+    const matchesGroup = !selectedGroup || selectedGroup === "all" || g.group === selectedGroup;
     let matchesStatus = true;
     if (selectedStatus === "sent") matchesStatus = g.isSent;
     else if (selectedStatus === "unsent") matchesStatus = !g.isSent;

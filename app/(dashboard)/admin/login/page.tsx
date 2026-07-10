@@ -22,7 +22,7 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError("Email atau password salah.");
+      setError(result.error === "CredentialsSignin" ? "Email atau password salah." : result.error);
       setLoading(false);
     } else {
       const session = await getSession();

@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import type { Invitation } from "@prisma/client";
 import Image from "next/image";
-import { Users, Calendar, Palette, FileEdit, MessageSquareHeart, ExternalLink, ImageIcon, Banknote, CalendarIcon } from "lucide-react";
-import Toast from "@/components/Toast";
+import { Users, Calendar, Palette, FileEdit, MessageSquareHeart, ExternalLink, ImageIcon, Banknote, CalendarIcon } from "lucide-react";import Toast from "@/components/Toast";
 import Sidebar from "@/components/admin/Sidebar";
 import type { SidebarNavItem } from "@/components/admin/Sidebar";
 import { extractMapsEmbedSrc } from "@/lib/maps";
@@ -19,6 +18,13 @@ import { IconBadge } from "@/components/ui/icon-badge";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+
+function toLocalISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 interface Props {
   invitation: Invitation | null;
@@ -46,7 +52,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
     brideFullName: invitation?.brideFullName ?? "",
     brideImage: invitation?.brideImage ?? "",
     weddingDate: invitation?.weddingDate
-      ? new Date(invitation.weddingDate).toISOString().slice(0, 10)
+      ? toLocalISODate(new Date(invitation.weddingDate))
       : "",
     akadTime: invitation?.akadTime ?? "",
     resepsiTime: invitation?.resepsiTime ?? "",
@@ -316,8 +322,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                         selected={form.weddingDate ? new Date(form.weddingDate + "T00:00:00") : undefined}
                         onSelect={(day) => {
                           if (day) {
-                            const iso = day.toISOString().slice(0, 10);
-                            setForm((prev) => ({ ...prev, weddingDate: iso }));
+                            setForm((prev) => ({ ...prev, weddingDate: toLocalISODate(day) }));
                           }
                         }}
                       />

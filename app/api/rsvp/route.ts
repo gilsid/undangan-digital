@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const inv = await prisma.invitation.findUnique({
       where: { id: body.invitationId },
     });
-    if (!inv || !inv.isPublished) {
+    if (!inv || !inv.isPublished || inv.isArchived) {
       return NextResponse.json({ error: "Undangan tidak ditemukan" }, { status: 404 });
     }
 
