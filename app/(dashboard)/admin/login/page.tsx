@@ -15,14 +15,26 @@ export default function LoginPage() {
     setError("");
 
     const fd = new FormData(e.currentTarget);
-    const result = await signIn("credentials", {
-      email: fd.get("email"),
-      password: fd.get("password"),
-      redirect: false,
+    const email = fd.get("email") as string;
+    const password = fd.get("password") as string;
+
+    // Cek rate limit dulu, sebelum signIn — supaya pesannya bisa ditampilkan apa adanya
+    const rlRes = await fetch("/api/auth/check-rate-limit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     });
+    const rl = await rlRes.json();
+    if (rl.limited) {
+      setError(rl.message);
+      setLoading(false);
+      return;
+    }
+
+    const result = await signIn("credentials", { email, password, redirect: false });
 
     if (result?.error) {
-      setError(result.error === "CredentialsSignin" ? "Email atau password salah." : result.error);
+      setError("Email atau password salah.");
       setLoading(false);
     } else {
       const session = await getSession();

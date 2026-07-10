@@ -15,10 +15,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        // Defense-in-depth: rate-limit check di sini sebagai lapis kedua
+        // (pesan error tidak akan sampai ke UI — itu ditangani oleh client endpoint)
         const forwarded = req?.headers?.get("x-forwarded-for");
         const ip = forwarded?.split(",")[0] ?? "127.0.0.1";
         if (isRateLimited(`login:${ip}:${credentials.email}`, 10, 60000)) {
-          throw new Error("Terlalu banyak percobaan login. Silakan coba lagi nanti.");
+          throw new Error("RateLimited");
         }
 
         const user = await prisma.user.findUnique({
