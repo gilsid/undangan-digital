@@ -2,9 +2,11 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import MapsEmbed, { getMapsSrc } from "@/components/MapsEmbed";
 import Image from "next/image";
+import { useCountdown } from "@/hooks/useCountdown";
+import SectionReveal from "@/components/themes/shared/SectionReveal";
 
 interface Props {
   invitation: Invitation;
@@ -13,58 +15,6 @@ interface Props {
 }
 
 // Minimalist Theme: Pure White (#ffffff) + Jet Black (#111111) + Steel Gray (#777777) + Pale Gray (#f5f5f5)
-// Fonts: Clean Sans-Serif (Inter) with generous letter-spacing and uppercase tracking
-
-function useCountdown(target: Date) {
-  const [diff, setDiff] = useState<number | null>(null);
-  useEffect(() => {
-    const update = () => setDiff(target.getTime() - Date.now());
-    const timer = setTimeout(update, 0);
-    const t = setInterval(update, 1000);
-    return () => {
-      clearTimeout(timer);
-      clearInterval(t);
-    };
-  }, [target]);
-
-  if (diff === null) {
-    return { days: 0, hours: 0, mins: 0, secs: 0, isReady: false, isOver: false };
-  }
-
-  const isOver = diff <= 0;
-  const total = Math.max(0, diff);
-  const days = Math.floor(total / 86400000);
-  const hours = Math.floor((total % 86400000) / 3600000);
-  const mins = Math.floor((total % 3600000) / 60000);
-  const secs = Math.floor((total % 60000) / 1000);
-  return { days, hours, mins, secs, isReady: true, isOver };
-}
-
-function SectionReveal({
-  children,
-  className = "",
-  delay = 0,
-  style,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-  style?: React.CSSProperties;
-}) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      className={className}
-      style={style}
-      initial={reduce ? {} : { opacity: 0, y: 15 }}
-      whileInView={reduce ? {} : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.5, delay, ease: "easeOut" }}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 function CountdownBox({
   value,
@@ -100,10 +50,10 @@ export default function MinimalistTheme({ invitation, guestName, wishes: initial
   const [rsvpSent, setRsvpSent] = useState(false);
   const [wishSent, setWishSent] = useState(false);
   const [bankOpen, setBankOpen] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const countdown = useCountdown(new Date(invitation.weddingDate));
   const reduce = useReducedMotion();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   function openInvitation() {
     setOpened(true);

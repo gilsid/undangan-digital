@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { guestImportSchema } from "@/lib/validations";
 
 const MAX_IMPORT_ROWS = 1000;
 
@@ -10,32 +11,24 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { guests, invitationId } = await req.json();
-
-    if (!invitationId || !Array.isArray(guests)) {
+    const body = await req.json();
+    const parsed = guestImportSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json({ error: "Format data tidak valid" }, { status: 400 });
     }
 
     // Ownership check
-    const inv = await prisma.invitation.findUnique({ where: { id: invitationId } });
+    const inv = await prisma.invitation.findUnique({ where: { id: parsed.data.invitationId } });
     if (!inv || inv.ownerId !== session.user.id) {
       return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
-    interface GuestInput {
-      name?: string;
-      phone?: string;
-      group?: string;
-    }
-
-    const data = (guests as GuestInput[])
-      .filter((g) => g && typeof g.name === "string" && g.name.trim())
-      .map((g) => ({
-        invitationId,
-        name: g.name!.trim(),
-        phone: g.phone ? String(g.phone).trim() : null,
-        group: g.group ? String(g.group).trim() : null,
-      }));
+    const data = parsed.data.guests.map((g) => ({
+      invitationId: parsed.data.invitationId,
+      name: g.name,
+      phone: g.phone || null,
+      group: g.group || null,
+    }));
 
     if (data.length === 0) {
       return NextResponse.json({ error: "Tidak ada data tamu yang valid untuk diimpor" }, { status: 400 });

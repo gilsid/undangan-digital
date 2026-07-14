@@ -2,65 +2,17 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import MapsEmbed, { getMapsSrc } from "@/components/MapsEmbed";
 import Image from "next/image";
+import { useCountdown } from "@/hooks/useCountdown";
+import { useMusic } from "@/hooks/useThemeCommon";
+import SectionReveal from "@/components/themes/shared/SectionReveal";
 
 interface Props {
   invitation: Invitation;
   guestName?: string;
   wishes: Wish[];
-}
-
-function useCountdown(target: Date) {
-  const [diff, setDiff] = useState<number | null>(null);
-  useEffect(() => {
-    const update = () => setDiff(target.getTime() - Date.now());
-    const timer = setTimeout(update, 0);
-    const t = setInterval(update, 1000);
-    return () => {
-      clearTimeout(timer);
-      clearInterval(t);
-    };
-  }, [target]);
-
-  if (diff === null) {
-    return { days: 0, hours: 0, mins: 0, secs: 0, isReady: false, isOver: false };
-  }
-
-  const isOver = diff <= 0;
-  const total = Math.max(0, diff);
-  const days = Math.floor(total / 86400000);
-  const hours = Math.floor((total % 86400000) / 3600000);
-  const mins = Math.floor((total % 3600000) / 60000);
-  const secs = Math.floor((total % 60000) / 1000);
-  return { days, hours, mins, secs, isReady: true, isOver };
-}
-
-function SectionReveal({
-  children,
-  className = "",
-  delay = 0,
-  style,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-  style?: React.CSSProperties;
-}) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      className={className}
-      style={style}
-      initial={reduce ? {} : { opacity: 0, y: 20 }}
-      whileInView={reduce ? {} : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.5, delay, ease: "easeOut" }}
-    >
-      {children}
-    </motion.div>
-  );
 }
 
 function BlueprintCorner() {
@@ -114,8 +66,7 @@ export default function FoilBlueprintTheme({ invitation, guestName, wishes: init
   const [wishSent, setWishSent] = useState(false);
   const [bankOpen, setBankOpen] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying] = useState(false);
+  const { audioRef, playing, setPlaying, toggleMusic } = useMusic();
   const countdown = useCountdown(new Date(invitation.weddingDate));
   const reduce = useReducedMotion();
 
@@ -126,19 +77,9 @@ export default function FoilBlueprintTheme({ invitation, guestName, wishes: init
     }
   }
 
-  function toggleMusic() {
-    if (!audioRef.current) return;
-    if (playing) {
-      audioRef.current.pause();
-      setPlaying(false);
-    } else {
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
-    }
-  }
-
   async function submitRsvp(e: React.FormEvent) {
     e.preventDefault();
-    await fetch("/api/rsvp", {
+    const res = await fetch("/api/rsvp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -148,7 +89,7 @@ export default function FoilBlueprintTheme({ invitation, guestName, wishes: init
         guestCount: rsvpCount,
       }),
     });
-    setRsvpSent(true);
+    if (res.ok) setRsvpSent(true);
   }
 
   async function submitWish(e: React.FormEvent) {

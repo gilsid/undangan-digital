@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isRateLimited } from "@/lib/rateLimit";
+import { wishSchema } from "@/lib/validations";
 
 // POST /api/wishes
 export async function POST(req: NextRequest) {
@@ -14,13 +15,13 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-
-    if (!body.invitationId || !body.name || !body.message) {
-      return NextResponse.json({ error: "Data tidak lengkap" }, { status: 400 });
+    const parsed = wishSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
     }
 
     const inv = await prisma.invitation.findUnique({
-      where: { id: body.invitationId },
+      where: { id: parsed.data.invitationId },
     });
     if (!inv || !inv.isPublished || inv.isArchived) {
       return NextResponse.json({ error: "Undangan tidak ditemukan" }, { status: 404 });
@@ -28,9 +29,9 @@ export async function POST(req: NextRequest) {
 
     const wish = await prisma.wish.create({
       data: {
-        invitationId: body.invitationId,
-        name: body.name.trim(),
-        message: body.message.trim(),
+        invitationId: parsed.data.invitationId,
+        name: parsed.data.name,
+        message: parsed.data.message,
       },
     });
 
