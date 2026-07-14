@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isRateLimited } from "@/lib/rateLimit";
+import { rsvpSchema } from "@/lib/validations";
 
 // POST /api/rsvp
 export async function POST(req: NextRequest) {
@@ -14,19 +15,14 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-
-    if (!body.invitationId || !body.guestName || !body.attendance) {
-      return NextResponse.json({ error: "Data tidak lengkap" }, { status: 400 });
-    }
-
-    const validAttendances = ["HADIR", "TIDAK_HADIR", "RAGU"];
-    if (!validAttendances.includes(body.attendance)) {
-      return NextResponse.json({ error: "Status kehadiran tidak valid" }, { status: 400 });
+    const parsed = rsvpSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
     }
 
     // Verify invitation exists & is published
     const inv = await prisma.invitation.findUnique({
-      where: { id: body.invitationId },
+      where: { id: parsed.data.invitationId },
     });
     if (!inv || !inv.isPublished || inv.isArchived) {
       return NextResponse.json({ error: "Undangan tidak ditemukan" }, { status: 404 });
@@ -34,10 +30,10 @@ export async function POST(req: NextRequest) {
 
     const rsvp = await prisma.rsvp.create({
       data: {
-        invitationId: body.invitationId,
-        guestName: body.guestName.trim(),
-        attendance: body.attendance,
-        guestCount: Number(body.guestCount) || 1,
+        invitationId: parsed.data.invitationId,
+        guestName: parsed.data.guestName,
+        attendance: parsed.data.attendance,
+        guestCount: parsed.data.guestCount,
       },
     });
 

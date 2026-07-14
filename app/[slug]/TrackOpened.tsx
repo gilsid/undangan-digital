@@ -6,7 +6,7 @@ import { useEffect } from "react";
 // Uses separate API route so Server Component render doesn't trigger it
 export default function TrackOpened({ code }: { code: string }) {
   useEffect(() => {
-    fetch(`/api/track/${code}`).catch(() => {});
+    fetch(`/api/track/${code}`).catch((err) => console.warn("Track-opened failed:", err));
   }, [code]);
   return null;
 }

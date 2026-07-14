@@ -31,6 +31,8 @@ model Invitation {
   id            String   @id @default(cuid())
   slug          String   @unique
   ownerId       String
+
+  @@index([ownerId])
   owner         User     @relation(fields: [ownerId], references: [id])
 
   groomName     String
@@ -73,6 +75,8 @@ model Guest {
   invitationId String
   invitation   Invitation @relation(fields: [invitationId], references: [id])
 
+  @@index([invitationId])
+
   name         String
   phone        String?
   group        String?
@@ -93,6 +97,8 @@ model Rsvp {
   attendance   Attendance
   guestCount   Int        @default(1)
   createdAt    DateTime   @default(now())
+
+  @@index([invitationId])
 }
 
 model Wish {
@@ -102,4 +108,6 @@ model Wish {
   name         String
   message      String
   createdAt    DateTime   @default(now())
+
+  @@index([invitationId])
 }

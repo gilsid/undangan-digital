@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { createInvitationSchema } from "@/lib/validations";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,29 +12,15 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const {
-      email,
-      password,
-      slug,
-      groomName,
-      brideName,
-      weddingDate,
-      venueName,
-      venueAddress,
-    } = body;
-
-    if (!email || !password || !slug || !groomName || !brideName || !weddingDate) {
-      return NextResponse.json({ error: "Data tidak lengkap" }, { status: 400 });
+    const parsed = createInvitationSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
     }
 
-    if (password.length < 8) {
-      return NextResponse.json({ error: "Password minimal 8 karakter" }, { status: 400 });
-    }
+    const { email, password, groomName, brideName, weddingDate, venueName, venueAddress, theme } = parsed.data;
 
-    // Validate slug regex (lowercase, numbers, dash only)
-    if (!/^[a-z0-9-]+$/.test(slug)) {
-      return NextResponse.json({ error: "Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung (-)" }, { status: 400 });
-    }
+    // Generate slug from groom+bride names
+    const slug = `${groomName.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${brideName.toLowerCase().replace(/[^a-z0-9]/g, "-")}`.replace(/-+/g, "-").replace(/^-|-$/g, "");
 
     // Check user unique
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -53,7 +40,6 @@ export async function POST(req: NextRequest) {
       data: { email, password: hashed },
     });
 
-    const theme = "elegant";
     const heroImage = `/placeholders/${theme}/hero.png`;
     const groomImage = `/placeholders/${theme}/groom.png`;
     const brideImage = `/placeholders/${theme}/bride.png`;
