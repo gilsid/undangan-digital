@@ -40,6 +40,10 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
+html, body {
+  overscroll-behavior: none;
+}
+
 :root {
   /* Foil Blueprint — dark navy-ink palette */
   --ink-bg: #12151c;

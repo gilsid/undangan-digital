@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import ElegantTheme from "@/components/themes/Elegant";
-import RusticTheme from "@/components/themes/Rustic";
-import MinimalistTheme from "@/components/themes/Minimalist";
+import BohoTheme from "@/components/themes/Boho";
+import TropicalTheme from "@/components/themes/Tropical";
 import FoilBlueprintTheme from "@/components/themes/FoilBlueprint";
 import TrackOpened from "./TrackOpened";
 import type { Wish } from "@prisma/client";
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `Undangan ${inv.groomName} & ${inv.brideName}`,
       description: `Bergabunglah dalam perayaan pernikahan ${inv.groomName} & ${inv.brideName}`,
-      images: [inv.heroImage ?? `/placeholders/${inv.theme}/hero.png`],
+      images: [inv.heroImage ?? "/placeholders/hero.png"],
     },
   };
 }
@@ -91,8 +91,8 @@ export default async function InvitationPage({ params, searchParams }: Props) {
 
 const themes: Record<string, typeof ElegantTheme> = {
   elegant: ElegantTheme,
-  rustic: RusticTheme,
-  minimalist: MinimalistTheme,
+  boho: BohoTheme,
+  tropical: TropicalTheme,
   "foil-blueprint": FoilBlueprintTheme,
 };
 

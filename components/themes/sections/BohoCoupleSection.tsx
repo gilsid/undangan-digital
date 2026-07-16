@@ -4,18 +4,17 @@ import { motion, useReducedMotion, type Variants } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import Image from "next/image";
 import Section from "@/components/themes/template/Section";
-import BlueprintCard from "@/components/themes/shared/BlueprintCard";
 
 interface Props {
   invitation: Invitation;
 }
 
-export default function FoilCoupleSection({ invitation }: Props) {
+export default function BohoCoupleSection({ invitation }: Props) {
   const reduce = useReducedMotion();
 
   const childVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
     hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.4, 0.3, 1] as const } },
   };
 
   const cardVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
@@ -28,13 +27,13 @@ export default function FoilCoupleSection({ invitation }: Props) {
     | null;
 
   return (
-    <section className="py-16 px-6" style={{ background: "#171b23" }}>
+    <section className="py-16 px-6" style={{ background: "#fdf9f2" }}>
       <Section direction="up" stagger staggerDelay={0.15} className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <motion.p
             variants={childVariants}
             className="text-xs uppercase tracking-[0.3em]"
-            style={{ color: "var(--foil-gold)", opacity: 0.7 }}
+            style={{ color: "#d4a853", opacity: 0.7 }}
           >
             Mempelai
           </motion.p>
@@ -42,9 +41,10 @@ export default function FoilCoupleSection({ invitation }: Props) {
             variants={childVariants}
             className="text-3xl mt-2"
             style={{
-              fontFamily: "var(--font-display)",
+              fontFamily: "'Playfair Display', serif",
+              fontStyle: "italic",
               fontWeight: 500,
-              color: "var(--text-primary)",
+              color: "#3d322b",
             }}
           >
             Dua Jiwa, Satu Ikatan
@@ -59,10 +59,13 @@ export default function FoilCoupleSection({ invitation }: Props) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-center"
           >
-            <BlueprintCard className="p-4">
+            <div
+              className="p-6 rounded-lg"
+              style={{ background: "#fdf9f2", border: "1px solid #e2d5c5" }}
+            >
               <motion.div
                 className="w-36 h-44 mx-auto mb-4 overflow-hidden rounded-sm"
-                style={{ border: "1px solid rgba(216,185,120,0.3)" }}
+                style={{ border: "2px solid #d4a853" }}
                 whileHover={reduce ? {} : { scale: 1.03 }}
                 transition={{ duration: 0.4 }}
               >
@@ -75,16 +78,16 @@ export default function FoilCoupleSection({ invitation }: Props) {
                   unoptimized
                 />
               </motion.div>
-              <h3 className="text-xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "var(--text-primary)" }}>
+              <h3 className="text-xl" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 500, color: "#3d322b" }}>
                 {invitation.groomFullName ?? invitation.groomName}
               </h3>
               {parentsInfo?.groomFather && (
-                <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
+                <p className="text-sm mt-2" style={{ color: "#8c7d70" }}>
                   Putra dari Bapak {parentsInfo.groomFather}
                   {parentsInfo.groomMother && ` & Ibu ${parentsInfo.groomMother}`}
                 </p>
               )}
-            </BlueprintCard>
+            </div>
           </motion.div>
 
           <motion.div
@@ -94,10 +97,13 @@ export default function FoilCoupleSection({ invitation }: Props) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-center"
           >
-            <BlueprintCard className="p-4">
+            <div
+              className="p-6 rounded-lg"
+              style={{ background: "#fdf9f2", border: "1px solid #e2d5c5" }}
+            >
               <motion.div
                 className="w-36 h-44 mx-auto mb-4 overflow-hidden rounded-sm"
-                style={{ border: "1px solid rgba(216,185,120,0.3)" }}
+                style={{ border: "2px solid #d4a853" }}
                 whileHover={reduce ? {} : { scale: 1.03 }}
                 transition={{ duration: 0.4 }}
               >
@@ -110,16 +116,16 @@ export default function FoilCoupleSection({ invitation }: Props) {
                   unoptimized
                 />
               </motion.div>
-              <h3 className="text-xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "var(--text-primary)" }}>
+              <h3 className="text-xl" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 500, color: "#3d322b" }}>
                 {invitation.brideFullName ?? invitation.brideName}
               </h3>
               {parentsInfo?.brideFather && (
-                <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
+                <p className="text-sm mt-2" style={{ color: "#8c7d70" }}>
                   Putri dari Bapak {parentsInfo.brideFather}
                   {parentsInfo.brideMother && ` & Ibu ${parentsInfo.brideMother}`}
                 </p>
               )}
-            </BlueprintCard>
+            </div>
           </motion.div>
         </div>
       </Section>
