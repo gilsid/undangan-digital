@@ -1,12 +1,25 @@
 "use client";
 
 import Image from "next/image";
+import { motion } from "framer-motion";
 import Section from "@/components/themes/template/Section";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
 import type { Invitation } from "@prisma/client";
 
 interface Props {
   invitation: Invitation;
+}
+
+function ImageHoverWrap({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      transition={{ type: "spring", stiffness: 200, damping: 15 }}
+      className="contents"
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 function CircularGold({ invitation }: Props) {
@@ -29,9 +42,14 @@ function CircularGold({ invitation }: Props) {
         <div className="grid grid-cols-2 gap-8 items-start">
           <Section delay={0.1} className="flex flex-col items-center">
             {invitation.groomImage && (
-              <div className="w-32 h-32 rounded-full overflow-hidden mb-4" style={{ border: `3px solid ${colors.accent}` }}>
+              <motion.div
+                className="w-32 h-32 rounded-full overflow-hidden mb-4"
+                style={{ border: `3px solid ${colors.accent}` }}
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
                 <Image src={invitation.groomImage} alt={invitation.groomName} width={128} height={128} className="w-full h-full object-cover" unoptimized />
-              </div>
+              </motion.div>
             )}
             <p className="text-2xl font-light" style={{ fontFamily: config.fonts.display, color: colors.text }}>
               {invitation.groomName}
@@ -45,9 +63,14 @@ function CircularGold({ invitation }: Props) {
 
           <Section delay={0.2} className="flex flex-col items-center">
             {invitation.brideImage && (
-              <div className="w-32 h-32 rounded-full overflow-hidden mb-4" style={{ border: `3px solid ${colors.accent}` }}>
+              <motion.div
+                className="w-32 h-32 rounded-full overflow-hidden mb-4"
+                style={{ border: `3px solid ${colors.accent}` }}
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
                 <Image src={invitation.brideImage} alt={invitation.brideName} width={128} height={128} className="w-full h-full object-cover" unoptimized />
-              </div>
+              </motion.div>
             )}
             <p className="text-2xl font-light" style={{ fontFamily: config.fonts.display, color: colors.text }}>
               {invitation.brideName}
@@ -84,9 +107,14 @@ function CircularWhiteShadow({ invitation }: Props) {
         <div className="grid grid-cols-2 gap-8 items-start">
           <Section delay={0.1} className="flex flex-col items-center">
             {invitation.groomImage && (
-              <div className="w-40 h-40 rounded-full overflow-hidden mb-4 shadow-lg" style={{ border: "4px solid white" }}>
+              <motion.div
+                className="w-40 h-40 rounded-full overflow-hidden mb-4 shadow-lg"
+                style={{ border: "4px solid white" }}
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
                 <Image src={invitation.groomImage} alt={invitation.groomName} width={160} height={160} className="w-full h-full object-cover" unoptimized />
-              </div>
+              </motion.div>
             )}
             <p className="text-2xl font-medium" style={{ fontFamily: config.fonts.display, color: colors.text }}>
               {invitation.groomName}
@@ -100,9 +128,14 @@ function CircularWhiteShadow({ invitation }: Props) {
 
           <Section delay={0.2} className="flex flex-col items-center">
             {invitation.brideImage && (
-              <div className="w-40 h-40 rounded-full overflow-hidden mb-4 shadow-lg" style={{ border: "4px solid white" }}>
+              <motion.div
+                className="w-40 h-40 rounded-full overflow-hidden mb-4 shadow-lg"
+                style={{ border: "4px solid white" }}
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
                 <Image src={invitation.brideImage} alt={invitation.brideName} width={160} height={160} className="w-full h-full object-cover" unoptimized />
-              </div>
+              </motion.div>
             )}
             <p className="text-2xl font-medium" style={{ fontFamily: config.fonts.display, color: colors.text }}>
               {invitation.brideName}
@@ -138,11 +171,15 @@ function SquareGrayscale({ invitation }: Props) {
 
         <div className="grid grid-cols-2 gap-16 items-start">
           <Section delay={0.1} className="flex flex-col items-center">
-            <div className="relative w-full aspect-square mb-4 overflow-hidden grayscale">
+            <motion.div
+              className="relative w-full aspect-square mb-4 overflow-hidden grayscale"
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            >
               {invitation.groomImage && (
                 <Image src={invitation.groomImage} alt={invitation.groomName} fill className="object-cover" unoptimized />
               )}
-            </div>
+            </motion.div>
             <span className="text-[10px] uppercase tracking-widest" style={{ color: colors.textMuted }}>
               Groom
             </span>
@@ -157,11 +194,15 @@ function SquareGrayscale({ invitation }: Props) {
           </Section>
 
           <Section delay={0.2} className="flex flex-col items-center">
-            <div className="relative w-full aspect-square mb-4 overflow-hidden grayscale">
+            <motion.div
+              className="relative w-full aspect-square mb-4 overflow-hidden grayscale"
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            >
               {invitation.brideImage && (
                 <Image src={invitation.brideImage} alt={invitation.brideName} fill className="object-cover" unoptimized />
               )}
-            </div>
+            </motion.div>
             <span className="text-[10px] uppercase tracking-widest" style={{ color: colors.textMuted }}>
               Bride
             </span>
