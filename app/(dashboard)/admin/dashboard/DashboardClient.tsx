@@ -391,17 +391,19 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                         key={t.id}
                         type="button"
                         onClick={() => setForm((prev) => ({ ...prev, theme: t.id }))}
-                        className={`ledger-card text-left overflow-hidden transition-all p-1 ${
+                        className={`ledger-card text-left overflow-hidden transition-all duration-200 p-1 ${
                           form.theme === t.id
-                            ? "border-[var(--ink-border-strong)] ring-1 ring-[var(--foil-gold)]/20"
-                            : "hover:border-[var(--ink-border-strong)]"
+                            ? "border-2 border-[var(--foil-gold)] bg-[var(--foil-gold)]/[0.08] shadow-[0_0_12px_rgba(216,185,120,0.18),inset_0_0_12px_rgba(216,185,120,0.1)] hover:shadow-[0_0_16px_rgba(216,185,120,0.25),inset_0_0_12px_rgba(216,185,120,0.1)]"
+                            : "border border-[var(--ink-border)] opacity-50 hover:opacity-80"
                         }`}
                       >
-                        <div className="aspect-video bg-[var(--ink-surface-raised)] rounded overflow-hidden mb-2 relative">
+                        <div className="aspect-video rounded overflow-hidden mb-2 relative">
                           <Image src={t.img} alt={t.name} fill className="object-cover" unoptimized />
                         </div>
                         <div className="px-1.5 pb-1.5">
-                          <p className="text-xs font-semibold text-[var(--text-primary)]">{t.name}</p>
+                          <p className={`text-xs font-semibold transition-colors ${
+                            form.theme === t.id ? "text-[var(--foil-gold)]" : "text-[var(--text-primary)]"
+                          }`}>{t.name}</p>
                           <p className="text-[10px] text-[var(--text-muted)]">{t.desc}</p>
                         </div>
                       </button>

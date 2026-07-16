@@ -39,7 +39,7 @@ export default function FoilRSVPSection({ invitation, guestName }: Props) {
   };
 
   return (
-    <section className="py-16 px-6">
+    <section className="py-16 px-6" style={{ background: "#12151c" }}>
       <Section direction="up" stagger staggerDelay={0.15} className="max-w-md mx-auto">
         <div className="text-center mb-8">
           <motion.p

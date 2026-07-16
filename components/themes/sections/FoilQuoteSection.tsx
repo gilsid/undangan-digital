@@ -32,25 +32,27 @@ export default function FoilQuoteSection({ invitation }: Props) {
       };
 
   return (
-    <Section direction="up" stagger staggerDelay={0.15} className="py-16 px-6 text-center max-w-2xl mx-auto">
-      <motion.div variants={childVariants}>
-        <div className="h-px w-16 mx-auto mb-8" style={{ background: "var(--foil-gold)", opacity: 0.3 }} />
-      </motion.div>
-      <motion.p
-        variants={springChild}
-        className="text-xl md:text-2xl font-light italic leading-relaxed"
-        style={{ fontFamily: "var(--font-display)", color: "#a9a296" }}
-      >
-        &ldquo;{invitation.quoteText}&rdquo;
-      </motion.p>
-      {invitation.quoteSource && (
-        <motion.p variants={childVariants} className="text-sm mt-4" style={{ color: "var(--foil-gold)", opacity: 0.7 }}>
-          — {invitation.quoteSource}
+    <section style={{ background: "#12151c" }}>
+      <Section direction="up" stagger staggerDelay={0.15} className="py-16 px-6 text-center max-w-2xl mx-auto">
+        <motion.div variants={childVariants}>
+          <div className="h-px w-16 mx-auto mb-8" style={{ background: "var(--foil-gold)", opacity: 0.3 }} />
+        </motion.div>
+        <motion.p
+          variants={springChild}
+          className="text-xl md:text-2xl font-light italic leading-relaxed"
+          style={{ fontFamily: "var(--font-display)", color: "#a9a296" }}
+        >
+          &ldquo;{invitation.quoteText}&rdquo;
         </motion.p>
-      )}
-      <motion.div variants={childVariants}>
-        <div className="h-px w-16 mx-auto mt-8" style={{ background: "var(--foil-gold)", opacity: 0.3 }} />
-      </motion.div>
-    </Section>
+        {invitation.quoteSource && (
+          <motion.p variants={childVariants} className="text-sm mt-4" style={{ color: "var(--foil-gold)", opacity: 0.7 }}>
+            — {invitation.quoteSource}
+          </motion.p>
+        )}
+        <motion.div variants={childVariants}>
+          <div className="h-px w-16 mx-auto mt-8" style={{ background: "var(--foil-gold)", opacity: 0.3 }} />
+        </motion.div>
+      </Section>
+    </section>
   );
 }

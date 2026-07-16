@@ -75,7 +75,7 @@ export default function FoilCoupleSection({ invitation }: Props) {
                   unoptimized
                 />
               </motion.div>
-              <h3 className="text-xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}>
+              <h3 className="text-xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "var(--text-primary)" }}>
                 {invitation.groomFullName ?? invitation.groomName}
               </h3>
               {parentsInfo?.groomFather && (
@@ -110,7 +110,7 @@ export default function FoilCoupleSection({ invitation }: Props) {
                   unoptimized
                 />
               </motion.div>
-              <h3 className="text-xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}>
+              <h3 className="text-xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "var(--text-primary)" }}>
                 {invitation.brideFullName ?? invitation.brideName}
               </h3>
               {parentsInfo?.brideFather && (

@@ -27,7 +27,7 @@ export default function FoilEventSection({ invitation }: Props) {
   };
 
   return (
-    <section className="py-16 px-6">
+    <section className="py-16 px-6" style={{ background: "#12151c" }}>
       <Section direction="up" stagger staggerDelay={0.15} className="text-center mb-10">
         <motion.p
           variants={headerVariant}
