@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const parsed = createInvitationSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
     }
 
     const { email, password, groomName, brideName, weddingDate, venueName, venueAddress, theme } = parsed.data;
@@ -40,14 +40,14 @@ export async function POST(req: NextRequest) {
       data: { email, password: hashed },
     });
 
-    const heroImage = `/placeholders/${theme}/hero.png`;
-    const groomImage = `/placeholders/${theme}/groom.png`;
-    const brideImage = `/placeholders/${theme}/bride.png`;
+    const heroImage = "/placeholders/hero.png";
+    const groomImage = "/placeholders/groom.png";
+    const brideImage = "/placeholders/bride.png";
     const gallery = [
-      `/placeholders/${theme}/gallery1.png`,
-      `/placeholders/${theme}/gallery2.png`,
-      `/placeholders/${theme}/gallery3.png`,
-      `/placeholders/${theme}/gallery4.png`,
+      "/placeholders/gallery1.png",
+      "/placeholders/gallery2.png",
+      "/placeholders/gallery3.png",
+      "/placeholders/gallery4.png",
     ];
 
     const invitation = await prisma.invitation.create({

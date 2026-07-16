@@ -26,7 +26,7 @@ export async function PUT(
     const body = await req.json();
     const parsed = invitationUpdateSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: `${parsed.error.errors[0].path.join(".")}: ${parsed.error.errors[0].message}` }, { status: 400 });
+      return NextResponse.json({ error: `${parsed.error.issues[0].path.join(".")}: ${parsed.error.issues[0].message}` }, { status: 400 });
     }
 
     const data = parsed.data;
@@ -49,7 +49,7 @@ export async function PUT(
         ...(data.heroImage !== undefined && { heroImage: data.heroImage }),
         ...(data.gallery !== undefined && { gallery: data.gallery }),
         ...(data.loveStory !== undefined && { loveStory: data.loveStory }),
-        ...(data.bankAccounts !== undefined && { bankAccounts: data.bankAccounts }),
+        ...(data.bankAccounts !== undefined && { bankAccounts: data.bankAccounts as any }),
         ...(data.musicUrl !== undefined && { musicUrl: data.musicUrl }),
         ...(data.quoteText !== undefined && { quoteText: data.quoteText }),
         ...(data.quoteSource !== undefined && { quoteSource: data.quoteSource }),

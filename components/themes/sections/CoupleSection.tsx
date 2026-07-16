@@ -48,7 +48,7 @@ function CircularGold({ invitation }: Props) {
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
               >
-                <Image src={invitation.groomImage} alt={invitation.groomName} width={128} height={128} className="w-full h-full object-cover" unoptimized />
+                <Image src={invitation.groomImage || "/placeholders/groom.png"} alt={invitation.groomName} width={128} height={128} className="w-full h-full object-cover" unoptimized />
               </motion.div>
             )}
             <p className="text-2xl font-light" style={{ fontFamily: config.fonts.display, color: colors.text }}>
@@ -69,7 +69,7 @@ function CircularGold({ invitation }: Props) {
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
               >
-                <Image src={invitation.brideImage} alt={invitation.brideName} width={128} height={128} className="w-full h-full object-cover" unoptimized />
+                <Image src={invitation.brideImage || "/placeholders/bride.png"} alt={invitation.brideName} width={128} height={128} className="w-full h-full object-cover" unoptimized />
               </motion.div>
             )}
             <p className="text-2xl font-light" style={{ fontFamily: config.fonts.display, color: colors.text }}>

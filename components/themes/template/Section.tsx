@@ -45,7 +45,7 @@ function getVariants(
   return {
     hidden,
     visible,
-  };
+  } as Variants;
 }
 
 export default function Section({
