@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
 
@@ -8,10 +8,29 @@ interface Props {
   invitation: Invitation;
 }
 
+function staggerContainer(reduce: boolean | null, staggerDelay = 0.2): Variants {
+  if (reduce) return {};
+  return {
+    hidden: {},
+    visible: { transition: { staggerChildren: staggerDelay } },
+  };
+}
+
+function fadeUp(reduce: boolean | null): Variants {
+  if (reduce) return {};
+  return {
+    hidden: { opacity: 0, y: 24 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
+  };
+}
+
 function CenteredDividerHero({ invitation }: Props) {
   const config = useThemeConfig();
   const reduce = useReducedMotion();
   const { colors, fonts } = config;
+
+  const wrap = staggerContainer(reduce);
+  const item = fadeUp(reduce);
 
   return (
     <section
@@ -23,27 +42,29 @@ function CenteredDividerHero({ invitation }: Props) {
       }}
     >
       <motion.div
-        initial={reduce ? {} : { opacity: 0, y: 30 }}
-        animate={reduce ? {} : { opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+        variants={wrap}
+        initial="hidden"
+        animate="visible"
       >
-        <p className="text-xs uppercase tracking-[0.4em] mb-6" style={{ color: colors.accentMuted }}>
+        <motion.p variants={item} className="text-xs uppercase tracking-[0.4em] mb-6" style={{ color: colors.accentMuted }}>
           The Wedding of
-        </p>
-        <h1
+        </motion.p>
+        <motion.h1
+          variants={item}
           className="text-white leading-tight"
           style={{ fontFamily: fonts.display, fontSize: "clamp(2.5rem,8vw,5rem)", fontWeight: 300 }}
         >
           {invitation.groomFullName ?? invitation.groomName}
-        </h1>
-        <p className="text-3xl my-2" style={{ color: colors.accent, fontFamily: fonts.display }}>&amp;</p>
-        <h1
+        </motion.h1>
+        <motion.p variants={item} className="text-3xl my-2" style={{ color: colors.accent, fontFamily: fonts.display }}>&amp;</motion.p>
+        <motion.h1
+          variants={item}
           className="text-white leading-tight"
           style={{ fontFamily: fonts.display, fontSize: "clamp(2.5rem,8vw,5rem)", fontWeight: 300 }}
         >
           {invitation.brideFullName ?? invitation.brideName}
-        </h1>
-        <div className="mt-6 flex items-center justify-center gap-3">
+        </motion.h1>
+        <motion.div variants={item} className="mt-6 flex items-center justify-center gap-3">
           <div className="h-px w-12" style={{ background: `${colors.accent}80` }} />
           <p className="text-white/80 text-sm">
             {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
@@ -51,7 +72,7 @@ function CenteredDividerHero({ invitation }: Props) {
             })}
           </p>
           <div className="h-px w-12" style={{ background: `${colors.accent}80` }} />
-        </div>
+        </motion.div>
       </motion.div>
 
       <motion.div
@@ -72,6 +93,9 @@ function BackdropCardHero({ invitation }: Props) {
   const reduce = useReducedMotion();
   const { colors, fonts } = config;
 
+  const wrap = staggerContainer(reduce);
+  const item = fadeUp(reduce);
+
   return (
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6"
@@ -82,29 +106,31 @@ function BackdropCardHero({ invitation }: Props) {
       }}
     >
       <motion.div
-        initial={reduce ? {} : { opacity: 0, y: 30 }}
-        animate={reduce ? {} : { opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+        variants={wrap}
+        initial="hidden"
+        animate="visible"
         className="p-8 rounded-3xl backdrop-blur-xs"
         style={{ background: `${colors.dark}33` }}
       >
-        <p className="text-xs uppercase tracking-[0.4em] mb-4 font-semibold" style={{ color: colors.bg }}>
+        <motion.p variants={item} className="text-xs uppercase tracking-[0.4em] mb-4 font-semibold" style={{ color: colors.bg }}>
           Pernikahan Dari
-        </p>
-        <h1
+        </motion.p>
+        <motion.h1
+          variants={item}
           className="text-white leading-tight"
           style={{ fontFamily: fonts.display, fontSize: "clamp(2.2rem,7vw,4.5rem)", fontWeight: 400 }}
         >
           {invitation.groomFullName ?? invitation.groomName}
-        </h1>
-        <p className="text-2xl my-2 italic font-serif" style={{ color: `${colors.bg}e0` }}>&amp;</p>
-        <h1
+        </motion.h1>
+        <motion.p variants={item} className="text-2xl my-2 italic font-serif" style={{ color: `${colors.bg}e0` }}>&amp;</motion.p>
+        <motion.h1
+          variants={item}
           className="text-white leading-tight"
           style={{ fontFamily: fonts.display, fontSize: "clamp(2.2rem,7vw,4.5rem)", fontWeight: 400 }}
         >
           {invitation.brideFullName ?? invitation.brideName}
-        </h1>
-        <div className="mt-6 flex items-center justify-center gap-3">
+        </motion.h1>
+        <motion.div variants={item} className="mt-6 flex items-center justify-center gap-3">
           <div className="h-px w-8" style={{ background: `${colors.bg}99` }} />
           <p className="text-white text-sm font-medium tracking-wider">
             {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
@@ -112,7 +138,7 @@ function BackdropCardHero({ invitation }: Props) {
             })}
           </p>
           <div className="h-px w-8" style={{ background: `${colors.bg}99` }} />
-        </div>
+        </motion.div>
       </motion.div>
     </section>
   );

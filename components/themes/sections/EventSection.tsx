@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import Section from "@/components/themes/template/Section";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
 import MapsEmbed, { getMapsSrc } from "@/components/MapsEmbed";
@@ -9,50 +10,76 @@ interface Props {
   invitation: Invitation;
 }
 
+function useEventAnim() {
+  const reduce = useReducedMotion();
+  const container: Variants = reduce ? {} : {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15 } },
+  };
+  const fadeChild: Variants = reduce ? {} : {
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  };
+  const springChild: Variants = reduce ? {} : {
+    hidden: { opacity: 0, y: 24 },
+    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } },
+  };
+  return { container, fadeChild, springChild };
+}
+
 function RoundedCards({ invitation }: Props) {
   const config = useThemeConfig();
   const { colors } = config;
   const mapsSrc = getMapsSrc(invitation.mapsEmbedUrl);
+  const { container, fadeChild, springChild } = useEventAnim();
 
   return (
     <Section className="py-16 px-6" style={{ background: colors.dark }}>
-      <div className="max-w-3xl mx-auto text-center">
-        <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: colors.accent }}>
+      <motion.div
+        className="max-w-3xl mx-auto text-center"
+        variants={container}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
+        <motion.p variants={fadeChild} className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: colors.accent }}>
           Lokasi & Waktu
-        </p>
-        <h2
+        </motion.p>
+        <motion.h2
+          variants={fadeChild}
           className="text-3xl font-light mb-10"
           style={{ fontFamily: config.fonts.display, color: colors.accent }}
         >
           Acara
-        </h2>
+        </motion.h2>
 
         <div className="grid grid-cols-2 gap-4 mb-8">
           {invitation.akadTime && (
-            <div className="rounded-2xl p-6 text-left" style={{ border: `1px solid ${colors.accent}`, background: colors.surface }}>
+            <motion.div variants={springChild} className="rounded-2xl p-6 text-left" style={{ border: `1px solid ${colors.accent}`, background: colors.surface }}>
               <p className="text-xs uppercase tracking-widest mb-1" style={{ color: colors.accent }}>Akad</p>
               <p className="text-sm" style={{ color: colors.text }}>{invitation.akadTime}</p>
-            </div>
+            </motion.div>
           )}
           {invitation.resepsiTime && (
-            <div className="rounded-2xl p-6 text-left" style={{ border: `1px solid ${colors.accent}`, background: colors.surface }}>
+            <motion.div variants={springChild} className="rounded-2xl p-6 text-left" style={{ border: `1px solid ${colors.accent}`, background: colors.surface }}>
               <p className="text-xs uppercase tracking-widest mb-1" style={{ color: colors.accent }}>Resepsi</p>
               <p className="text-sm" style={{ color: colors.text }}>{invitation.resepsiTime}</p>
-            </div>
+            </motion.div>
           )}
         </div>
 
-        <div className="rounded-2xl p-6 text-left mb-8" style={{ border: `1px solid ${colors.accent}`, background: colors.surface }}>
+        <motion.div variants={springChild} className="rounded-2xl p-6 text-left mb-8" style={{ border: `1px solid ${colors.accent}`, background: colors.surface }}>
           <p className="text-sm font-medium" style={{ fontFamily: config.fonts.display, color: colors.text }}>
             {invitation.venueName}
           </p>
           <p className="text-xs mt-1" style={{ color: colors.textMuted }}>
             {invitation.venueAddress}
           </p>
-        </div>
+        </motion.div>
 
         {mapsSrc && !mapsSrc.includes("/maps/embed") && (
-          <a
+          <motion.a
+            variants={fadeChild}
             href={mapsSrc}
             target="_blank"
             rel="noopener noreferrer"
@@ -60,7 +87,7 @@ function RoundedCards({ invitation }: Props) {
             style={{ border: `1px solid ${colors.accent}`, color: colors.accent }}
           >
             Buka Google Maps
-          </a>
+          </motion.a>
         )}
 
         {mapsSrc?.includes("/maps/embed") && (
@@ -68,7 +95,7 @@ function RoundedCards({ invitation }: Props) {
             <MapsEmbed mapsEmbedUrl={invitation.mapsEmbedUrl} iframeHeight={240} />
           </Section>
         )}
-      </div>
+      </motion.div>
     </Section>
   );
 }
@@ -77,46 +104,55 @@ function TranslucentCards({ invitation }: Props) {
   const config = useThemeConfig();
   const { colors } = config;
   const mapsSrc = getMapsSrc(invitation.mapsEmbedUrl);
+  const { container, fadeChild, springChild } = useEventAnim();
 
   return (
     <Section className="py-16 px-6" style={{ background: colors.secondary }}>
-      <div className="max-w-3xl mx-auto text-center">
-        <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: colors.text }}>
+      <motion.div
+        className="max-w-3xl mx-auto text-center"
+        variants={container}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
+        <motion.p variants={fadeChild} className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: colors.text }}>
           Lokasi & Waktu
-        </p>
-        <h2
+        </motion.p>
+        <motion.h2
+          variants={fadeChild}
           className="text-3xl font-light mb-10"
           style={{ fontFamily: config.fonts.display, color: colors.text }}
         >
           Acara
-        </h2>
+        </motion.h2>
 
         <div className="grid grid-cols-2 gap-4 mb-8">
           {invitation.akadTime && (
-            <div className="rounded-2xl p-6 text-left backdrop-blur border" style={{ background: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.15)" }}>
+            <motion.div variants={springChild} className="rounded-2xl p-6 text-left backdrop-blur border" style={{ background: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.15)" }}>
               <p className="text-xs uppercase tracking-widest mb-1" style={{ color: colors.text }}>Akad</p>
               <p className="text-sm" style={{ color: colors.textMuted }}>{invitation.akadTime}</p>
-            </div>
+            </motion.div>
           )}
           {invitation.resepsiTime && (
-            <div className="rounded-2xl p-6 text-left backdrop-blur border" style={{ background: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.15)" }}>
+            <motion.div variants={springChild} className="rounded-2xl p-6 text-left backdrop-blur border" style={{ background: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.15)" }}>
               <p className="text-xs uppercase tracking-widest mb-1" style={{ color: colors.text }}>Resepsi</p>
               <p className="text-sm" style={{ color: colors.textMuted }}>{invitation.resepsiTime}</p>
-            </div>
+            </motion.div>
           )}
         </div>
 
-        <div className="rounded-2xl p-6 text-left mb-8 backdrop-blur border" style={{ background: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.15)" }}>
+        <motion.div variants={springChild} className="rounded-2xl p-6 text-left mb-8 backdrop-blur border" style={{ background: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.15)" }}>
           <p className="text-sm font-medium" style={{ fontFamily: config.fonts.display, color: colors.text }}>
             {invitation.venueName}
           </p>
           <p className="text-xs mt-1" style={{ color: colors.textMuted }}>
             {invitation.venueAddress}
           </p>
-        </div>
+        </motion.div>
 
         {mapsSrc && !mapsSrc.includes("/maps/embed") && (
-          <a
+          <motion.a
+            variants={fadeChild}
             href={mapsSrc}
             target="_blank"
             rel="noopener noreferrer"
@@ -124,7 +160,7 @@ function TranslucentCards({ invitation }: Props) {
             style={{ background: "#b85c3e", color: "white" }}
           >
             Buka Google Maps
-          </a>
+          </motion.a>
         )}
 
         {mapsSrc?.includes("/maps/embed") && (
@@ -132,7 +168,7 @@ function TranslucentCards({ invitation }: Props) {
             <MapsEmbed mapsEmbedUrl={invitation.mapsEmbedUrl} iframeHeight={240} />
           </Section>
         )}
-      </div>
+      </motion.div>
     </Section>
   );
 }
@@ -141,11 +177,18 @@ function TextForwardGrid({ invitation }: Props) {
   const config = useThemeConfig();
   const { colors } = config;
   const mapsSrc = getMapsSrc(invitation.mapsEmbedUrl);
+  const { container, fadeChild, springChild } = useEventAnim();
 
   return (
     <Section className="py-16 px-6" style={{ background: colors.bg }}>
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-10">
+      <motion.div
+        className="max-w-4xl mx-auto"
+        variants={container}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
+        <motion.div variants={fadeChild} className="text-center mb-10">
           <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: colors.secondary }}>
             Lokasi & Waktu
           </p>
@@ -155,10 +198,10 @@ function TextForwardGrid({ invitation }: Props) {
           >
             Acara
           </h2>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-2 gap-12 items-start">
-          <div className="space-y-8">
+          <motion.div variants={springChild} className="space-y-8">
             {invitation.akadTime && (
               <div>
                 <p className="text-xs uppercase tracking-widest mb-1" style={{ color: colors.secondary }}>Akad</p>
@@ -179,9 +222,9 @@ function TextForwardGrid({ invitation }: Props) {
                 {invitation.venueAddress}
               </p>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="space-y-4">
+          <motion.div variants={fadeChild} className="space-y-4">
             {mapsSrc && !mapsSrc.includes("/maps/embed") && (
               <a
                 href={mapsSrc}
@@ -198,9 +241,9 @@ function TextForwardGrid({ invitation }: Props) {
                 <MapsEmbed mapsEmbedUrl={invitation.mapsEmbedUrl} iframeHeight={240} />
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </Section>
   );
 }

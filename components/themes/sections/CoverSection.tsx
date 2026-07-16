@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
 
@@ -10,10 +10,25 @@ interface Props {
   onOpen?: () => void;
 }
 
+function useCoverAnim() {
+  const reduce = useReducedMotion();
+  const container: Variants = reduce ? {} : {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15 } },
+  };
+  const child: Variants = reduce ? {} : {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  };
+  const btnHover = reduce ? {} : { scale: 1.02 };
+  const btnTap = reduce ? {} : { scale: 0.98 };
+  return { container, child, btnHover, btnTap };
+}
+
 function CenteredCover({ invitation, guestName, onOpen }: Props) {
   const config = useThemeConfig();
-  const reduce = useReducedMotion();
   const { colors, fonts } = config;
+  const { container, child, btnHover, btnTap } = useCoverAnim();
 
   return (
     <div
@@ -25,33 +40,47 @@ function CenteredCover({ invitation, guestName, onOpen }: Props) {
       }}
     >
       <motion.div
-        initial={reduce ? {} : { opacity: 0, y: 20 }}
-        animate={reduce ? {} : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        variants={container}
+        initial="hidden"
+        animate="visible"
       >
-        <p className="text-xs uppercase tracking-[0.3em] mb-4" style={{ color: colors.accentMuted }}>
+        <motion.p variants={child} className="text-xs uppercase tracking-[0.3em] mb-4" style={{ color: colors.accentMuted }}>
           Undangan Pernikahan
-        </p>
-        {guestName && <p className="text-white/80 text-sm mb-1">Kepada Yth.</p>}
+        </motion.p>
         {guestName && (
-          <h2 className="text-xl font-light text-white mb-6" style={{ fontFamily: fonts.display }}>
-            {guestName}
-          </h2>
+          <motion.div variants={child}>
+            <p className="text-white/80 text-sm mb-1">Kepada Yth.</p>
+            <h2 className="text-xl font-light text-white mb-6" style={{ fontFamily: fonts.display }}>
+              {guestName}
+            </h2>
+          </motion.div>
         )}
-        <h1
-          className="text-4xl md:text-5xl font-light text-white mb-2 leading-tight"
+        <motion.h1
+          variants={child}
+          className="text-4xl md:text-5xl font-light text-white leading-tight"
           style={{ fontFamily: fonts.display }}
         >
           {invitation.groomName}
-          <span className="block text-2xl my-1" style={{ color: colors.accent }}>&amp;</span>
+        </motion.h1>
+        <motion.span variants={child} className="block text-2xl my-1" style={{ color: colors.accent }}>
+          &amp;
+        </motion.span>
+        <motion.h1
+          variants={child}
+          className="text-4xl md:text-5xl font-light text-white mb-2 leading-tight"
+          style={{ fontFamily: fonts.display }}
+        >
           {invitation.brideName}
-        </h1>
-        <p className="text-white/70 text-sm mt-4 mb-10">
+        </motion.h1>
+        <motion.p variants={child} className="text-white/70 text-sm mt-4 mb-10">
           {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
             day: "numeric", month: "long", year: "numeric",
           })}
-        </p>
-        <button
+        </motion.p>
+        <motion.button
+          variants={child}
+          whileHover={btnHover}
+          whileTap={btnTap}
           onClick={onOpen}
           className="px-8 py-3 rounded-full text-sm tracking-widest uppercase transition-shadow"
           style={{
@@ -62,7 +91,7 @@ function CenteredCover({ invitation, guestName, onOpen }: Props) {
           }}
         >
           Buka Undangan
-        </button>
+        </motion.button>
       </motion.div>
     </div>
   );
@@ -70,8 +99,8 @@ function CenteredCover({ invitation, guestName, onOpen }: Props) {
 
 function CardCenteredCover({ invitation, guestName, onOpen }: Props) {
   const config = useThemeConfig();
-  const reduce = useReducedMotion();
   const { colors, fonts } = config;
+  const { container, child, btnHover, btnTap } = useCoverAnim();
 
   return (
     <div
@@ -84,9 +113,9 @@ function CardCenteredCover({ invitation, guestName, onOpen }: Props) {
     >
       <div className="absolute inset-0 bg-[radial-gradient(#c2593f0a_1px,transparent_1px)] [background-size:16px_16px]" />
       <motion.div
-        initial={reduce ? {} : { opacity: 0, y: 20 }}
-        animate={reduce ? {} : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        variants={container}
+        initial="hidden"
+        animate="visible"
         className="relative z-10 max-w-sm w-full shadow-xl"
         style={{
           background: `${colors.bg}/95`,
@@ -95,36 +124,50 @@ function CardCenteredCover({ invitation, guestName, onOpen }: Props) {
           padding: "2rem",
         }}
       >
-        <p className="text-xs uppercase tracking-[0.25em] font-medium mb-2" style={{ color: colors.secondary }}>
+        <motion.p variants={child} className="text-xs uppercase tracking-[0.25em] font-medium mb-2" style={{ color: colors.secondary }}>
           Undangan Pernikahan
-        </p>
-        <div className="h-px w-16 mx-auto my-3" style={{ background: `${colors.accent}30` }} />
-        {guestName && <p className="text-xs mb-1" style={{ color: `${colors.text}70` }}>Kepada Yth. Bapak/Ibu/Saudara/i</p>}
+        </motion.p>
+        <motion.div variants={child} className="h-px w-16 mx-auto my-3" style={{ background: `${colors.accent}30` }} />
         {guestName && (
-          <h2 className="text-xl font-medium mb-6" style={{ fontFamily: fonts.display, color: colors.text }}>
-            {guestName}
-          </h2>
+          <motion.div variants={child}>
+            <p className="text-xs mb-1" style={{ color: `${colors.text}70` }}>Kepada Yth. Bapak/Ibu/Saudara/i</p>
+            <h2 className="text-xl font-medium mb-6" style={{ fontFamily: fonts.display, color: colors.text }}>
+              {guestName}
+            </h2>
+          </motion.div>
         )}
-        <h1
-          className="text-4xl font-light mb-2 leading-snug"
+        <motion.h1
+          variants={child}
+          className="text-4xl font-light leading-snug"
           style={{ fontFamily: fonts.display, color: colors.text }}
         >
           {invitation.groomName}
-          <span className="block text-2xl my-1 italic font-serif" style={{ color: colors.accent }}>&amp;</span>
+        </motion.h1>
+        <motion.span variants={child} className="block text-2xl my-1 italic font-serif" style={{ color: colors.accent }}>
+          &amp;
+        </motion.span>
+        <motion.h1
+          variants={child}
+          className="text-4xl font-light mb-2 leading-snug"
+          style={{ fontFamily: fonts.display, color: colors.text }}
+        >
           {invitation.brideName}
-        </h1>
-        <p className="text-xs mt-4 mb-8 font-medium tracking-wide" style={{ color: `${colors.text}80` }}>
+        </motion.h1>
+        <motion.p variants={child} className="text-xs mt-4 mb-8 font-medium tracking-wide" style={{ color: `${colors.text}80` }}>
           {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
             day: "numeric", month: "long", year: "numeric",
           })}
-        </p>
-        <button
+        </motion.p>
+        <motion.button
+          variants={child}
+          whileHover={btnHover}
+          whileTap={btnTap}
           onClick={onOpen}
           className="px-6 py-2.5 rounded-full text-xs font-semibold uppercase tracking-widest text-white shadow-md transition-shadow"
           style={{ background: colors.accent }}
         >
           Buka Undangan
-        </button>
+        </motion.button>
       </motion.div>
     </div>
   );
@@ -132,18 +175,28 @@ function CardCenteredCover({ invitation, guestName, onOpen }: Props) {
 
 function FramedCover({ invitation, guestName, onOpen }: Props) {
   const config = useThemeConfig();
-  const reduce = useReducedMotion();
   const { colors, fonts } = config;
+  const { container, child, btnHover, btnTap } = useCoverAnim();
+  const upChild: Variants = useReducedMotion() ? {} : {
+    hidden: { opacity: 0, y: 24 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-8 text-left relative">
-      <div className="border flex-1 flex flex-col justify-between p-8" style={{ borderColor: `${colors.text}10` }}>
-        <div>
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="visible"
+        className="border flex-1 flex flex-col justify-between p-8"
+        style={{ borderColor: `${colors.text}10` }}
+      >
+        <motion.div variants={upChild}>
           <p className="text-[10px] uppercase tracking-[0.35em]" style={{ color: colors.textMuted }}>
             Wedding Invitation
           </p>
-        </div>
-        <div>
+        </motion.div>
+        <motion.div variants={upChild}>
           <h1
             className="text-4xl md:text-5xl font-light uppercase tracking-wide leading-none"
             style={{ color: colors.text, fontFamily: fonts.display }}
@@ -157,15 +210,17 @@ function FramedCover({ invitation, guestName, onOpen }: Props) {
               day: "numeric", month: "long", year: "numeric",
             })}
           </p>
-        </div>
-        <div className="space-y-6">
+        </motion.div>
+        <motion.div variants={upChild} className="space-y-6">
           {guestName && (
             <div>
               <p className="text-[10px] uppercase tracking-widest mb-1" style={{ color: colors.textMuted }}>Kepada Yth.</p>
               <p className="text-lg font-medium" style={{ color: colors.text }}>{guestName}</p>
             </div>
           )}
-          <button
+          <motion.button
+            whileHover={btnHover}
+            whileTap={btnTap}
             onClick={onOpen}
             className="group flex items-center gap-3 text-xs uppercase tracking-[0.2em] font-semibold"
             style={{ color: colors.text }}
@@ -174,9 +229,9 @@ function FramedCover({ invitation, guestName, onOpen }: Props) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
-          </button>
-        </div>
-      </div>
+          </motion.button>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

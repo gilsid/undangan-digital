@@ -10,9 +10,10 @@ interface Props {
   themeConfig: ThemeConfig;
   cover: ReactNode;
   children: ReactNode;
+  musicToggle?: (playing: boolean, toggleMusic: () => void) => ReactNode;
 }
 
-export default function ThemeLayout({ invitation, themeConfig, cover, children }: Props) {
+export default function ThemeLayout({ invitation, themeConfig, cover, children, musicToggle }: Props) {
   const [opened, setOpened] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -51,6 +52,9 @@ export default function ThemeLayout({ invitation, themeConfig, cover, children }
       {invitation.musicUrl && <audio ref={audioRef} src={invitation.musicUrl} loop />}
 
       {invitation.musicUrl && (
+        musicToggle ? (
+          musicToggle(playing, toggleMusic)
+        ) : (
         <button
           onClick={toggleMusic}
           className="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105"
@@ -72,6 +76,7 @@ export default function ThemeLayout({ invitation, themeConfig, cover, children }
             )}
           </svg>
         </button>
+        )
       )}
 
       {children}

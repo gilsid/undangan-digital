@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import { useRsvp } from "@/hooks/useThemeCommon";
 import Section from "@/components/themes/template/Section";
@@ -19,6 +20,7 @@ const attendOptions = [
 export default function RSVPSection({ invitation, guestName }: Props) {
   const config = useThemeConfig();
   const { colors, decorations } = config;
+  const reduce = useReducedMotion();
   const rsvp = useRsvp({ invitationId: invitation.id, guestName });
   const isBorderOnly = decorations.cardStyle === "border-only";
   const isMinimalist = config.id === "minimalist";
@@ -31,7 +33,13 @@ export default function RSVPSection({ invitation, guestName }: Props) {
   const inputBg = isMinimalist ? colors.bg : "rgba(255,255,255,0.1)";
   const inputBorder = isMinimalist ? colors.border : "rgba(255,255,255,0.2)";
   const titleColor = isMinimalist ? colors.text : "#ffffff";
-  const dividerColor = isMinimalist ? colors.border : undefined;
+
+  const fieldDelay = {
+    name: 0,
+    attendance: 0.15,
+    count: 0.3,
+    submit: 0.4,
+  };
 
   return (
     <section
@@ -52,76 +60,108 @@ export default function RSVPSection({ invitation, guestName }: Props) {
           RSVP
         </h2>
 
-        {rsvp.sent ? (
-          <div className="text-center py-8" style={{ color: colors.accent }}>
-            <p className="text-2xl mb-2" style={{ fontFamily: config.fonts.display }}>
-              Terima kasih!
-            </p>
-            <p className="text-sm" style={{ color: mutedColor }}>
-              Konfirmasi kehadiran Anda telah kami terima.
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={rsvp.submit} className="space-y-4">
-            <div>
-              <label className="block text-xs mb-1" style={{ color: mutedColor }}>
-                Nama
-              </label>
-              <input
-                value={rsvp.name}
-                onChange={(e) => rsvp.setName(e.target.value)}
-                required
-                className={`w-full px-3 py-2 text-sm border ${inputRounded}`}
-                style={{ background: inputBg, borderColor: inputBorder, color: textColor }}
-              />
-            </div>
-            <div>
-              <label className="block text-xs mb-2" style={{ color: mutedColor }}>
-                Kehadiran
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {attendOptions.map((opt) => (
-                  <button
-                    key={opt.val}
-                    type="button"
-                    onClick={() => rsvp.setAttendance(opt.val)}
-                    className={`py-2 text-xs transition-all ${inputRounded}`}
-                    style={{
-                      background: rsvp.attendance === opt.val ? colors.accent : "transparent",
-                      border: `1px solid ${rsvp.attendance === opt.val ? colors.accent : inputBorder}`,
-                      color: rsvp.attendance === opt.val ? (isMinimalist ? colors.bg : colors.dark) : mutedColor,
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {rsvp.attendance === "HADIR" && (
-              <div>
+        <AnimatePresence mode="wait">
+          {rsvp.sent ? (
+            <motion.div
+              key="success"
+              className="text-center py-8"
+              style={{ color: colors.accent }}
+              initial={reduce ? {} : { opacity: 0, scale: 0.9 }}
+              animate={reduce ? {} : { opacity: 1, scale: 1 }}
+              exit={reduce ? {} : { opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.35 }}
+            >
+              <p className="text-2xl mb-2" style={{ fontFamily: config.fonts.display }}>
+                Terima kasih!
+              </p>
+              <p className="text-sm" style={{ color: mutedColor }}>
+                Konfirmasi kehadiran Anda telah kami terima.
+              </p>
+            </motion.div>
+          ) : (
+            <motion.form
+              key="form"
+              onSubmit={rsvp.submit}
+              className="space-y-4"
+              initial={reduce ? {} : { opacity: 0 }}
+              animate={reduce ? {} : { opacity: 1 }}
+              exit={reduce ? {} : { opacity: 0 }}
+            >
+              <motion.div
+                initial={reduce ? {} : { opacity: 0, y: 8 }}
+                animate={reduce ? {} : { opacity: 1, y: 0 }}
+                transition={{ delay: fieldDelay.name }}
+              >
                 <label className="block text-xs mb-1" style={{ color: mutedColor }}>
-                  Jumlah tamu (termasuk Anda)
+                  Nama
                 </label>
                 <input
-                  type="number"
-                  min={1}
-                  max={10}
-                  value={rsvp.count}
-                  onChange={(e) => rsvp.setCount(Number(e.target.value))}
+                  value={rsvp.name}
+                  onChange={(e) => rsvp.setName(e.target.value)}
+                  required
                   className={`w-full px-3 py-2 text-sm border ${inputRounded}`}
                   style={{ background: inputBg, borderColor: inputBorder, color: textColor }}
                 />
-              </div>
-            )}
-            <button
-              type="submit"
-              className={`w-full py-3 text-sm font-medium transition-opacity hover:opacity-90 ${inputRounded}`}
-              style={{ background: colors.accent, color: isMinimalist ? colors.bg : colors.dark }}
-            >
-              Kirim Konfirmasi
-            </button>
-          </form>
-        )}
+              </motion.div>
+              <motion.div
+                initial={reduce ? {} : { opacity: 0, y: 8 }}
+                animate={reduce ? {} : { opacity: 1, y: 0 }}
+                transition={{ delay: fieldDelay.attendance }}
+              >
+                <label className="block text-xs mb-2" style={{ color: mutedColor }}>
+                  Kehadiran
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {attendOptions.map((opt) => (
+                    <button
+                      key={opt.val}
+                      type="button"
+                      onClick={() => rsvp.setAttendance(opt.val)}
+                      className={`py-2 text-xs transition-all ${inputRounded}`}
+                      style={{
+                        background: rsvp.attendance === opt.val ? colors.accent : "transparent",
+                        border: `1px solid ${rsvp.attendance === opt.val ? colors.accent : inputBorder}`,
+                        color: rsvp.attendance === opt.val ? (isMinimalist ? colors.bg : colors.dark) : mutedColor,
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+              {rsvp.attendance === "HADIR" && (
+                <motion.div
+                  initial={reduce ? {} : { opacity: 0, y: 8 }}
+                  animate={reduce ? {} : { opacity: 1, y: 0 }}
+                  transition={{ delay: fieldDelay.count }}
+                >
+                  <label className="block text-xs mb-1" style={{ color: mutedColor }}>
+                    Jumlah tamu (termasuk Anda)
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={rsvp.count}
+                    onChange={(e) => rsvp.setCount(Number(e.target.value))}
+                    className={`w-full px-3 py-2 text-sm border ${inputRounded}`}
+                    style={{ background: inputBg, borderColor: inputBorder, color: textColor }}
+                  />
+                </motion.div>
+              )}
+              <motion.button
+                type="submit"
+                initial={reduce ? {} : { opacity: 0, y: 8 }}
+                animate={reduce ? {} : { opacity: 1, y: 0 }}
+                transition={{ delay: fieldDelay.submit }}
+                className={`w-full py-3 text-sm font-medium transition-opacity hover:opacity-90 ${inputRounded}`}
+                style={{ background: colors.accent, color: isMinimalist ? colors.bg : colors.dark }}
+              >
+                Kirim Konfirmasi
+              </motion.button>
+            </motion.form>
+          )}
+        </AnimatePresence>
       </Section>
     </section>
   );
