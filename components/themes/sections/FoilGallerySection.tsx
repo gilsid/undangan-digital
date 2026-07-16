@@ -32,7 +32,7 @@ export default function FoilGallerySection({ invitation }: Props) {
   if (gallery.length === 0) return null;
 
   return (
-    <section className="py-16 px-6">
+    <section className="py-16 px-6" style={{ background: "#12151c" }}>
       <Section className="text-center mb-10">
         <p className="text-xs uppercase tracking-[0.3em]" style={{ color: "var(--foil-gold)", opacity: 0.7 }}>
           Kenangan
