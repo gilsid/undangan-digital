@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { handlePrismaError } from "@/lib/api-error";
 import { invitationUpdateSchema } from "@/lib/validations";
+import type { Prisma } from "@prisma/client";
 
 // PUT /api/invitations/[id]
 export async function PUT(
@@ -49,7 +50,7 @@ export async function PUT(
         ...(data.heroImage !== undefined && { heroImage: data.heroImage }),
         ...(data.gallery !== undefined && { gallery: data.gallery }),
         ...(data.loveStory !== undefined && { loveStory: data.loveStory }),
-        ...(data.bankAccounts !== undefined && { bankAccounts: data.bankAccounts as any }),
+        ...(data.bankAccounts !== undefined && { bankAccounts: data.bankAccounts as unknown as Prisma.InputJsonValue }),
         ...(data.musicUrl !== undefined && { musicUrl: data.musicUrl }),
         ...(data.quoteText !== undefined && { quoteText: data.quoteText }),
         ...(data.quoteSource !== undefined && { quoteSource: data.quoteSource }),
