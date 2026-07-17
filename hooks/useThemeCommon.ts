@@ -1,15 +1,33 @@
 import { useState, useRef, type FormEvent } from "react";
 import type { Wish } from "@prisma/client";
 
-interface RsvpForm {
-  guestName: string;
+interface UseRsvpReturn {
+  name: string;
+  setName: (v: string) => void;
   attendance: string;
-  guestCount: number;
+  setAttendance: (v: string) => void;
+  count: number;
+  setCount: (v: number) => void;
+  sent: boolean;
+  error: string | null;
+  submit: (e: FormEvent) => Promise<void>;
 }
 
-interface WishForm {
+interface UseWishReturn {
   name: string;
+  setName: (v: string) => void;
   message: string;
+  setMessage: (v: string) => void;
+  sent: boolean;
+  error: string | null;
+  submit: (e: FormEvent, invitationId: string) => Promise<void>;
+}
+
+interface UseMusicReturn {
+  audioRef: React.RefObject<HTMLAudioElement | null>;
+  playing: boolean;
+  setPlaying: (v: boolean) => void;
+  toggleMusic: () => void;
 }
 
 interface UseRsvpOptions {
@@ -27,9 +45,11 @@ export function useRsvp({ invitationId, guestName, onSubmit }: UseRsvpOptions) {
   const [attendance, setAttendance] = useState("HADIR");
   const [count, setCount] = useState(1);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    setError(null);
     const res = await fetch("/api/rsvp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -43,19 +63,24 @@ export function useRsvp({ invitationId, guestName, onSubmit }: UseRsvpOptions) {
     if (res.ok) {
       setSent(true);
       onSubmit?.();
+    } else {
+      const d = await res.json().catch(() => null);
+      setError(d?.error ?? "Gagal mengirim RSVP. Silakan coba lagi.");
     }
   }
 
-  return { name, setName, attendance, setAttendance, count, setCount, sent, submit };
+  return { name, setName, attendance, setAttendance, count, setCount, sent, error, submit };
 }
 
 export function useWish({ onSubmit }: UseWishOptions = {}) {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function submit(e: FormEvent, invitationId: string) {
     e.preventDefault();
+    setError(null);
     const res = await fetch("/api/wishes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -68,10 +93,13 @@ export function useWish({ onSubmit }: UseWishOptions = {}) {
       setSent(true);
       setTimeout(() => setSent(false), 3000);
       onSubmit?.(w);
+    } else {
+      const d = await res.json().catch(() => null);
+      setError(d?.error ?? "Gagal mengirim ucapan. Silakan coba lagi.");
     }
   }
 
-  return { name, setName, message, setMessage, sent, submit };
+  return { name, setName, message, setMessage, sent, error, submit };
 }
 
 export function useMusic() {
@@ -84,7 +112,9 @@ export function useMusic() {
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
+      audioRef.current.play().then(() => setPlaying(true)).catch((err) => {
+        console.warn("Music play failed:", err);
+      });
     }
   }
 

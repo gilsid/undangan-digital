@@ -25,8 +25,9 @@ export async function GET(
     }
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (err) {
     // Public endpoint — never expose errors to the guest
+    console.error("Track endpoint error:", err);
     return NextResponse.json({ ok: false });
   }
 }
