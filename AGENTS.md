@@ -37,13 +37,12 @@ User, Invitation (owner FK→User), Guest (FK→Invitation), Rsvp (FK→Invitati
 - Toast via `components/Toast.tsx` (Framer Motion wrapper).
 
 ## Known issues to avoid
-- `UPSTASH_REDIS_*` + `R2_*` env vars **required** by code but not in `.env.example`.
-- `"unoptimized": true` + `images.remotePatterns: "**"` in next.config.ts.
-- Mixed lock files exist (pnpm-lock.yaml + package-lock.json).
-- `tsconfig.tsbuildinfo` committed — should be gitignored.
-- Theme files repeat ~60% code (useCountdown, SectionReveal, RSVP/wish submit, music toggle).
-- No Zod/Yup — validation is ad-hoc `if` checks.
-- No error boundaries or loading.tsx anywhere.
-- Silent `catch(() => {})` in TrackOpened, RSVP, wish submissions.
+- `UPSTASH_REDIS_*` + `R2_*` env vars **required** by code but not in `.env.example`. *(Stale: both ARE in .env.example)*
+- Theme files repeat ~60% code (useCountdown, SectionReveal, RSVP/wish submit, music toggle, Framer Motion types).
+- No Zod/Yup — validation is ad-hoc `if` checks. *(Stale: Zod validation exists via lib/validations.ts)*
 - `papaparse` imported in client-side GuestsClient — prefer native FileReader for CSV.
+- `tsconfig.tsbuildinfo` committed — should be gitignored.
+- Mixed lock files exist (pnpm-lock.yaml + package-lock.json).
+- `prisma` in `dependencies` instead of `devDependencies`.
+- `dotenv` in devDependencies unused — Next.js loads .env natively.
 <!-- END:project-context -->

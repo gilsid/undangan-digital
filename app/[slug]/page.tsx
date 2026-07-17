@@ -77,13 +77,22 @@ export default async function InvitationPage({ params, searchParams }: Props) {
 
   return (
     <>
+      {/* ponytail: skip-to-content link — upgrade to motion-enhanced when adding nav */}
+      <a
+        href="#invitation-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#2c2c2c] focus:text-white focus:rounded focus:text-sm"
+      >
+        Langsung ke konten undangan
+      </a>
       {guestCode && <TrackOpened code={guestCode} />}
       <ErrorBoundary>
-        <ThemeComponent
-          invitation={invitation}
-          guestName={guestName}
-          wishes={wishes as Wish[]}
-        />
+        <main id="invitation-content">
+          <ThemeComponent
+            invitation={invitation}
+            guestName={guestName}
+            wishes={wishes as Wish[]}
+          />
+        </main>
       </ErrorBoundary>
     </>
   );
