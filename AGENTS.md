@@ -43,6 +43,6 @@ User, Invitation (owner FK→User), Guest (FK→Invitation), Rsvp (FK→Invitati
 - `papaparse` imported in client-side GuestsClient — prefer native FileReader for CSV.
 - `tsconfig.tsbuildinfo` committed — should be gitignored.
 - Mixed lock files exist (pnpm-lock.yaml + package-lock.json).
-- `prisma` in `dependencies` instead of `devDependencies`.
-- `dotenv` in devDependencies unused — Next.js loads .env natively.
+- `prisma` in `dependencies` instead of `devDependencies`. *(Fixed: moved to devDependencies)*
+- `dotenv` in devDependencies — used by `prisma.config.ts`, not unused.
 <!-- END:project-context -->
