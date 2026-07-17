@@ -28,7 +28,6 @@ export default function WishesSection({ invitation, initialWishes }: Props) {
 
   const isMinimalist = config.id === "minimalist";
   const isRustic = config.id === "rustic";
-  const isElegant = config.id === "elegant";
 
   let bg: string;
   if (isMinimalist) bg = colors.bg;
@@ -83,6 +82,16 @@ export default function WishesSection({ invitation, initialWishes }: Props) {
           >
             {wish.sent ? "Terkirim!" : "Kirim Ucapan"}
           </motion.button>
+          {wish.error && (
+            <motion.p
+              initial={reduce ? {} : { opacity: 0, y: 4 }}
+              animate={reduce ? {} : { opacity: 1, y: 0 }}
+              className="text-xs mt-2 text-center"
+              style={{ color: "#ef4444" }}
+            >
+              {wish.error}
+            </motion.p>
+          )}
         </motion.form>
 
         <div

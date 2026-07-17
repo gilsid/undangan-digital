@@ -57,6 +57,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(wishes);
   } catch (error) {
     console.error(error);
-    return NextResponse.json([]);
+    return NextResponse.json({ error: "Gagal memuat ucapan" }, { status: 500 });
   }
 }

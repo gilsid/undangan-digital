@@ -23,16 +23,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error("RateLimited");
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
-        });
+        const email = credentials.email as string;
+    const password = credentials.password as string;
 
-        if (!user) return null;
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
-        const valid = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        );
+    if (!user) return null;
+
+    const valid = await bcrypt.compare(password, user.password);
 
         if (!valid) return null;
 
@@ -48,7 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as { role?: string }).role;
+        token.role = user.role as string;
       }
       return token;
     },

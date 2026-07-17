@@ -159,6 +159,16 @@ export default function RSVPSection({ invitation, guestName }: Props) {
               >
                 Kirim Konfirmasi
               </motion.button>
+              {rsvp.error && (
+                <motion.p
+                  initial={reduce ? {} : { opacity: 0, y: 4 }}
+                  animate={reduce ? {} : { opacity: 1, y: 0 }}
+                  className="text-xs mt-2 text-center"
+                  style={{ color: "#ef4444" }}
+                >
+                  {rsvp.error}
+                </motion.p>
+              )}
             </motion.form>
           )}
         </AnimatePresence>

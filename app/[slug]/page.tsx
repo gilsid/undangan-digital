@@ -1,12 +1,10 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
-import ElegantTheme from "@/components/themes/Elegant";
-import BohoTheme from "@/components/themes/Boho";
-import TropicalTheme from "@/components/themes/Tropical";
-import FoilBlueprintTheme from "@/components/themes/FoilBlueprint";
 import TrackOpened from "./TrackOpened";
 import type { Wish } from "@prisma/client";
+import dynamic from "next/dynamic";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -80,22 +78,30 @@ export default async function InvitationPage({ params, searchParams }: Props) {
   return (
     <>
       {guestCode && <TrackOpened code={guestCode} />}
-      <ThemeComponent
-        invitation={invitation}
-        guestName={guestName}
-        wishes={wishes as Wish[]}
-      />
+      <ErrorBoundary>
+        <ThemeComponent
+          invitation={invitation}
+          guestName={guestName}
+          wishes={wishes as Wish[]}
+        />
+      </ErrorBoundary>
     </>
   );
 }
 
-const themes: Record<string, typeof ElegantTheme> = {
-  elegant: ElegantTheme,
-  boho: BohoTheme,
-  tropical: TropicalTheme,
-  "foil-blueprint": FoilBlueprintTheme,
+// Lazy-loaded themes — only the active theme's bundle is downloaded per visitor
+const lazyElegant = dynamic(() => import("@/components/themes/Elegant"), { ssr: true });
+const lazyBoho = dynamic(() => import("@/components/themes/Boho"), { ssr: true });
+const lazyTropical = dynamic(() => import("@/components/themes/Tropical"), { ssr: true });
+const lazyFoil = dynamic(() => import("@/components/themes/FoilBlueprint"), { ssr: true });
+
+const themes: Record<string, typeof lazyElegant> = {
+  elegant: lazyElegant,
+  boho: lazyBoho,
+  tropical: lazyTropical,
+  "foil-blueprint": lazyFoil,
 };
 
 function resolveTheme(theme: string) {
-  return themes[theme] ?? ElegantTheme;
+  return themes[theme] ?? lazyElegant;
 }

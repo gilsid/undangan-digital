@@ -21,7 +21,9 @@ export default function ThemeLayout({ invitation, themeConfig, cover, children, 
   function openInvitation() {
     setOpened(true);
     if (invitation.musicUrl && audioRef.current) {
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
+      audioRef.current.play().then(() => setPlaying(true)).catch((err) => {
+        console.warn("Music play failed:", err);
+      });
     }
   }
 
@@ -31,7 +33,9 @@ export default function ThemeLayout({ invitation, themeConfig, cover, children, 
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
+      audioRef.current.play().then(() => setPlaying(true)).catch((err) => {
+        console.warn("Music play toggle failed:", err);
+      });
     }
   }
 
