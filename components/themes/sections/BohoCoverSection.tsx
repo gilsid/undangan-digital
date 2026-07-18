@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
+import { formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -79,11 +80,7 @@ export default function BohoCoverSection({ invitation, guestName, onOpen }: Prop
           {invitation.brideName}
         </h1>
         <p className="text-sm mt-4 mb-8" style={{ color: "#8c7d70" }}>
-          {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
+          {formatDateID(invitation.weddingDate)}
         </p>
         <motion.button
           onClick={onOpen}

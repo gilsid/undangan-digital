@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import Section from "@/components/themes/template/Section";
+import { formatParents, getParentsInfo } from "@/hooks/useThemeCommon";
 import type { Invitation } from "@prisma/client";
 
 interface Props {
@@ -21,12 +22,7 @@ const C = {
 
 export default function TropicalCoupleSection({ invitation }: Props) {
   const reduce = useReducedMotion();
-  const parents = invitation.parentsInfo as {
-    groomFather?: string;
-    groomMother?: string;
-    brideFather?: string;
-    brideMother?: string;
-  } | null;
+  const parents = getParentsInfo(invitation.parentsInfo);
 
   return (
     <Section className="py-16 px-6" style={{ background: "#ffffff" }}>
@@ -55,9 +51,7 @@ export default function TropicalCoupleSection({ invitation }: Props) {
               {invitation.groomName}
             </p>
             <p className="text-sm mt-2" style={{ color: C.sage }}>
-              {parents
-                ? `Putra dari ${parents.groomFather ?? ""}${parents.groomMother ? ` & ${parents.groomMother}` : ""}`
-                : invitation.groomFullName}
+              {formatParents(invitation.parentsInfo, "groom") || invitation.groomFullName}
             </p>
           </Section>
 
@@ -74,9 +68,7 @@ export default function TropicalCoupleSection({ invitation }: Props) {
               {invitation.brideName}
             </p>
             <p className="text-sm mt-2" style={{ color: C.sage }}>
-              {parents
-                ? `Putri dari ${parents.brideFather ?? ""}${parents.brideMother ? ` & ${parents.brideMother}` : ""}`
-                : invitation.brideFullName}
+              {formatParents(invitation.parentsInfo, "bride") || invitation.brideFullName}
             </p>
           </Section>
         </div>

@@ -24,7 +24,7 @@ export const bohoConfig: ThemeConfig = {
     couple: "circular-gold",
     event: "rounded-cards",
     countdown: "vertical-stack",
-    gallery: "rounded-grid",
+    gallery: "masonry-columns",
   },
   decorations: {
     sectionDivider: "gold-line",

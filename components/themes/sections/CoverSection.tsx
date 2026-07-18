@@ -1,8 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
+import { formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -12,11 +14,11 @@ interface Props {
 
 function useCoverAnim() {
   const reduce = useReducedMotion();
-  const container: Variants = reduce ? {} : {
+  const container: Variants = reduce ? { hidden: {}, visible: {} } : {
     hidden: {},
     visible: { transition: { staggerChildren: 0.15 } },
   };
-  const child: Variants = reduce ? {} : {
+  const child: Variants = reduce ? { hidden: {}, visible: {} } : {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
@@ -73,9 +75,7 @@ function CenteredCover({ invitation, guestName, onOpen }: Props) {
           {invitation.brideName}
         </motion.h1>
         <motion.p variants={child} className="text-white/70 text-sm mt-4 mb-10">
-          {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-            day: "numeric", month: "long", year: "numeric",
-          })}
+          {formatDateID(invitation.weddingDate)}
         </motion.p>
         <motion.button
           variants={child}
@@ -154,9 +154,7 @@ function CardCenteredCover({ invitation, guestName, onOpen }: Props) {
           {invitation.brideName}
         </motion.h1>
         <motion.p variants={child} className="text-xs mt-4 mb-8 font-medium tracking-wide" style={{ color: `${colors.text}80` }}>
-          {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-            day: "numeric", month: "long", year: "numeric",
-          })}
+          {formatDateID(invitation.weddingDate)}
         </motion.p>
         <motion.button
           variants={child}
@@ -177,7 +175,7 @@ function FramedCover({ invitation, guestName, onOpen }: Props) {
   const config = useThemeConfig();
   const { colors, fonts } = config;
   const { container, child, btnHover, btnTap } = useCoverAnim();
-  const upChild: Variants = useReducedMotion() ? {} : {
+  const upChild: Variants = useReducedMotion() ? { hidden: {}, visible: {} } : {
     hidden: { opacity: 0, y: 24 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
@@ -206,9 +204,7 @@ function FramedCover({ invitation, guestName, onOpen }: Props) {
             {invitation.brideName}
           </h1>
           <p className="text-sm tracking-widest uppercase mt-6" style={{ color: colors.textMuted }}>
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
         </motion.div>
         <motion.div variants={upChild} className="space-y-6">

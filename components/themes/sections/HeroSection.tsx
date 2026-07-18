@@ -1,26 +1,20 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
+import { fadeUpVariant, formatDateID } from "@/hooks/useThemeCommon";
+import type { Variants } from "framer-motion";
 
 interface Props {
   invitation: Invitation;
 }
 
-function staggerContainer(reduce: boolean | null, staggerDelay = 0.2): Variants {
-  if (reduce) return {};
+function staggerContainer(reduce: boolean | null, staggerDelay = 0.2) {
+  if (reduce) return { hidden: {}, visible: {} };
   return {
     hidden: {},
     visible: { transition: { staggerChildren: staggerDelay } },
-  };
-}
-
-function fadeUp(reduce: boolean | null): Variants {
-  if (reduce) return {};
-  return {
-    hidden: { opacity: 0, y: 24 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
   };
 }
 
@@ -30,7 +24,7 @@ function CenteredDividerHero({ invitation }: Props) {
   const { colors, fonts } = config;
 
   const wrap = staggerContainer(reduce);
-  const item = fadeUp(reduce);
+  const item = fadeUpVariant(reduce);
 
   return (
     <section
@@ -67,9 +61,7 @@ function CenteredDividerHero({ invitation }: Props) {
         <motion.div variants={item} className="mt-6 flex items-center justify-center gap-3">
           <div className="h-px w-12" style={{ background: `${colors.accent}80` }} />
           <p className="text-white/80 text-sm">
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long", day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
           <div className="h-px w-12" style={{ background: `${colors.accent}80` }} />
         </motion.div>
@@ -94,7 +86,7 @@ function BackdropCardHero({ invitation }: Props) {
   const { colors, fonts } = config;
 
   const wrap = staggerContainer(reduce);
-  const item = fadeUp(reduce);
+  const item = fadeUpVariant(reduce);
 
   return (
     <section
@@ -133,9 +125,7 @@ function BackdropCardHero({ invitation }: Props) {
         <motion.div variants={item} className="mt-6 flex items-center justify-center gap-3">
           <div className="h-px w-8" style={{ background: `${colors.bg}99` }} />
           <p className="text-white text-sm font-medium tracking-wider">
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long", day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
           <div className="h-px w-8" style={{ background: `${colors.bg}99` }} />
         </motion.div>
@@ -197,9 +187,7 @@ function EditorialThreeRowHero({ invitation }: Props) {
         <div>
           <p className="font-medium" style={{ color: colors.text }}>Save The Date</p>
           <p className="mt-1">
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long", day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
         </div>
         <div className="flex gap-2 items-center">

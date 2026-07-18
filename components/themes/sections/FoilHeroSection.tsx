@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import Section from "@/components/themes/template/Section";
+import { childVariant, formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -11,12 +12,7 @@ interface Props {
 export default function FoilHeroSection({ invitation }: Props) {
   const reduce = useReducedMotion();
 
-  const childVariants: Variants = reduce
-    ? { hidden: {}, visible: {} }
-    : {
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
-      };
+  const childVariants = childVariant(reduce, 30, 0.8);
 
   return (
     <section
@@ -82,12 +78,7 @@ export default function FoilHeroSection({ invitation }: Props) {
         >
           <div className="h-px w-12" style={{ background: "var(--foil-gold)", opacity: 0.4 }} />
           <p className="text-[var(--text-secondary)] text-sm" style={{ fontFamily: "var(--font-mono)" }}>
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
           <div className="h-px w-12" style={{ background: "var(--foil-gold)", opacity: 0.4 }} />
         </motion.div>

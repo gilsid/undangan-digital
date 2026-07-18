@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import Section from "@/components/themes/template/Section";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
+import { formatParents } from "@/hooks/useThemeCommon";
 import type { Invitation } from "@prisma/client";
 
 interface Props {
@@ -55,9 +56,7 @@ function CircularGold({ invitation }: Props) {
               {invitation.groomName}
             </p>
             <p className="text-sm mt-2" style={{ color: colors.textMuted }}>
-              {typeof invitation.parentsInfo === "object" && invitation.parentsInfo !== null
-                ? `Putra dari ${(invitation.parentsInfo as { groomFather?: string; groomMother?: string }).groomFather ?? ""}${(invitation.parentsInfo as { groomFather?: string; groomMother?: string }).groomMother ? ` & ${(invitation.parentsInfo as { groomMother: string }).groomMother}` : ""}`
-                : invitation.groomFullName}
+              {formatParents(invitation.parentsInfo, "groom") || invitation.groomFullName}
             </p>
           </Section>
 
@@ -76,9 +75,7 @@ function CircularGold({ invitation }: Props) {
               {invitation.brideName}
             </p>
             <p className="text-sm mt-2" style={{ color: colors.textMuted }}>
-              {typeof invitation.parentsInfo === "object" && invitation.parentsInfo !== null
-                ? `Putri dari ${(invitation.parentsInfo as { brideFather?: string; brideMother?: string }).brideFather ?? ""}${(invitation.parentsInfo as { brideFather?: string; brideMother?: string }).brideMother ? ` & ${(invitation.parentsInfo as { brideMother: string }).brideMother}` : ""}`
-                : invitation.brideFullName}
+              {formatParents(invitation.parentsInfo, "bride") || invitation.brideFullName}
             </p>
           </Section>
         </div>
@@ -120,9 +117,7 @@ function CircularWhiteShadow({ invitation }: Props) {
               {invitation.groomName}
             </p>
             <p className="text-sm mt-2" style={{ color: colors.textMuted }}>
-              {typeof invitation.parentsInfo === "object" && invitation.parentsInfo !== null
-                ? `Putra dari ${(invitation.parentsInfo as { groomFather?: string; groomMother?: string }).groomFather ?? ""}${(invitation.parentsInfo as { groomFather?: string; groomMother?: string }).groomMother ? ` & ${(invitation.parentsInfo as { groomMother: string }).groomMother}` : ""}`
-                : invitation.groomFullName}
+              {formatParents(invitation.parentsInfo, "groom") || invitation.groomFullName}
             </p>
           </Section>
 
@@ -141,9 +136,7 @@ function CircularWhiteShadow({ invitation }: Props) {
               {invitation.brideName}
             </p>
             <p className="text-sm mt-2" style={{ color: colors.textMuted }}>
-              {typeof invitation.parentsInfo === "object" && invitation.parentsInfo !== null
-                ? `Putri dari ${(invitation.parentsInfo as { brideFather?: string; brideMother?: string }).brideFather ?? ""}${(invitation.parentsInfo as { brideFather?: string; brideMother?: string }).brideMother ? ` & ${(invitation.parentsInfo as { brideMother: string }).brideMother}` : ""}`
-                : invitation.brideFullName}
+              {formatParents(invitation.parentsInfo, "bride") || invitation.brideFullName}
             </p>
           </Section>
         </div>
@@ -187,9 +180,7 @@ function SquareGrayscale({ invitation }: Props) {
               {invitation.groomName}
             </p>
             <p className="text-xs mt-2" style={{ color: colors.textMuted }}>
-              Son of {typeof invitation.parentsInfo === "object" && invitation.parentsInfo !== null
-                ? (invitation.parentsInfo as { groomFather?: string }).groomFather ?? invitation.groomFullName ?? ""
-                : invitation.groomFullName ?? ""}
+              {formatParents(invitation.parentsInfo, "groom", "en") || invitation.groomFullName}
             </p>
           </Section>
 
@@ -210,9 +201,7 @@ function SquareGrayscale({ invitation }: Props) {
               {invitation.brideName}
             </p>
             <p className="text-xs mt-2" style={{ color: colors.textMuted }}>
-              Daughter of {typeof invitation.parentsInfo === "object" && invitation.parentsInfo !== null
-                ? (invitation.parentsInfo as { brideFather?: string }).brideFather ?? invitation.brideFullName ?? ""
-                : invitation.brideFullName ?? ""}
+              {formatParents(invitation.parentsInfo, "bride", "en") || invitation.brideFullName}
             </p>
           </Section>
         </div>

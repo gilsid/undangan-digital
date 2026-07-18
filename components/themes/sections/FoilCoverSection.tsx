@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import { BlueprintCorner, BlueprintCornerOpposite } from "@/components/themes/shared/BlueprintCorner";
+import { formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -53,11 +54,7 @@ export default function FoilCoverSection({ invitation, guestName, onOpen }: Prop
           {invitation.brideName}
         </h1>
         <p className="text-[var(--text-secondary)] text-sm mt-4 mb-8" style={{ fontFamily: "var(--font-mono)" }}>
-          {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
+          {formatDateID(invitation.weddingDate)}
         </p>
         <motion.button
           onClick={onOpen}

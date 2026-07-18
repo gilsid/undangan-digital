@@ -5,16 +5,16 @@ import ThemeLayout from "@/components/themes/template/ThemeLayout";
 import { bohoConfig } from "@/components/themes/config/boho";
 import BohoCoverSection from "@/components/themes/sections/BohoCoverSection";
 import BohoHeroSection from "@/components/themes/sections/BohoHeroSection";
-import BohoQuoteSection from "@/components/themes/sections/BohoQuoteSection";
+import QuoteSection from "@/components/themes/sections/QuoteSection";
 import BohoCoupleSection from "@/components/themes/sections/BohoCoupleSection";
 import BohoEventSection from "@/components/themes/sections/BohoEventSection";
-import BohoLoveStorySection from "@/components/themes/sections/BohoLoveStorySection";
-import BohoGallerySection from "@/components/themes/sections/BohoGallerySection";
-import BohoCountdownSection from "@/components/themes/sections/BohoCountdownSection";
-import BohoRSVPSection from "@/components/themes/sections/BohoRSVPSection";
-import BohoGiftSection from "@/components/themes/sections/BohoGiftSection";
+import LoveStorySection from "@/components/themes/sections/LoveStorySection";
+import GallerySection from "@/components/themes/sections/GallerySection";
+import CountdownSection from "@/components/themes/sections/CountdownSection";
+import RSVPSection from "@/components/themes/sections/RSVPSection";
+import GiftSection from "@/components/themes/sections/GiftSection";
 import BohoWishesSection from "@/components/themes/sections/BohoWishesSection";
-import BohoFooterSection from "@/components/themes/sections/BohoFooterSection";
+import FooterSection from "@/components/themes/sections/FooterSection";
 
 interface Props {
   invitation: Invitation;
@@ -30,16 +30,16 @@ export default function BohoTheme({ invitation, guestName, wishes }: Props) {
       cover={<BohoCoverSection invitation={invitation} guestName={guestName} />}
     >
       <BohoHeroSection invitation={invitation} />
-      <BohoQuoteSection invitation={invitation} />
+      <QuoteSection invitation={invitation} />
       <BohoCoupleSection invitation={invitation} />
       <BohoEventSection invitation={invitation} />
-      <BohoLoveStorySection invitation={invitation} />
-      <BohoGallerySection invitation={invitation} />
-      <BohoCountdownSection invitation={invitation} />
-      <BohoRSVPSection invitation={invitation} guestName={guestName} />
-      <BohoGiftSection invitation={invitation} />
+      <LoveStorySection invitation={invitation} />
+      <GallerySection invitation={invitation} />
+      <CountdownSection invitation={invitation} />
+      <RSVPSection invitation={invitation} guestName={guestName} />
+      <GiftSection invitation={invitation} />
       <BohoWishesSection invitation={invitation} initialWishes={wishes} />
-      <BohoFooterSection invitation={invitation} />
+      <FooterSection invitation={invitation} />
     </ThemeLayout>
   );
 }
