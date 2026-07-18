@@ -93,41 +93,42 @@ export default function QuoteSection({ invitation }: Props) {
   const springChild = childSpringConfigVariant(reduce, 80, 15, 20);
 
   return (
-    <Section
-      direction="up"
-      stagger
-      staggerDelay={0.15}
-      className="py-16 px-6 text-center max-w-2xl mx-auto"
-      style={{ background: v.bg }}
-    >
-      <motion.div variants={fadeChild}>
-        <div
-          className={`h-px w-16 mx-auto ${v.topDividerMargin}`}
-          style={{ background: v.dividerColor, opacity: v.dividerOpacity }}
-        />
-      </motion.div>
-      <motion.p
-        variants={springChild}
-        className={v.textClassName}
-        style={{ fontFamily: config.fonts.display, color: v.textColor }}
+    <section style={{ background: v.bg }}>
+      <Section
+        direction="up"
+        stagger
+        staggerDelay={0.15}
+        className="py-16 px-6 text-center max-w-2xl mx-auto"
       >
-        &ldquo;{invitation.quoteText}&rdquo;
-      </motion.p>
-      {invitation.quoteSource && (
+        <motion.div variants={fadeChild}>
+          <div
+            className={`h-px w-16 mx-auto ${v.topDividerMargin}`}
+            style={{ background: v.dividerColor, opacity: v.dividerOpacity }}
+          />
+        </motion.div>
         <motion.p
-          variants={fadeChild}
-          className="mt-4 text-sm"
-          style={{ color: v.sourceColor, opacity: v.sourceOpacity }}
+          variants={springChild}
+          className={v.textClassName}
+          style={{ fontFamily: config.fonts.display, color: v.textColor }}
         >
-          &mdash; {invitation.quoteSource}
+          &ldquo;{invitation.quoteText}&rdquo;
         </motion.p>
-      )}
-      <motion.div variants={fadeChild}>
-        <div
-          className={`h-px w-16 mx-auto ${v.bottomDividerMargin}`}
-          style={{ background: v.dividerColor, opacity: v.dividerOpacity }}
-        />
-      </motion.div>
-    </Section>
+        {invitation.quoteSource && (
+          <motion.p
+            variants={fadeChild}
+            className="mt-4 text-sm"
+            style={{ color: v.sourceColor, opacity: v.sourceOpacity }}
+          >
+            &mdash; {invitation.quoteSource}
+          </motion.p>
+        )}
+        <motion.div variants={fadeChild}>
+          <div
+            className={`h-px w-16 mx-auto ${v.bottomDividerMargin}`}
+            style={{ background: v.dividerColor, opacity: v.dividerOpacity }}
+          />
+        </motion.div>
+      </Section>
+    </section>
   );
 }
