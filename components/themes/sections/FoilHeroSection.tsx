@@ -20,7 +20,7 @@ export default function FoilHeroSection({ invitation }: Props) {
       style={{
         background: invitation.heroImage
           ? `linear-gradient(rgba(18,21,28,0.6), rgba(18,21,28,0.8)), url(${invitation.heroImage}) center/cover no-repeat`
-          : "#12151c",
+          : `linear-gradient(rgba(18,21,28,0.6), rgba(18,21,28,0.8)), url(/placeholders/hero.png) center/cover no-repeat`,
       }}
     >
       <div

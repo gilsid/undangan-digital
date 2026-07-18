@@ -18,9 +18,7 @@ export default function FoilCoverSection({ invitation, guestName, onOpen }: Prop
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(18,21,28,0.7), rgba(18,21,28,0.85)), url(${invitation.heroImage}) center/cover no-repeat`
-          : "#12151c",
+        background: `linear-gradient(rgba(18,21,28,0.7), rgba(18,21,28,0.85)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <motion.div

@@ -30,9 +30,7 @@ function CenteredDividerHero({ invitation }: Props) {
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(44,44,44,0.45), rgba(44,44,44,0.6)), url(${invitation.heroImage}) center/cover no-repeat`
-          : `linear-gradient(160deg, ${colors.secondary} 0%, ${colors.dark} 100%)`,
+        background: `linear-gradient(rgba(44,44,44,0.45), rgba(44,44,44,0.6)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <motion.div
@@ -92,9 +90,7 @@ function BackdropCardHero({ invitation }: Props) {
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(62,57,53,0.35), rgba(62,57,53,0.5)), url(${invitation.heroImage}) center/cover no-repeat`
-          : `linear-gradient(160deg, ${colors.secondary} 0%, ${colors.dark} 100%)`,
+        background: `linear-gradient(rgba(62,57,53,0.35), rgba(62,57,53,0.5)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <motion.div
@@ -140,7 +136,10 @@ function EditorialThreeRowHero({ invitation }: Props) {
   const { colors, fonts } = config;
 
   return (
-    <section className="min-h-screen flex flex-col justify-between p-8 md:p-16" style={{ background: colors.bg, borderBottom: `1px solid ${colors.border}` }}>
+    <section className="min-h-screen flex flex-col justify-between p-8 md:p-16" style={{
+      background: `linear-gradient(rgba(252,248,240,0.92), rgba(252,248,240,0.92)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
+      borderBottom: `1px solid ${colors.border}`,
+    }}>
       <div className="w-full flex justify-between items-start text-xs uppercase tracking-widest" style={{ color: colors.textMuted }}>
         <span>{invitation.groomName} &amp; {invitation.brideName}</span>
         <span>{new Date(invitation.weddingDate).getFullYear()}</span>

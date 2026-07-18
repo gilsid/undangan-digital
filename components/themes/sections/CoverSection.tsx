@@ -36,9 +36,7 @@ function CenteredCover({ invitation, guestName, onOpen }: Props) {
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(44,44,44,0.55), rgba(44,44,44,0.55)), url(${invitation.heroImage}) center/cover no-repeat`
-          : `linear-gradient(135deg, ${colors.secondary} 0%, ${colors.dark} 100%)`,
+        background: `linear-gradient(rgba(44,44,44,0.55), rgba(44,44,44,0.55)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <motion.div
@@ -106,9 +104,7 @@ function CardCenteredCover({ invitation, guestName, onOpen }: Props) {
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative overflow-hidden"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(62,57,53,0.5), rgba(62,57,53,0.5)), url(${invitation.heroImage}) center/cover no-repeat`
-          : `linear-gradient(135deg, ${colors.secondary} 0%, ${colors.dark} 100%)`,
+        background: `linear-gradient(rgba(62,57,53,0.5), rgba(62,57,53,0.5)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <div className="absolute inset-0 bg-[radial-gradient(#c2593f0a_1px,transparent_1px)] [background-size:16px_16px]" />
@@ -181,7 +177,9 @@ function FramedCover({ invitation, guestName, onOpen }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-between p-8 text-left relative">
+    <div className="min-h-screen flex flex-col justify-between p-8 text-left relative" style={{
+      background: `linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
+    }}>
       <motion.div
         variants={container}
         initial="hidden"

@@ -17,9 +17,7 @@ export default function BohoCoverSection({ invitation, guestName, onOpen }: Prop
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(61,50,43,0.55), rgba(61,50,43,0.55)), url(${invitation.heroImage}) center/cover no-repeat`
-          : "#faf5ed"
+        background: `linear-gradient(rgba(61,50,43,0.55), rgba(61,50,43,0.55)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       {/* Mandala ring SVG decor */}

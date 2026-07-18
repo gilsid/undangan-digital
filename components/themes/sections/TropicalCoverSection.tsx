@@ -45,9 +45,7 @@ export default function TropicalCoverSection({ invitation, guestName, onOpen }: 
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative overflow-hidden"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(42,66,49,0.5), rgba(42,66,49,0.5)), url(${invitation.heroImage}) center/cover no-repeat`
-          : C.bg
+        background: `linear-gradient(rgba(42,66,49,0.5), rgba(42,66,49,0.5)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <LeafDecor />

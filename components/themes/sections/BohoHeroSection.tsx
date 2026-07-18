@@ -23,7 +23,7 @@ export default function BohoHeroSection({ invitation }: Props) {
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #faf5ed 0%, #fdf9f2 100%)",
+        background: `linear-gradient(rgba(250,245,237,0.92), rgba(253,249,242,0.95)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <Section

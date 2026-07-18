@@ -26,7 +26,7 @@ export default function TropicalHeroSection({ invitation }: Props) {
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden"
       style={{
-        background: `linear-gradient(180deg, ${C.bg} 0%, #ffffff 100%)`,
+        background: `linear-gradient(rgba(247,245,239,0.92), rgba(255,255,255,0.95)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <div
