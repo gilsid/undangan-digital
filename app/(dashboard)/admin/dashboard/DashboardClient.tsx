@@ -397,7 +397,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                     label="Foto Hero / Latar Belakang"
                     value={form.heroImage}
                     folder={`undangan-digital/${invitation.slug}`}
-                    onChange={(url) => setForm((p) => ({ ...p, heroImage: url }))}
+                    onChange={(url) => setForm((p) => ({ ...p, heroImage: url ?? "" }))}
                   />
                   {form.heroImage?.startsWith("/placeholders/") && (
                     <Badge variant="outline" className="mt-1 bg-[var(--status-warning)]/15 text-[var(--status-warning)] border-[var(--status-warning)]/30 w-fit">
@@ -412,7 +412,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                     value={form.groomImage}
                     folder={`undangan-digital/${invitation.slug}`}
                     aspectRatio="square"
-                    onChange={(url) => setForm((p) => ({ ...p, groomImage: url }))}
+                    onChange={(url) => setForm((p) => ({ ...p, groomImage: url ?? "" }))}
                   />
                   {form.groomImage?.startsWith("/placeholders/") && (
                     <Badge variant="outline" className="mt-1 bg-[var(--status-warning)]/15 text-[var(--status-warning)] border-[var(--status-warning)]/30 w-fit">
@@ -453,7 +453,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                     accept="audio/mpeg,audio/mp3,audio/wav"
                     folder={`undangan-digital/${invitation.slug}`}
                     hint="MP3, maksimal 5MB"
-                    onChange={(url) => setForm((p) => ({ ...p, musicUrl: url }))}
+                    onChange={(url) => setForm((p) => ({ ...p, musicUrl: url ?? "" }))}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
