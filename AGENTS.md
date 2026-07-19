@@ -55,7 +55,14 @@ User, Invitation (owner FK→User), Guest (FK→Invitation), Rsvp (FK→Invitati
 <!-- BEGIN:workflow -->
 ## Git workflow (Wajib!)
 - **GitHub Flow:** `main` = production. Setiap kerja bikin branch baru dari `main`.
-- Saat user bilang "kerjain X" / "bikin Y": `git checkout main && git pull && git checkout -b feat/<nama>` otomatis.
+- Saat user bilang "kerjain X" / "bikin Y": `git checkout main && git pull && git checkout -b <tipe>/<nama>` otomatis.
+  - Tipe branch sesuai konteks:
+    - `feat/` — fitur baru
+    - `fix/` — perbaikan bug
+    - `refactor/` — refaktor kode
+    - `docs/` — dokumentasi
+    - `chore/` — maintenance, config, dependency
+    - `style/` — styling, UI (bukan logika)
 - Selesai → push + buat PR ke `main`. Jangan merge sendiri. Delete branch setelah merge.
 - `dev` branch udah ga dipake. Pakai `main` sebagai base.
 <!-- END:workflow -->
