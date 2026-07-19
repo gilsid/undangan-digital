@@ -1,26 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { v2 as cloudinary } from "cloudinary";
 import { isRateLimited } from "@/lib/rateLimit";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
-const USE_R2 = !!(process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY && process.env.R2_BUCKET_NAME && process.env.R2_PUBLIC_URL);
 
-// Lazy init — avoid crash when env missing
-function getR2Client(): S3Client | null {
-  if (!USE_R2) return null;
-  return new S3Client({
-    region: "auto",
-    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-    },
-  });
-}
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -42,28 +32,15 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-    const key = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const b64 = buffer.toString("base64");
+    const dataUri = `data:${file.type};base64,${b64}`;
 
-    // ── R2 path ──
-    if (USE_R2) {
-      const r2 = getR2Client()!;
-      await r2.send(
-        new PutObjectCommand({
-          Bucket: process.env.R2_BUCKET_NAME!,
-          Key: key,
-          Body: buffer,
-          ContentType: file.type,
-        })
-      );
-      return NextResponse.json({ url: `${process.env.R2_PUBLIC_URL}/${key}` });
-    }
+    const result = await cloudinary.uploader.upload(dataUri, {
+      folder: "undangan-digital",
+      resource_type: "image",
+    });
 
-    // ── Local fallback (dev mode) ──
-    const publicDir = path.join(process.cwd(), "public", key);
-    await mkdir(path.dirname(publicDir), { recursive: true });
-    await writeFile(publicDir, buffer);
-    return NextResponse.json({ url: `/${key}` });
+    return NextResponse.json({ url: result.secure_url });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Gagal mengunggah file" }, { status: 500 });
