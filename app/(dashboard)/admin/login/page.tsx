@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -37,11 +35,11 @@ export default function LoginPage() {
       setError("Email atau password salah.");
       setLoading(false);
     } else {
-      const session = await getSession();
-      if (session?.user?.role === "SUPERADMIN") {
-        router.push("/superadmin");
+      // Full reload biar cookie session ter-set sebelum navigasi — prevent middleware cookie race
+      if ((await getSession())?.user?.role === "SUPERADMIN") {
+        window.location.href = "/superadmin";
       } else {
-        router.push("/admin/dashboard");
+        window.location.href = "/admin/dashboard";
       }
     }
   }
