@@ -42,7 +42,9 @@ export default function LoveStorySection({ invitation }: Props) {
     bodyVariant = childSpringConfigVariant(reduce, 80, 15, 24);
   }
 
-  // ── Elegant path (different DOM structure: flat container with inline stagger) ──
+  const timelineColor = isFoil ? "rgba(216,185,120,0.25)" : isElegant ? colors.secondary : colors.accent;
+
+  // ── Elegant path ──
   if (isElegant) {
     const container: Variants = (reduce ? {} : {
       hidden: {},
@@ -52,35 +54,43 @@ export default function LoveStorySection({ invitation }: Props) {
     return (
       <Section className="py-16 px-6">
         <motion.div
-          className="max-w-2xl mx-auto text-center"
+          className="max-w-2xl mx-auto"
           variants={container}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <motion.p variants={subtitleHeadingVariant} className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: colors.secondary }}>
-            Our Story
-          </motion.p>
-          <motion.h2
-            variants={subtitleHeadingVariant}
-            className="text-3xl font-light mb-8"
-            style={{ fontFamily: fonts.display, color: colors.secondary }}
-          >
-            Cerita Kita
-          </motion.h2>
-          <motion.p
-            variants={bodyVariant}
-            className="leading-relaxed whitespace-pre-line"
-            style={{ color: colors.textMuted }}
-          >
-            {invitation.loveStory}
-          </motion.p>
+          <div className="text-center mb-10">
+            <motion.p variants={subtitleHeadingVariant} className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: colors.secondary }}>
+              Our Story
+            </motion.p>
+            <motion.h2
+              variants={subtitleHeadingVariant}
+              className="text-3xl font-light"
+              style={{ fontFamily: fonts.display, color: colors.secondary }}
+            >
+              Cerita Kita
+            </motion.h2>
+          </div>
+          <div className="relative pl-8 border-l-2" style={{ borderColor: timelineColor }}>
+            <div
+              className="absolute left-0 top-1 w-3 h-3 rounded-full -translate-x-[7px]"
+              style={{ background: timelineColor }}
+            />
+            <motion.p
+              variants={bodyVariant}
+              className="leading-relaxed whitespace-pre-line"
+              style={{ color: colors.textMuted }}
+            >
+              {invitation.loveStory}
+            </motion.p>
+          </div>
         </motion.div>
       </Section>
     );
   }
 
-  // ── Boho / Foil path (shared structure: outer section, Section stagger, mb-10 wrapper) ──
+  // ── Boho / Foil path ──
   return (
     <section className="py-16 px-6" style={{ background: isFoil ? "#171b23" : colors.surface }}>
       <Section direction="up" stagger staggerDelay={0.15} className="max-w-2xl mx-auto">
@@ -105,13 +115,19 @@ export default function LoveStorySection({ invitation }: Props) {
             Cerita Kita
           </motion.h2>
         </div>
-        <motion.p
-          variants={bodyVariant}
-          className="leading-relaxed whitespace-pre-line"
-          style={{ color: isFoil ? colors.secondary : colors.textMuted }}
-        >
-          {invitation.loveStory}
-        </motion.p>
+        <div className="relative pl-8 border-l-2" style={{ borderColor: timelineColor }}>
+          <div
+            className="absolute left-0 top-1 w-3 h-3 rounded-full -translate-x-[7px]"
+            style={{ background: timelineColor }}
+          />
+          <motion.p
+            variants={bodyVariant}
+            className="leading-relaxed whitespace-pre-line"
+            style={{ color: isFoil ? colors.secondary : colors.textMuted }}
+          >
+            {invitation.loveStory}
+          </motion.p>
+        </div>
       </Section>
     </section>
   );

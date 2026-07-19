@@ -73,6 +73,7 @@ export default function GallerySection({ invitation }: Props) {
   // ── Masonry columns (Boho/Foil/Tropical) ──
   if (variant === "masonry-columns") {
     const t = getGalleryTheme(id);
+    const colClass = gallery.length <= 4 ? "columns-2" : "columns-2 md:columns-3";
 
     return (
       <section className="py-16 px-6" style={{ background: id === "boho" ? "#faf5ed" : id === "foil-blueprint" ? "#12151c" : colors.bg }}>
@@ -87,7 +88,7 @@ export default function GallerySection({ invitation }: Props) {
             Galeri Foto
           </h2>
         </Section>
-        <div className="max-w-4xl mx-auto columns-2 md:columns-3 gap-3 space-y-3">
+        <div className={`max-w-4xl mx-auto ${colClass} gap-3 space-y-3`}>
           {gallery.map((url, i) => (
             <motion.div
               key={i}
@@ -95,14 +96,14 @@ export default function GallerySection({ invitation }: Props) {
               whileInView={reduce ? {} : { opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05, duration: 0.5 }}
-              className="overflow-hidden rounded-lg transition-all duration-500 cursor-pointer"
-              style={{ border: `1px solid ${t.itemBorder}` }}
+              className="overflow-hidden rounded-lg transition-all duration-500 cursor-pointer break-inside-avoid"
+              style={{ border: `1px solid ${t.itemBorder}`, marginBottom: "0.75rem" }}
               onClick={() => setLightboxIdx(i)}
             >
               <motion.img
                 src={url}
                 alt={`Foto ${i + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-auto"
                 whileHover={reduce ? {} : { scale: 1.03 }}
                 transition={{ duration: 0.4 }}
               />
@@ -157,11 +158,11 @@ export default function GallerySection({ invitation }: Props) {
     );
   }
 
-  // ── Elegant grid variants ──
+  // ── Elegant grid variants (CSS Columns — inline gap via style biar Turbopack detect) ──
   let bg: string;
-  let gridCols: string;
+  let cols: string;
   let rounded: string;
-  let gap: string;
+  let gapPx: number;
   let shadow: string;
   let hoverScale: number;
   let grayscale: boolean;
@@ -169,36 +170,36 @@ export default function GallerySection({ invitation }: Props) {
   switch (variant) {
     case "rounded-grid":
       bg = colors.surface;
-      gridCols = "grid-cols-2 md:grid-cols-3";
+      cols = "columns-2 md:columns-3";
       rounded = "rounded-xl";
-      gap = "gap-3";
+      gapPx = 12;
       shadow = "";
       hoverScale = 1.05;
       grayscale = false;
       break;
     case "rounded-shadow-grid":
       bg = "#f4ece1";
-      gridCols = "grid-cols-2 md:grid-cols-3";
+      cols = "columns-2 md:columns-3";
       rounded = "rounded-2xl";
-      gap = "gap-4";
+      gapPx = 16;
       shadow = "shadow-md";
       hoverScale = 1.04;
       grayscale = false;
       break;
     case "grayscale-grid":
       bg = colors.bg;
-      gridCols = "grid-cols-2 md:grid-cols-4";
+      cols = "columns-2 md:columns-4";
       rounded = "";
-      gap = "gap-2";
+      gapPx = 8;
       shadow = "";
       hoverScale = 1;
       grayscale = true;
       break;
     default:
       bg = colors.surface;
-      gridCols = "grid-cols-2 md:grid-cols-3";
+      cols = "columns-2 md:columns-3";
       rounded = "rounded-xl";
-      gap = "gap-3";
+      gapPx = 12;
       shadow = "";
       hoverScale = 1.05;
       grayscale = false;
@@ -214,12 +215,12 @@ export default function GallerySection({ invitation }: Props) {
           Galeri Foto
         </h2>
       </Section>
-      <div className={`max-w-4xl mx-auto grid ${gridCols} ${gap}`}>
+      <div className={`max-w-4xl mx-auto ${cols}`} style={{ columnGap: gapPx }}>
         {gallery.map((url, i) => (
           <Section key={i} delay={i * 0.07}>
             <motion.div
-              className={`aspect-square overflow-hidden ${rounded} ${shadow} cursor-pointer`}
-              style={grayscale ? { filter: "grayscale(1)", transition: "filter 0.4s" } : {}}
+              className={`overflow-hidden break-inside-avoid ${rounded} ${shadow} cursor-pointer`}
+              style={{ marginBottom: gapPx, filter: grayscale ? "grayscale(1)" : "none", transition: "filter 0.4s" }}
               onMouseEnter={(e) => {
                 if (grayscale) (e.currentTarget as HTMLElement).style.filter = "grayscale(0)";
               }}
@@ -231,7 +232,7 @@ export default function GallerySection({ invitation }: Props) {
               <motion.img
                 src={url}
                 alt={`Foto ${i + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-auto object-cover"
                 whileHover={reduce || grayscale ? {} : { scale: hoverScale }}
                 transition={{ duration: 0.4 }}
               />
