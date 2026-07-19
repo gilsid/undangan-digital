@@ -48,6 +48,9 @@ next-env.d.ts
 
 /app/generated/prisma
 
+# local uploads (dev mode)
+/public/uploads/
+
 # sensitive / deploy docs
 neon.txt
 tutorial-deploy-vercel.md
