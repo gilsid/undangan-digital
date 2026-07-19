@@ -1,12 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import Section from "@/components/themes/template/Section";
-
-interface Props {
-  invitation: Invitation;
-}
+import { formatDateID } from "@/hooks/useThemeCommon";
 
 const C = {
   bg: "#f7f5ef",
@@ -18,21 +15,18 @@ const C = {
   border: "#d6e2d4",
 };
 
+interface Props {
+  invitation: Invitation;
+}
+
 export default function TropicalHeroSection({ invitation }: Props) {
   const reduce = useReducedMotion();
-
-  const childVariants: Variants = reduce
-    ? { hidden: {}, visible: {} }
-    : {
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.4, 0.3, 1] as const } },
-      };
 
   return (
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden"
       style={{
-        background: `linear-gradient(180deg, ${C.bg} 0%, #ffffff 100%)`,
+        background: `linear-gradient(rgba(247,245,239,0.92), rgba(255,255,255,0.95)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <div
@@ -103,9 +97,7 @@ export default function TropicalHeroSection({ invitation }: Props) {
         >
           <div className="h-px w-12" style={{ background: C.sage }} />
           <p className="text-sm" style={{ color: C.sage }}>
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long", day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
           <div className="h-px w-12" style={{ background: C.sage }} />
         </motion.div>

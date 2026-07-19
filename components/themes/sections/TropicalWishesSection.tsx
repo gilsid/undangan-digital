@@ -1,14 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
 import Section from "@/components/themes/template/Section";
-
-interface Props {
-  invitation: Invitation;
-  initialWishes: Wish[];
-}
+import { useWish, childEasedVariant, formatDateID } from "@/hooks/useThemeCommon";
 
 const C = {
   bg: "#f7f5ef",
@@ -20,40 +16,24 @@ const C = {
   border: "#d6e2d4",
 };
 
+interface Props {
+  invitation: Invitation;
+  initialWishes: Wish[];
+}
+
 export default function TropicalWishesSection({ invitation, initialWishes }: Props) {
-  const [wishName, setWishName] = useState("");
-  const [wishMsg, setWishMsg] = useState("");
   const [wishes, setWishes] = useState<Wish[]>(initialWishes);
-  const [wishSent, setWishSent] = useState(false);
   const [newWishId, setNewWishId] = useState<string | null>(null);
   const reduce = useReducedMotion();
-
-  async function submitWish(e: FormEvent) {
-    e.preventDefault();
-    const res = await fetch("/api/wishes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        invitationId: invitation.id,
-        name: wishName,
-        message: wishMsg,
-      }),
-    });
-    if (res.ok) {
-      const w = await res.json();
-      setWishes((p) => [w, ...p]);
-      setWishName("");
-      setWishMsg("");
-      setWishSent(true);
+  const wish = useWish({
+    onSubmit: (w) => {
+      setWishes((prev) => [w, ...prev]);
       setNewWishId(w.id);
-      setTimeout(() => { setWishSent(false); setNewWishId(null); }, 3000);
-    }
-  }
+      setTimeout(() => setNewWishId(null), 3000);
+    },
+  });
 
-  const childVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  };
+  const childVariants = childEasedVariant(reduce, 0.5);
 
   const wishVariants = {
     hidden: { opacity: 0, y: 10, x: 0 },
@@ -84,14 +64,14 @@ export default function TropicalWishesSection({ invitation, initialWishes }: Pro
         </div>
 
         <div
-          className="rounded-lg p-6 mb-8"
+          className="p-6 rounded-lg mb-8"
           style={{ background: C.surface, border: `1px solid ${C.border}` }}
         >
-          <form onSubmit={submitWish} className="space-y-3">
+          <form onSubmit={(e) => wish.submit(e, invitation.id)} className="space-y-3">
             <motion.div variants={childVariants}>
               <input
-                value={wishName}
-                onChange={(e) => setWishName(e.target.value)}
+                value={wish.name}
+                onChange={(e) => wish.setName(e.target.value)}
                 placeholder="Nama Anda"
                 required
                 className="w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all"
@@ -104,8 +84,8 @@ export default function TropicalWishesSection({ invitation, initialWishes }: Pro
             </motion.div>
             <motion.div variants={childVariants}>
               <textarea
-                value={wishMsg}
-                onChange={(e) => setWishMsg(e.target.value)}
+                value={wish.message}
+                onChange={(e) => wish.setMessage(e.target.value)}
                 placeholder="Tulis ucapan & doa untuk mempelai..."
                 required
                 rows={3}
@@ -122,15 +102,15 @@ export default function TropicalWishesSection({ invitation, initialWishes }: Pro
               variants={childVariants}
               whileHover={reduce ? {} : { scale: 1.01 }}
               whileTap={reduce ? {} : { scale: 0.99 }}
-              className="w-full py-2 rounded-md text-sm transition-all duration-300 hover:opacity-90 text-white"
-              style={{ background: C.emerald }}
+              className="w-full py-2 rounded-md text-sm transition-all duration-300 hover:opacity-90"
+              style={{ background: C.coral, color: "#fff" }}
             >
-              {wishSent ? "Terkirim!" : "Kirim Ucapan"}
+              {wish.sent ? "Terkirim!" : "Kirim Ucapan"}
             </motion.button>
           </form>
         </div>
 
-        <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+        <div className="space-y-4 max-h-80 overflow-y-auto pr-1">
           {wishes.map((w, i) => (
             <motion.div
               key={w.id}
@@ -143,18 +123,14 @@ export default function TropicalWishesSection({ invitation, initialWishes }: Pro
               className="rounded-lg p-4"
               style={{
                 background: C.surface,
-                border: `1px solid ${w.id === newWishId ? C.emerald : C.border}`,
-                transition: w.id === newWishId ? "background-color 2s ease-out" : "none",
+                border: w.id === newWishId ? `1px solid ${C.coral}` : `1px solid ${C.border}`,
+                transition: w.id === newWishId ? "border-color 2s ease-out" : "none",
               }}
             >
               <p className="text-sm font-medium" style={{ color: C.text }}>{w.name}</p>
               <p className="text-sm mt-1" style={{ color: C.sage }}>{w.message}</p>
               <p className="text-xs mt-1" style={{ color: C.sage }}>
-                {new Date(w.createdAt).toLocaleDateString("id-ID", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
+                {formatDateID(w.createdAt)}
               </p>
             </motion.div>
           ))}

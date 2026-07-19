@@ -18,6 +18,7 @@ import { IconBadge } from "@/components/ui/icon-badge";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import UploadField from "@/components/upload/UploadField";
 
 function toLocalISODate(d: Date): string {
   const y = d.getFullYear();
@@ -35,7 +36,6 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [mapsError, setMapsError] = useState("");
   const [confirmUnpublish, setConfirmUnpublish] = useState(false);
@@ -137,25 +137,6 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
 
   function addGalleryItem() {
     setGallery((p) => [...p, ""]);
-  }
-
-  async function uploadFile(file: File): Promise<string | null> {
-    setUploading(true);
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: fd,
-      });
-      if (res.ok) {
-        const d = await res.json();
-        return d.url;
-      }
-      return null;
-    } finally {
-      setUploading(false);
-    }
   }
 
   function removeGalleryItem(index: number) {
@@ -412,37 +393,13 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                 </div>
 
                 <div>
-                  <Label className="text-xs text-[var(--text-muted)] mb-1 block">
-                    Foto Hero / Latar Belakang
-                  </Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      name="heroImage"
-                      value={form.heroImage}
-                      onChange={handleChange}
-                      placeholder="https://..."
-                      className="flex-1"
-                    />
-                    <label className={`cursor-pointer px-3 py-2 text-xs rounded-md border font-medium transition-colors ${uploading ? "opacity-50 pointer-events-none" : "bg-[var(--ink-surface-raised)] hover:bg-[var(--ink-surface-raised)]/80 border-[var(--ink-border)] text-[var(--text-secondary)]"}`}>
-                      {uploading ? "..." : "Upload"}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const url = await uploadFile(file);
-                            if (url) setForm((p) => ({ ...p, heroImage: url }));
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-                  {form.heroImage && (
-                    <Image src={form.heroImage} alt="Hero Preview" width={96} height={64} className="object-cover rounded-lg mt-2 border border-[var(--ink-border)]" unoptimized />
-                  )}
-                  {form.heroImage.startsWith("/placeholders/") && (
+                  <UploadField
+                    label="Foto Hero / Latar Belakang"
+                    value={form.heroImage}
+                    folder={`undangan-digital/${invitation.slug}`}
+                    onChange={(url) => setForm((p) => ({ ...p, heroImage: url ?? "" }))}
+                  />
+                  {form.heroImage?.startsWith("/placeholders/") && (
                     <Badge variant="outline" className="mt-1 bg-[var(--status-warning)]/15 text-[var(--status-warning)] border-[var(--status-warning)]/30 w-fit">
                       Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
                     </Badge>
@@ -450,37 +407,14 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                 </div>
 
                 <div>
-                  <Label className="text-xs text-[var(--text-muted)] mb-1 block">
-                    Foto Profil Pria (Groom)
-                  </Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      name="groomImage"
-                      value={form.groomImage}
-                      onChange={handleChange}
-                      placeholder="https://..."
-                      className="flex-1"
-                    />
-                    <label className={`cursor-pointer px-3 py-2 text-xs rounded-md border font-medium transition-colors ${uploading ? "opacity-50 pointer-events-none" : "bg-[var(--ink-surface-raised)] hover:bg-[var(--ink-surface-raised)]/80 border-[var(--ink-border)] text-[var(--text-secondary)]"}`}>
-                      {uploading ? "..." : "Upload"}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const url = await uploadFile(file);
-                            if (url) setForm((p) => ({ ...p, groomImage: url }));
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-                  {form.groomImage && (
-                    <Image src={form.groomImage} alt="Groom Preview" width={64} height={64} className="object-cover rounded-full mt-2 border border-[var(--ink-border)]" unoptimized />
-                  )}
-                  {form.groomImage.startsWith("/placeholders/") && (
+                  <UploadField
+                    label="Foto Profil Pria (Groom)"
+                    value={form.groomImage}
+                    folder={`undangan-digital/${invitation.slug}`}
+                    aspectRatio="square"
+                    onChange={(url) => setForm((p) => ({ ...p, groomImage: url ?? "" }))}
+                  />
+                  {form.groomImage?.startsWith("/placeholders/") && (
                     <Badge variant="outline" className="mt-1 bg-[var(--status-warning)]/15 text-[var(--status-warning)] border-[var(--status-warning)]/30 w-fit">
                       Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
                     </Badge>
@@ -488,37 +422,14 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                 </div>
 
                 <div>
-                  <Label className="text-xs text-[var(--text-muted)] mb-1 block">
-                    Foto Profil Wanita (Bride)
-                  </Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      name="brideImage"
-                      value={form.brideImage}
-                      onChange={handleChange}
-                      placeholder="https://..."
-                      className="flex-1"
-                    />
-                    <label className={`cursor-pointer px-3 py-2 text-xs rounded-md border font-medium transition-colors ${uploading ? "opacity-50 pointer-events-none" : "bg-[var(--ink-surface-raised)] hover:bg-[var(--ink-surface-raised)]/80 border-[var(--ink-border)] text-[var(--text-secondary)]"}`}>
-                      {uploading ? "..." : "Upload"}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const url = await uploadFile(file);
-                            if (url) setForm((p) => ({ ...p, brideImage: url }));
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-                  {form.brideImage && (
-                    <Image src={form.brideImage} alt="Bride Preview" width={64} height={64} className="object-cover rounded-full mt-2 border border-[var(--ink-border)]" unoptimized />
-                  )}
-                  {form.brideImage.startsWith("/placeholders/") && (
+                  <UploadField
+                    label="Foto Profil Wanita (Bride)"
+                    value={form.brideImage}
+                    folder={`undangan-digital/${invitation.slug}`}
+                    aspectRatio="square"
+                    onChange={(url) => setForm((p) => ({ ...p, brideImage: url ?? "" }))}
+                  />
+                  {form.brideImage?.startsWith("/placeholders/") && (
                     <Badge variant="outline" className="mt-1 bg-[var(--status-warning)]/15 text-[var(--status-warning)] border-[var(--status-warning)]/30 w-fit">
                       Foto contoh — silakan ganti dengan foto Anda sebelum dipublikasi.
                     </Badge>
@@ -536,14 +447,13 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-[var(--text-muted)] mb-1 block">
-                    URL Musik Latar (opsional)
-                  </Label>
-                  <Input
-                    name="musicUrl"
+                  <UploadField
+                    label="Musik Latar (MP3)"
                     value={form.musicUrl}
-                    onChange={handleChange}
-                    placeholder="https://example.com/song.mp3"
+                    accept="audio/mpeg,audio/mp3,audio/wav"
+                    folder={`undangan-digital/${invitation.slug}`}
+                    hint="MP3, maksimal 5MB"
+                    onChange={(url) => setForm((p) => ({ ...p, musicUrl: url ?? "" }))}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -585,41 +495,21 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                   </div>
                   <div className="space-y-2">
                     {gallery.map((url, i) => (
-                      <div key={i} className="space-y-2 border border-[var(--ink-border)] p-2.5 rounded-lg bg-[var(--ink-surface-raised)]/50">
-                        <div className="flex gap-2">
-                          <Input
-                            value={url}
-                            onChange={(e) => handleGalleryChange(i, e.target.value)}
-                            placeholder="https://..."
-                            className="flex-1"
-                          />
-                          <label className={`cursor-pointer px-3 py-2 text-xs rounded-md border font-medium flex items-center transition-colors ${uploading ? "opacity-50 pointer-events-none" : "bg-[var(--ink-surface-raised)] hover:bg-[var(--ink-surface-raised)]/80 border-[var(--ink-border)] text-[var(--text-secondary)]"}`}>
-                            {uploading ? "..." : "Upload"}
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  const url = await uploadFile(file);
-                                  if (url) handleGalleryChange(i, url);
-                                }
-                              }}
-                            />
-                          </label>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => removeGalleryItem(i)}
-                          >
-                            Hapus
-                          </Button>
-                        </div>
-                        {url && (
-                          <Image src={url} alt={`Gallery Preview ${i+1}`} width={64} height={64} className="object-cover rounded-lg border border-[var(--ink-border)]" unoptimized />
-                        )}
+                      <div key={i} className="flex items-start gap-2 border border-[var(--ink-border)] p-2.5 rounded-lg bg-[var(--ink-surface-raised)]/50">
+                        <UploadField
+                          value={url}
+                          folder={`undangan-digital/${invitation.slug}`}
+                          onChange={(val) => handleGalleryChange(i, val ?? "")}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeGalleryItem(i)}
+                          className="mt-1"
+                        >
+                          Hapus
+                        </Button>
                       </div>
                     ))}
                     {gallery.length === 0 && (

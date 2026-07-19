@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { v2 as cloudinary } from "cloudinary";
 import { isRateLimited } from "@/lib/rateLimit";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ALLOWED_TYPES = [
+  "image/jpeg", "image/png", "image/webp", "image/gif",
+  "audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg",
+];
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 
-const r2 = new S3Client({
-  region: "auto",
-  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-  },
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
 
 export async function POST(req: NextRequest) {
@@ -26,33 +26,26 @@ export async function POST(req: NextRequest) {
 
     const fd = await req.formData();
     const file = fd.get("file") as File;
-    if (!file) {
-      return NextResponse.json({ error: "Tidak ada file" }, { status: 400 });
-    }
+    if (!file) return NextResponse.json({ error: "Tidak ada file" }, { status: 400 });
     if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Tipe file tidak didukung. Gunakan JPEG, PNG, WebP, atau GIF." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Tipe file tidak didukung. Gunakan JPEG, PNG, WebP, GIF, atau MP3." }, { status: 400 });
     }
     if (file.size > MAX_BYTES) {
       return NextResponse.json({ error: "Ukuran file terlalu besar. Maksimum 5 MB." }, { status: 400 });
     }
 
+    const folder = (fd.get("folder") as string) || "undangan-digital";
+
     const buffer = Buffer.from(await file.arrayBuffer());
-    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-    const key = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const b64 = buffer.toString("base64");
+    const dataUri = `data:${file.type};base64,${b64}`;
 
-    await r2.send(
-      new PutObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME!,
-        Key: key,
-        Body: buffer,
-        ContentType: file.type,
-      })
-    );
+    const result = await cloudinary.uploader.upload(dataUri, {
+      folder,
+      resource_type: "auto",
+    });
 
-    return NextResponse.json({ url: `${process.env.R2_PUBLIC_URL}/${key}` });
+    return NextResponse.json({ url: result.secure_url, publicId: result.public_id });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Gagal mengunggah file" }, { status: 500 });

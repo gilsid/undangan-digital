@@ -1,10 +1,11 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import Image from "next/image";
 import Section from "@/components/themes/template/Section";
 import BlueprintCard from "@/components/themes/shared/BlueprintCard";
+import { childVariant, getParentsInfo, formatParents } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -13,19 +14,11 @@ interface Props {
 export default function FoilCoupleSection({ invitation }: Props) {
   const reduce = useReducedMotion();
 
-  const childVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-  };
+  const childVariants = childVariant(reduce, 16, 0.6);
 
-  const cardVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  };
+  const cardVariants = childVariant(reduce, 30, 0.6);
 
-  const parentsInfo = invitation.parentsInfo as
-    | { groomFather?: string; groomMother?: string; brideFather?: string; brideMother?: string }
-    | null;
+  const parentsInfo = getParentsInfo(invitation.parentsInfo);
 
   return (
     <section className="py-16 px-6" style={{ background: "#171b23" }}>
@@ -80,8 +73,7 @@ export default function FoilCoupleSection({ invitation }: Props) {
               </h3>
               {parentsInfo?.groomFather && (
                 <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-                  Putra dari Bapak {parentsInfo.groomFather}
-                  {parentsInfo.groomMother && ` & Ibu ${parentsInfo.groomMother}`}
+                  {formatParents(invitation.parentsInfo, "groom")}
                 </p>
               )}
             </BlueprintCard>
@@ -115,8 +107,7 @@ export default function FoilCoupleSection({ invitation }: Props) {
               </h3>
               {parentsInfo?.brideFather && (
                 <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-                  Putri dari Bapak {parentsInfo.brideFather}
-                  {parentsInfo.brideMother && ` & Ibu ${parentsInfo.brideMother}`}
+                  {formatParents(invitation.parentsInfo, "bride")}
                 </p>
               )}
             </BlueprintCard>

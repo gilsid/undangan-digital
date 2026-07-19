@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
-import { useWish } from "@/hooks/useThemeCommon";
+import { useWish, formatDateID } from "@/hooks/useThemeCommon";
 import Section from "@/components/themes/template/Section";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
 
@@ -130,11 +130,7 @@ export default function WishesSection({ invitation, initialWishes }: Props) {
                     {w.message}
                   </p>
                   <p className="text-xs mt-1" style={{ color: colors.textMuted, opacity: 0.6 }}>
-                    {new Date(w.createdAt).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {formatDateID(w.createdAt)}
                   </p>
                 </motion.div>
               );

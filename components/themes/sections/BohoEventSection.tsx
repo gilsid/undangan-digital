@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import Section from "@/components/themes/template/Section";
 import MapsEmbed, { getMapsSrc } from "@/components/MapsEmbed";
+import { childSpringConfigVariant, childEasedVariant } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -12,18 +13,9 @@ interface Props {
 export default function BohoEventSection({ invitation }: Props) {
   const reduce = useReducedMotion();
 
-  const childVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1, y: 0,
-      transition: { type: "spring", stiffness: 80, damping: 18 },
-    },
-  };
+  const childVariants = childSpringConfigVariant(reduce, 80, 18, 20);
 
-  const headerVariant: Variants = reduce ? { hidden: {}, visible: {} } : {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.4, 0.3, 1] as const } },
-  };
+  const headerVariant = childEasedVariant(reduce, 0.6);
 
   return (
     <section className="py-16 px-6" style={{ background: "#faf5ed" }}>

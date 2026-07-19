@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import Section from "@/components/themes/template/Section";
+import { formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -11,7 +12,7 @@ interface Props {
 export default function BohoHeroSection({ invitation }: Props) {
   const reduce = useReducedMotion();
 
-  const childVariants: Variants = reduce
+  const childVariants = reduce
     ? { hidden: {}, visible: {} }
     : {
         hidden: { opacity: 0, y: 30 },
@@ -22,7 +23,7 @@ export default function BohoHeroSection({ invitation }: Props) {
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #faf5ed 0%, #fdf9f2 100%)",
+        background: `linear-gradient(rgba(250,245,237,0.92), rgba(253,249,242,0.95)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <Section
@@ -77,12 +78,7 @@ export default function BohoHeroSection({ invitation }: Props) {
         >
           <div className="h-px w-12" style={{ background: "#d4a853", opacity: 0.4 }} />
           <p className="text-sm" style={{ color: "#8c7d70" }}>
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
           <div className="h-px w-12" style={{ background: "#d4a853", opacity: 0.4 }} />
         </motion.div>

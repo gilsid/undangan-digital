@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
+import { formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -44,9 +45,7 @@ export default function TropicalCoverSection({ invitation, guestName, onOpen }: 
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative overflow-hidden"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(42,66,49,0.5), rgba(42,66,49,0.5)), url(${invitation.heroImage}) center/cover no-repeat`
-          : C.bg
+        background: `linear-gradient(rgba(42,66,49,0.5), rgba(42,66,49,0.5)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <LeafDecor />
@@ -86,9 +85,7 @@ export default function TropicalCoverSection({ invitation, guestName, onOpen }: 
           {invitation.brideName}
         </h1>
         <p className="text-sm mt-4 mb-10" style={{ color: C.sage }}>
-          {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-            day: "numeric", month: "long", year: "numeric",
-          })}
+          {formatDateID(invitation.weddingDate)}
         </p>
         <motion.button
           onClick={onOpen}

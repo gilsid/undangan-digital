@@ -5,16 +5,16 @@ import ThemeLayout from "@/components/themes/template/ThemeLayout";
 import { tropicalConfig } from "@/components/themes/config/tropical";
 import TropicalCoverSection from "@/components/themes/sections/TropicalCoverSection";
 import TropicalHeroSection from "@/components/themes/sections/TropicalHeroSection";
-import TropicalQuoteSection from "@/components/themes/sections/TropicalQuoteSection";
+import QuoteSection from "@/components/themes/sections/QuoteSection";
 import TropicalCoupleSection from "@/components/themes/sections/TropicalCoupleSection";
 import TropicalEventSection from "@/components/themes/sections/TropicalEventSection";
 import TropicalLoveStorySection from "@/components/themes/sections/TropicalLoveStorySection";
-import TropicalGallerySection from "@/components/themes/sections/TropicalGallerySection";
-import TropicalCountdownSection from "@/components/themes/sections/TropicalCountdownSection";
-import TropicalRSVPSection from "@/components/themes/sections/TropicalRSVPSection";
-import TropicalGiftSection from "@/components/themes/sections/TropicalGiftSection";
+import GallerySection from "@/components/themes/sections/GallerySection";
+import CountdownSection from "@/components/themes/sections/CountdownSection";
+import RSVPSection from "@/components/themes/sections/RSVPSection";
+import GiftSection from "@/components/themes/sections/GiftSection";
 import TropicalWishesSection from "@/components/themes/sections/TropicalWishesSection";
-import TropicalFooterSection from "@/components/themes/sections/TropicalFooterSection";
+import FooterSection from "@/components/themes/sections/FooterSection";
 
 interface Props {
   invitation: Invitation;
@@ -30,16 +30,16 @@ export default function TropicalTheme({ invitation, guestName, wishes }: Props) 
       cover={<TropicalCoverSection invitation={invitation} guestName={guestName} />}
     >
       <TropicalHeroSection invitation={invitation} />
-      <TropicalQuoteSection invitation={invitation} />
+      <QuoteSection invitation={invitation} />
       <TropicalCoupleSection invitation={invitation} />
       <TropicalEventSection invitation={invitation} />
       <TropicalLoveStorySection invitation={invitation} />
-      <TropicalGallerySection invitation={invitation} />
-      <TropicalCountdownSection invitation={invitation} />
-      <TropicalRSVPSection invitation={invitation} guestName={guestName} />
-      <TropicalGiftSection invitation={invitation} />
+      <GallerySection invitation={invitation} />
+      <CountdownSection invitation={invitation} />
+      <RSVPSection invitation={invitation} guestName={guestName} />
+      <GiftSection invitation={invitation} />
       <TropicalWishesSection invitation={invitation} initialWishes={wishes} />
-      <TropicalFooterSection invitation={invitation} />
+      <FooterSection invitation={invitation} />
     </ThemeLayout>
   );
 }

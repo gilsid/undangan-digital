@@ -5,16 +5,16 @@ import ThemeLayout from "@/components/themes/template/ThemeLayout";
 import { foilBlueprintConfig } from "@/components/themes/config/foil-blueprint";
 import FoilCoverSection from "@/components/themes/sections/FoilCoverSection";
 import FoilHeroSection from "@/components/themes/sections/FoilHeroSection";
-import FoilQuoteSection from "@/components/themes/sections/FoilQuoteSection";
+import QuoteSection from "@/components/themes/sections/QuoteSection";
 import FoilCoupleSection from "@/components/themes/sections/FoilCoupleSection";
 import FoilEventSection from "@/components/themes/sections/FoilEventSection";
-import FoilLoveStorySection from "@/components/themes/sections/FoilLoveStorySection";
-import FoilGallerySection from "@/components/themes/sections/FoilGallerySection";
-import FoilCountdownSection from "@/components/themes/sections/FoilCountdownSection";
-import FoilRSVPSection from "@/components/themes/sections/FoilRSVPSection";
-import FoilGiftSection from "@/components/themes/sections/FoilGiftSection";
+import LoveStorySection from "@/components/themes/sections/LoveStorySection";
+import GallerySection from "@/components/themes/sections/GallerySection";
+import CountdownSection from "@/components/themes/sections/CountdownSection";
+import RSVPSection from "@/components/themes/sections/RSVPSection";
+import GiftSection from "@/components/themes/sections/GiftSection";
 import FoilWishesSection from "@/components/themes/sections/FoilWishesSection";
-import FoilFooterSection from "@/components/themes/sections/FoilFooterSection";
+import FooterSection from "@/components/themes/sections/FooterSection";
 
 interface Props {
   invitation: Invitation;
@@ -49,16 +49,16 @@ export default function FoilBlueprintTheme({ invitation, guestName, wishes }: Pr
       )}
     >
       <FoilHeroSection invitation={invitation} />
-      <FoilQuoteSection invitation={invitation} />
+      <QuoteSection invitation={invitation} />
       <FoilCoupleSection invitation={invitation} />
       <FoilEventSection invitation={invitation} />
-      <FoilLoveStorySection invitation={invitation} />
-      <FoilGallerySection invitation={invitation} />
-      <FoilCountdownSection invitation={invitation} />
-      <FoilRSVPSection invitation={invitation} guestName={guestName} />
-      <FoilGiftSection invitation={invitation} />
+      <LoveStorySection invitation={invitation} />
+      <GallerySection invitation={invitation} />
+      <CountdownSection invitation={invitation} />
+      <RSVPSection invitation={invitation} guestName={guestName} />
+      <GiftSection invitation={invitation} />
       <FoilWishesSection invitation={invitation} initialWishes={wishes} />
-      <FoilFooterSection invitation={invitation} />
+      <FooterSection invitation={invitation} />
     </ThemeLayout>
   );
 }

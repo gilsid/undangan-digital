@@ -21,7 +21,7 @@ export type HeroLayout = 'centered-divider' | 'backdrop-card' | 'editorial-three
 export type CoupleLayout = 'circular-gold' | 'circular-white-shadow' | 'square-grayscale';
 export type EventLayout = 'rounded-cards' | 'translucent-cards' | 'text-forward-grid';
 export type CountdownLayout = 'vertical-stack' | 'card-grid' | 'line-separated';
-export type GalleryLayout = 'rounded-grid' | 'rounded-shadow-grid' | 'grayscale-grid';
+export type GalleryLayout = 'rounded-grid' | 'rounded-shadow-grid' | 'grayscale-grid' | 'masonry-columns';
 
 export interface ThemeLayouts {
   cover: CoverLayout;

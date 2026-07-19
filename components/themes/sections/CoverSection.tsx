@@ -1,8 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
+import { formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -12,11 +14,11 @@ interface Props {
 
 function useCoverAnim() {
   const reduce = useReducedMotion();
-  const container: Variants = reduce ? {} : {
+  const container: Variants = reduce ? { hidden: {}, visible: {} } : {
     hidden: {},
     visible: { transition: { staggerChildren: 0.15 } },
   };
-  const child: Variants = reduce ? {} : {
+  const child: Variants = reduce ? { hidden: {}, visible: {} } : {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
@@ -34,9 +36,7 @@ function CenteredCover({ invitation, guestName, onOpen }: Props) {
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(44,44,44,0.55), rgba(44,44,44,0.55)), url(${invitation.heroImage}) center/cover no-repeat`
-          : `linear-gradient(135deg, ${colors.secondary} 0%, ${colors.dark} 100%)`,
+        background: `linear-gradient(rgba(44,44,44,0.55), rgba(44,44,44,0.55)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <motion.div
@@ -73,9 +73,7 @@ function CenteredCover({ invitation, guestName, onOpen }: Props) {
           {invitation.brideName}
         </motion.h1>
         <motion.p variants={child} className="text-white/70 text-sm mt-4 mb-10">
-          {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-            day: "numeric", month: "long", year: "numeric",
-          })}
+          {formatDateID(invitation.weddingDate)}
         </motion.p>
         <motion.button
           variants={child}
@@ -106,9 +104,7 @@ function CardCenteredCover({ invitation, guestName, onOpen }: Props) {
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative overflow-hidden"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(62,57,53,0.5), rgba(62,57,53,0.5)), url(${invitation.heroImage}) center/cover no-repeat`
-          : `linear-gradient(135deg, ${colors.secondary} 0%, ${colors.dark} 100%)`,
+        background: `linear-gradient(rgba(62,57,53,0.5), rgba(62,57,53,0.5)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <div className="absolute inset-0 bg-[radial-gradient(#c2593f0a_1px,transparent_1px)] [background-size:16px_16px]" />
@@ -154,9 +150,7 @@ function CardCenteredCover({ invitation, guestName, onOpen }: Props) {
           {invitation.brideName}
         </motion.h1>
         <motion.p variants={child} className="text-xs mt-4 mb-8 font-medium tracking-wide" style={{ color: `${colors.text}80` }}>
-          {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-            day: "numeric", month: "long", year: "numeric",
-          })}
+          {formatDateID(invitation.weddingDate)}
         </motion.p>
         <motion.button
           variants={child}
@@ -177,13 +171,15 @@ function FramedCover({ invitation, guestName, onOpen }: Props) {
   const config = useThemeConfig();
   const { colors, fonts } = config;
   const { container, child, btnHover, btnTap } = useCoverAnim();
-  const upChild: Variants = useReducedMotion() ? {} : {
+  const upChild: Variants = useReducedMotion() ? { hidden: {}, visible: {} } : {
     hidden: { opacity: 0, y: 24 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-between p-8 text-left relative">
+    <div className="min-h-screen flex flex-col justify-between p-8 text-left relative" style={{
+      background: `linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
+    }}>
       <motion.div
         variants={container}
         initial="hidden"
@@ -206,9 +202,7 @@ function FramedCover({ invitation, guestName, onOpen }: Props) {
             {invitation.brideName}
           </h1>
           <p className="text-sm tracking-widest uppercase mt-6" style={{ color: colors.textMuted }}>
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
         </motion.div>
         <motion.div variants={upChild} className="space-y-6">

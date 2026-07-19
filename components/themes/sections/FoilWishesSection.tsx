@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation, Wish } from "@prisma/client";
 import Section from "@/components/themes/template/Section";
 import BlueprintCard from "@/components/themes/shared/BlueprintCard";
+import { useWish, childVariant, formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -12,39 +13,18 @@ interface Props {
 }
 
 export default function FoilWishesSection({ invitation, initialWishes }: Props) {
-  const [wishName, setWishName] = useState("");
-  const [wishMsg, setWishMsg] = useState("");
   const [wishes, setWishes] = useState<Wish[]>(initialWishes);
-  const [wishSent, setWishSent] = useState(false);
   const [newWishId, setNewWishId] = useState<string | null>(null);
   const reduce = useReducedMotion();
-
-  async function submitWish(e: FormEvent) {
-    e.preventDefault();
-    const res = await fetch("/api/wishes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        invitationId: invitation.id,
-        name: wishName,
-        message: wishMsg,
-      }),
-    });
-    if (res.ok) {
-      const w = await res.json();
-      setWishes((p) => [w, ...p]);
-      setWishName("");
-      setWishMsg("");
-      setWishSent(true);
+  const wish = useWish({
+    onSubmit: (w) => {
+      setWishes((prev) => [w, ...prev]);
       setNewWishId(w.id);
-      setTimeout(() => { setWishSent(false); setNewWishId(null); }, 3000);
-    }
-  }
+      setTimeout(() => setNewWishId(null), 3000);
+    },
+  });
 
-  const childVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  };
+  const childVariants = childVariant(reduce, 16, 0.5);
 
   const wishVariants = {
     hidden: { opacity: 0, y: 10, x: 0 },
@@ -55,7 +35,7 @@ export default function FoilWishesSection({ invitation, initialWishes }: Props) 
   };
 
   return (
-    <section className="py-16 px-6" style={{ background: "#12151c" }}>
+    <section className="py-16 px-6" style={{ background: "#0e1016" }}>
       <Section direction="up" stagger staggerDelay={0.15} className="max-w-lg mx-auto">
         <div className="text-center mb-8">
           <motion.p
@@ -74,12 +54,12 @@ export default function FoilWishesSection({ invitation, initialWishes }: Props) 
           </motion.h2>
         </div>
 
-        <BlueprintCard className="mb-8">
-          <form onSubmit={submitWish} className="space-y-3">
+        <BlueprintCard className="mb-8 p-6">
+          <form onSubmit={(e) => wish.submit(e, invitation.id)} className="space-y-3">
             <motion.div variants={childVariants}>
               <input
-                value={wishName}
-                onChange={(e) => setWishName(e.target.value)}
+                value={wish.name}
+                onChange={(e) => wish.setName(e.target.value)}
                 placeholder="Nama Anda"
                 required
                 className="w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all"
@@ -92,8 +72,8 @@ export default function FoilWishesSection({ invitation, initialWishes }: Props) 
             </motion.div>
             <motion.div variants={childVariants}>
               <textarea
-                value={wishMsg}
-                onChange={(e) => setWishMsg(e.target.value)}
+                value={wish.message}
+                onChange={(e) => wish.setMessage(e.target.value)}
                 placeholder="Tulis ucapan & doa untuk mempelai..."
                 required
                 rows={3}
@@ -113,7 +93,7 @@ export default function FoilWishesSection({ invitation, initialWishes }: Props) 
               className="w-full py-2 rounded-md text-sm transition-all duration-300 hover:opacity-90"
               style={{ background: "var(--foil-gold)", color: "#12151c" }}
             >
-              {wishSent ? "Terkirim!" : "Kirim Ucapan"}
+              {wish.sent ? "Terkirim!" : "Kirim Ucapan"}
             </motion.button>
           </form>
         </BlueprintCard>
@@ -128,21 +108,17 @@ export default function FoilWishesSection({ invitation, initialWishes }: Props) 
               animate={w.id === newWishId ? { opacity: 1, x: 0 } : "visible"}
               whileInView={w.id !== newWishId ? "visible" : undefined}
               viewport={{ once: true }}
-              className={`rounded-lg p-4 border ${w.id === newWishId ? "bg-[#1a1e27]" : ""}`}
+              className="rounded-lg p-4"
               style={{
-                background: w.id === newWishId ? "#1a1e27" : "#1a1e27",
-                border: "1px solid rgba(216,185,120,0.12)",
-                transition: w.id === newWishId ? "background-color 2s ease-out" : "none",
+                background: "#20242f",
+                border: w.id === newWishId ? "1px solid var(--foil-gold)" : "1px solid rgba(216,185,120,0.08)",
+                transition: w.id === newWishId ? "border-color 2s ease-out" : "none",
               }}
             >
               <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{w.name}</p>
-              <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>{w.message}</p>
+              <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{w.message}</p>
               <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
-                {new Date(w.createdAt).toLocaleDateString("id-ID", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
+                {formatDateID(w.createdAt)}
               </p>
             </motion.div>
           ))}

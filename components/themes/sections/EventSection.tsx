@@ -12,15 +12,15 @@ interface Props {
 
 function useEventAnim() {
   const reduce = useReducedMotion();
-  const container: Variants = reduce ? {} : {
+  const container: Variants = reduce ? { hidden: {}, visible: {} } : {
     hidden: {},
     visible: { transition: { staggerChildren: 0.15 } },
   };
-  const fadeChild: Variants = reduce ? {} : {
+  const fadeChild: Variants = reduce ? { hidden: {}, visible: {} } : {
     hidden: { opacity: 0, y: 16 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
   };
-  const springChild: Variants = reduce ? {} : {
+  const springChild: Variants = reduce ? { hidden: {}, visible: {} } : {
     hidden: { opacity: 0, y: 24 },
     visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } },
   };

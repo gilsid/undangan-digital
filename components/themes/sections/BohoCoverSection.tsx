@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
+import { formatDateID } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -16,9 +17,7 @@ export default function BohoCoverSection({ invitation, guestName, onOpen }: Prop
     <div
       className="min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(61,50,43,0.55), rgba(61,50,43,0.55)), url(${invitation.heroImage}) center/cover no-repeat`
-          : "#faf5ed"
+        background: `linear-gradient(rgba(61,50,43,0.55), rgba(61,50,43,0.55)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       {/* Mandala ring SVG decor */}
@@ -79,11 +78,7 @@ export default function BohoCoverSection({ invitation, guestName, onOpen }: Prop
           {invitation.brideName}
         </h1>
         <p className="text-sm mt-4 mb-8" style={{ color: "#8c7d70" }}>
-          {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
+          {formatDateID(invitation.weddingDate)}
         </p>
         <motion.button
           onClick={onOpen}

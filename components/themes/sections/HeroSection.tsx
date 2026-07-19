@@ -1,26 +1,20 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import { useThemeConfig } from "@/components/themes/template/ThemeProvider";
+import { fadeUpVariant, formatDateID } from "@/hooks/useThemeCommon";
+import type { Variants } from "framer-motion";
 
 interface Props {
   invitation: Invitation;
 }
 
-function staggerContainer(reduce: boolean | null, staggerDelay = 0.2): Variants {
-  if (reduce) return {};
+function staggerContainer(reduce: boolean | null, staggerDelay = 0.2) {
+  if (reduce) return { hidden: {}, visible: {} };
   return {
     hidden: {},
     visible: { transition: { staggerChildren: staggerDelay } },
-  };
-}
-
-function fadeUp(reduce: boolean | null): Variants {
-  if (reduce) return {};
-  return {
-    hidden: { opacity: 0, y: 24 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
   };
 }
 
@@ -30,15 +24,13 @@ function CenteredDividerHero({ invitation }: Props) {
   const { colors, fonts } = config;
 
   const wrap = staggerContainer(reduce);
-  const item = fadeUp(reduce);
+  const item = fadeUpVariant(reduce);
 
   return (
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(44,44,44,0.45), rgba(44,44,44,0.6)), url(${invitation.heroImage}) center/cover no-repeat`
-          : `linear-gradient(160deg, ${colors.secondary} 0%, ${colors.dark} 100%)`,
+        background: `linear-gradient(rgba(44,44,44,0.45), rgba(44,44,44,0.6)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <motion.div
@@ -67,9 +59,7 @@ function CenteredDividerHero({ invitation }: Props) {
         <motion.div variants={item} className="mt-6 flex items-center justify-center gap-3">
           <div className="h-px w-12" style={{ background: `${colors.accent}80` }} />
           <p className="text-white/80 text-sm">
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long", day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
           <div className="h-px w-12" style={{ background: `${colors.accent}80` }} />
         </motion.div>
@@ -94,15 +84,13 @@ function BackdropCardHero({ invitation }: Props) {
   const { colors, fonts } = config;
 
   const wrap = staggerContainer(reduce);
-  const item = fadeUp(reduce);
+  const item = fadeUpVariant(reduce);
 
   return (
     <section
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6"
       style={{
-        background: invitation.heroImage
-          ? `linear-gradient(rgba(62,57,53,0.35), rgba(62,57,53,0.5)), url(${invitation.heroImage}) center/cover no-repeat`
-          : `linear-gradient(160deg, ${colors.secondary} 0%, ${colors.dark} 100%)`,
+        background: `linear-gradient(rgba(62,57,53,0.35), rgba(62,57,53,0.5)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
       }}
     >
       <motion.div
@@ -133,9 +121,7 @@ function BackdropCardHero({ invitation }: Props) {
         <motion.div variants={item} className="mt-6 flex items-center justify-center gap-3">
           <div className="h-px w-8" style={{ background: `${colors.bg}99` }} />
           <p className="text-white text-sm font-medium tracking-wider">
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long", day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
           <div className="h-px w-8" style={{ background: `${colors.bg}99` }} />
         </motion.div>
@@ -150,7 +136,10 @@ function EditorialThreeRowHero({ invitation }: Props) {
   const { colors, fonts } = config;
 
   return (
-    <section className="min-h-screen flex flex-col justify-between p-8 md:p-16" style={{ background: colors.bg, borderBottom: `1px solid ${colors.border}` }}>
+    <section className="min-h-screen flex flex-col justify-between p-8 md:p-16" style={{
+      background: `linear-gradient(rgba(252,248,240,0.92), rgba(252,248,240,0.92)), url(${invitation.heroImage || "/placeholders/hero.png"}) center/cover no-repeat`,
+      borderBottom: `1px solid ${colors.border}`,
+    }}>
       <div className="w-full flex justify-between items-start text-xs uppercase tracking-widest" style={{ color: colors.textMuted }}>
         <span>{invitation.groomName} &amp; {invitation.brideName}</span>
         <span>{new Date(invitation.weddingDate).getFullYear()}</span>
@@ -197,9 +186,7 @@ function EditorialThreeRowHero({ invitation }: Props) {
         <div>
           <p className="font-medium" style={{ color: colors.text }}>Save The Date</p>
           <p className="mt-1">
-            {new Date(invitation.weddingDate).toLocaleDateString("id-ID", {
-              weekday: "long", day: "numeric", month: "long", year: "numeric",
-            })}
+            {formatDateID(invitation.weddingDate)}
           </p>
         </div>
         <div className="flex gap-2 items-center">

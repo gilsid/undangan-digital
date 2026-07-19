@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Invitation } from "@prisma/client";
 import Image from "next/image";
 import Section from "@/components/themes/template/Section";
+import { childEasedVariant, getParentsInfo, formatParents } from "@/hooks/useThemeCommon";
 
 interface Props {
   invitation: Invitation;
@@ -12,19 +13,14 @@ interface Props {
 export default function BohoCoupleSection({ invitation }: Props) {
   const reduce = useReducedMotion();
 
-  const childVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.4, 0.3, 1] as const } },
-  };
+  const childVariants = childEasedVariant(reduce, 0.6);
 
-  const cardVariants: Variants = reduce ? { hidden: {}, visible: {} } : {
+  const cardVariants = reduce ? { hidden: {}, visible: {} } : {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
-  const parentsInfo = invitation.parentsInfo as
-    | { groomFather?: string; groomMother?: string; brideFather?: string; brideMother?: string }
-    | null;
+  const parentsInfo = getParentsInfo(invitation.parentsInfo);
 
   return (
     <section className="py-16 px-6" style={{ background: "#fdf9f2" }}>
@@ -83,8 +79,7 @@ export default function BohoCoupleSection({ invitation }: Props) {
               </h3>
               {parentsInfo?.groomFather && (
                 <p className="text-sm mt-2" style={{ color: "#8c7d70" }}>
-                  Putra dari Bapak {parentsInfo.groomFather}
-                  {parentsInfo.groomMother && ` & Ibu ${parentsInfo.groomMother}`}
+                  {formatParents(invitation.parentsInfo, "groom")}
                 </p>
               )}
             </div>
@@ -121,8 +116,7 @@ export default function BohoCoupleSection({ invitation }: Props) {
               </h3>
               {parentsInfo?.brideFather && (
                 <p className="text-sm mt-2" style={{ color: "#8c7d70" }}>
-                  Putri dari Bapak {parentsInfo.brideFather}
-                  {parentsInfo.brideMother && ` & Ibu ${parentsInfo.brideMother}`}
+                  {formatParents(invitation.parentsInfo, "bride")}
                 </p>
               )}
             </div>

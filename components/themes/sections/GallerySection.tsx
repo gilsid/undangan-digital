@@ -10,12 +10,34 @@ interface Props {
   invitation: Invitation;
 }
 
+interface GalleryTheme {
+  subtitleColor: string;
+  subtitleOpacity: number | undefined;
+  titleColor: string;
+  titleWeight: number;
+  itemBorder: string;
+}
+
+function getGalleryTheme(id: string): GalleryTheme {
+  switch (id) {
+    case "boho":
+      return { subtitleColor: "#d4a853", subtitleOpacity: 0.7, titleColor: "#3d322b", titleWeight: 500, itemBorder: "#e2d5c5" };
+    case "foil-blueprint":
+      return { subtitleColor: "var(--foil-gold)", subtitleOpacity: 0.7, titleColor: "var(--text-primary)", titleWeight: 500, itemBorder: "rgba(216,185,120,0.12)" };
+    case "tropical":
+      return { subtitleColor: "#7e9b85", subtitleOpacity: undefined, titleColor: "#2a4231", titleWeight: 300, itemBorder: "#d6e2d4" };
+    default:
+      return { subtitleColor: "", subtitleOpacity: undefined, titleColor: "", titleWeight: 400, itemBorder: "" };
+  }
+}
+
 export default function GallerySection({ invitation }: Props) {
   const config = useThemeConfig();
-  const { colors, layout, decorations } = config;
+  const { colors, layout, fonts } = config;
   const reduce = useReducedMotion();
   const gallery = invitation.gallery ?? [];
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const id = config.id;
 
   const closeLightbox = useCallback(() => setLightboxIdx(null), []);
 
@@ -48,6 +70,94 @@ export default function GallerySection({ invitation }: Props) {
 
   const variant = layout.gallery;
 
+  // ── Masonry columns (Boho/Foil/Tropical) ──
+  if (variant === "masonry-columns") {
+    const t = getGalleryTheme(id);
+
+    return (
+      <section className="py-16 px-6" style={{ background: id === "boho" ? "#faf5ed" : id === "foil-blueprint" ? "#12151c" : colors.bg }}>
+        <Section className="text-center mb-10">
+          <p className="text-xs uppercase tracking-[0.3em]" style={{ color: t.subtitleColor, opacity: t.subtitleOpacity }}>
+            Kenangan
+          </p>
+          <h2
+            className="text-3xl mt-2"
+            style={{ fontFamily: id === "elegant" ? fonts.display : "'Playfair Display', serif", fontWeight: t.titleWeight, fontStyle: id === "boho" ? "italic" : undefined, color: t.titleColor }}
+          >
+            Galeri Foto
+          </h2>
+        </Section>
+        <div className="max-w-4xl mx-auto columns-2 md:columns-3 gap-3 space-y-3">
+          {gallery.map((url, i) => (
+            <motion.div
+              key={i}
+              initial={reduce ? {} : { opacity: 0, y: 20 }}
+              whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05, duration: 0.5 }}
+              className="overflow-hidden rounded-lg transition-all duration-500 cursor-pointer"
+              style={{ border: `1px solid ${t.itemBorder}` }}
+              onClick={() => setLightboxIdx(i)}
+            >
+              <motion.img
+                src={url}
+                alt={`Foto ${i + 1}`}
+                className="w-full h-full object-cover"
+                whileHover={reduce ? {} : { scale: 1.03 }}
+                transition={{ duration: 0.4 }}
+              />
+            </motion.div>
+          ))}
+        </div>
+
+        <AnimatePresence>
+          {lightboxIdx !== null && (
+            <motion.div
+              key="lightbox"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeLightbox}
+            >
+              <button className="absolute top-4 right-4 text-white/80 hover:text-white text-2xl z-10" onClick={closeLightbox}>
+                ✕
+              </button>
+              {gallery.length > 1 && (
+                <>
+                  <button
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-3xl z-10"
+                    onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                  >
+                    ‹
+                  </button>
+                  <button
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-3xl z-10"
+                    onClick={(e) => { e.stopPropagation(); goNext(); }}
+                  >
+                    ›
+                  </button>
+                </>
+              )}
+              <motion.img
+                key={lightboxIdx}
+                src={gallery[lightboxIdx]}
+                alt={`Foto ${lightboxIdx + 1}`}
+                className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg"
+                initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
+                animate={reduce ? {} : { scale: 1, opacity: 1 }}
+                exit={reduce ? {} : { scale: 0.8, opacity: 0 }}
+                transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
+    );
+  }
+
+  // ── Elegant grid variants ──
   let bg: string;
   let gridCols: string;
   let rounded: string;
@@ -100,10 +210,7 @@ export default function GallerySection({ invitation }: Props) {
         <p className="text-xs uppercase tracking-[0.3em]" style={{ color: colors.textMuted }}>
           Kenangan
         </p>
-        <h2
-          className="text-3xl font-light mt-2"
-          style={{ fontFamily: config.fonts.display, color: colors.text }}
-        >
+        <h2 className="text-3xl font-light mt-2" style={{ fontFamily: fonts.display, color: colors.text }}>
           Galeri Foto
         </h2>
       </Section>
