@@ -427,7 +427,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                     value={form.brideImage}
                     folder={`undangan-digital/${invitation.slug}`}
                     aspectRatio="square"
-                    onChange={(url) => setForm((p) => ({ ...p, brideImage: url }))}
+                    onChange={(url) => setForm((p) => ({ ...p, brideImage: url ?? "" }))}
                   />
                   {form.brideImage?.startsWith("/placeholders/") && (
                     <Badge variant="outline" className="mt-1 bg-[var(--status-warning)]/15 text-[var(--status-warning)] border-[var(--status-warning)]/30 w-fit">
@@ -499,7 +499,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                         <UploadField
                           value={url}
                           folder={`undangan-digital/${invitation.slug}`}
-                          onChange={(val) => handleGalleryChange(i, val)}
+                          onChange={(val) => handleGalleryChange(i, val ?? "")}
                         />
                         <Button
                           type="button"
