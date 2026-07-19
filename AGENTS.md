@@ -8,7 +8,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # Project: Undangan Digital
 
 **Stack:** Next.js 16 App Router, Prisma 7 + PostgreSQL, NextAuth v5 (Credentials), bcryptjs, Tailwind v4, shadcn/ui, Framer Motion, pnpm
-**Infra deps:** PostgreSQL, Upstash Redis (rate limit, no fallback), Cloudflare R2 (upload)
+**Infra:** PostgreSQL, Upstash Redis (rate limit), Cloudinary (upload foto + audio)
+
+## Commands
+- `pnpm dev` — dev server
+- `pnpm build` — production build
+- `pnpm db:migrate` — Prisma migrate dev
+- `pnpm db:seed` — seed database
+- `pnpm db:studio` — Prisma Studio
 
 ## Auth pattern
 - NextAuth v5 Credentials provider. JWT stores `id` + `role`.
@@ -35,14 +42,20 @@ User, Invitation (owner FK→User), Guest (FK→Invitation), Rsvp (FK→Invitati
 - All theme files are "use client" — use Framer Motion for animations.
 - shadcn/ui components in `components/ui/` with cn() utility.
 - Toast via `components/Toast.tsx` (Framer Motion wrapper).
+- **Upload:** `components/upload/UploadField.tsx` reusable component. POST to `/api/upload` → Cloudinary. Accept image/audio, max 5MB. Folder: `undangan-digital/{slug}/`.
+- **Cloudinary config:** 3 env vars — `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`. Diupload via base64 data URI.
+- `.env.example` di repo — salin ke `.env` buat dev.
 
-## Known issues to avoid
-- `UPSTASH_REDIS_*` + `R2_*` env vars **required** by code but not in `.env.example`. *(Stale: both ARE in .env.example)*
-- Theme files repeat ~60% code (useCountdown, SectionReveal, RSVP/wish submit, music toggle, Framer Motion types).
-- No Zod/Yup — validation is ad-hoc `if` checks. *(Stale: Zod validation exists via lib/validations.ts)*
-- `papaparse` imported in client-side GuestsClient — prefer native FileReader for CSV.
-- `tsconfig.tsbuildinfo` committed — should be gitignored.
-- Mixed lock files exist (pnpm-lock.yaml + package-lock.json).
-- `prisma` in `dependencies` instead of `devDependencies`. *(Fixed: moved to devDependencies)*
-- `dotenv` in devDependencies — used by `prisma.config.ts`, not unused.
+## Known issues
+- Theme sections (Cover/Hero/Couple/Gallery/Event) repeat ~60% code across 4 themes. Fase 1 (shared hooks) done. Fase 2 (consolidation) partial.
+- `tsconfig.tsbuildinfo` committed & gitignored — generate ulang tiap build, harmless.
+- `papaparse` in dependencies — cuma dipake server, bukan client.
 <!-- END:project-context -->
+
+<!-- BEGIN:workflow -->
+## Git workflow (Wajib!)
+- **GitHub Flow:** `main` = production. Setiap kerja bikin branch baru dari `main`.
+- Saat user bilang "kerjain X" / "bikin Y": `git checkout main && git pull && git checkout -b feat/<nama>` otomatis.
+- Selesai → push + buat PR ke `main`. Jangan merge sendiri. Delete branch setelah merge.
+- `dev` branch udah ga dipake. Pakai `main` sebagai base.
+<!-- END:workflow -->
