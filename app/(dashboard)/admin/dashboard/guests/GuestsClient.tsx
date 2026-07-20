@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { StatusStamp } from "@/components/ui/status-stamp";
+import { Label } from "@/components/ui/label";
 import Toast from "@/components/Toast";
 
 interface Props {
@@ -36,6 +37,11 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editGroup, setEditGroup] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -116,6 +122,34 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
     setAdding(false);
   }
 
+  function openEdit(guest: Guest) {
+    setEditingGuest(guest);
+    setEditName(guest.name);
+    setEditPhone(guest.phone ?? "");
+    setEditGroup(guest.group ?? "");
+  }
+
+  async function saveEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingGuest) return;
+    setEditSaving(true);
+    const res = await fetch(`/api/guests/${editingGuest.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editName, phone: editPhone, group: editGroup }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setGuests((p) => p.map((g) => (g.id === updated.id ? updated : g)));
+      setEditingGuest(null);
+      setToast({ message: "Tamu berhasil diperbarui.", type: "success" });
+    } else {
+      const data = await res.json().catch(() => null);
+      setToast({ message: data?.error ?? "Gagal memperbarui tamu.", type: "error" });
+    }
+    setEditSaving(false);
+  }
+
   async function deleteGuest(id: string) {
     const res = await fetch(`/api/guests/${id}`, { method: "DELETE" });
     if (!res.ok && res.status !== 404) {
@@ -177,7 +211,7 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
         const d = await res.json();
         if (res.ok) {
           setImportMsg(d.message ?? "Selesai.");
-          router.refresh();
+          if (d.guests) setGuests((p) => [...d.guests, ...p]);
         } else {
           setImportMsg(d.error ?? "Gagal mengimpor.");
         }
@@ -376,6 +410,12 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem
+                            onClick={() => openEdit(g)}
+                          >
+                            <FileEdit size={14} className="text-[var(--foil-gold)]" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             onClick={async () => {
                               try {
                                 await navigator.clipboard.writeText(inviteUrl(g.uniqueCode));
@@ -418,6 +458,35 @@ export default function GuestsClient({ invitation, guests: initialGuests, accoun
       </main>
 
       <Toast toast={toast} onClose={() => setToast(null)} />
+
+      <Dialog open={!!editingGuest} onOpenChange={(open) => { if (!open) setEditingGuest(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Tamu</DialogTitle>
+            <DialogDescription>
+              Ubah data tamu <span className="font-medium text-[var(--text-primary)]">{editingGuest?.name}</span>.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={saveEdit} className="space-y-4 py-2">
+            <div>
+              <Label className="text-xs text-[var(--text-muted)] mb-1 block">Nama</Label>
+              <Input value={editName} onChange={(e) => setEditName(e.target.value)} required />
+            </div>
+            <div>
+              <Label className="text-xs text-[var(--text-muted)] mb-1 block">No. WA</Label>
+              <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="08123..." />
+            </div>
+            <div>
+              <Label className="text-xs text-[var(--text-muted)] mb-1 block">Grup</Label>
+              <Input value={editGroup} onChange={(e) => setEditGroup(e.target.value)} placeholder="Keluarga / Teman" />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditingGuest(null)}>Batal</Button>
+              <Button type="submit" disabled={editSaving}>{editSaving ? "Menyimpan..." : "Simpan"}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
         <DialogContent>

@@ -41,9 +41,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await prisma.guest.createMany({ data });
+    const created = await prisma.guest.createManyAndReturn({ data });
 
-    return NextResponse.json({ message: `${data.length} tamu berhasil diimpor.` });
+    return NextResponse.json({ message: `${data.length} tamu berhasil diimpor.`, guests: created });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Terjadi kesalahan server saat mengimpor data" }, { status: 500 });
