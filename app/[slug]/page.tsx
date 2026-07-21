@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import TrackOpened from "./TrackOpened";
 import type { Wish } from "@prisma/client";
+
+export const revalidate = 3600; // ISR: revalidate every hour
 import dynamic from "next/dynamic";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
