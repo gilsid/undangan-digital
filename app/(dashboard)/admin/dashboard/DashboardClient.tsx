@@ -39,6 +39,7 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [mapsError, setMapsError] = useState("");
   const [confirmUnpublish, setConfirmUnpublish] = useState(false);
+  const [activeTab, setActiveTab] = useState("detail");
   const [gallery, setGallery] = useState<string[]>(invitation?.gallery ?? []);
   const [bankAccounts, setBankAccounts] = useState<{ bank: string; accountNumber: string; accountName: string }[]>(
     (invitation?.bankAccounts as { bank: string; accountNumber: string; accountName: string }[] | null) ?? []
@@ -241,7 +242,34 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
             </div>
           )}
 
+          {/* Tab navigation */}
+          <div className="mb-6 flex gap-1 border-b border-[var(--ink-border)]">
+            {[
+              { id: "detail", label: "Detail", icon: "Users" },
+              { id: "tampilan", label: "Tampilan", icon: "Palette" },
+              { id: "media", label: "Media", icon: "ImageIcon" },
+              { id: "amplop", label: "Amplop", icon: "Banknote" },
+            ].map((tab) => {
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                    active
+                      ? "border-[var(--foil-gold)] text-[var(--foil-gold)]"
+                      : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
+            {activeTab === "detail" && (<>
             <LedgerCard>
               <div className="flex items-center gap-3 mb-4">
                 <IconBadge>
@@ -348,13 +376,15 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                 </div>
               </div>
             </LedgerCard>
+            </>)}
 
+            {activeTab === "tampilan" && (
             <LedgerCard>
               <div className="flex items-center gap-3 mb-4">
                 <IconBadge>
                   <Palette size={18} />
                 </IconBadge>
-                <h2 className="font-semibold text-[var(--text-primary)]">Tampilan & Konten</h2>
+                <h2 className="font-semibold text-[var(--text-primary)]">Tampilan</h2>
               </div>
               <div className="space-y-6">
                 <div>
@@ -435,6 +465,19 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                     </Badge>
                   )}
                 </div>
+              </div>
+            </LedgerCard>
+            )}
+
+            {activeTab === "detail" && (
+            <LedgerCard>
+              <div className="flex items-center gap-3 mb-4">
+                <IconBadge className="border-[var(--dusty-rose)]/60 text-[var(--dusty-rose)]">
+                  <FileEdit size={18} />
+                </IconBadge>
+                <h2 className="font-semibold text-[var(--text-primary)]">Konten Tambahan</h2>
+              </div>
+              <div className="space-y-4">
                 <div>
                   <Label className="text-xs text-[var(--text-muted)] mb-1 block">
                     Cerita cinta (opsional)
@@ -444,16 +487,6 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                     value={form.loveStory}
                     onChange={handleChange}
                     rows={4}
-                  />
-                </div>
-                <div>
-                  <UploadField
-                    label="Musik Latar (MP3)"
-                    value={form.musicUrl}
-                    accept="audio/mpeg,audio/mp3,audio/wav"
-                    folder={`undangan-digital/${invitation.slug}`}
-                    hint="MP3, maksimal 5MB"
-                    onChange={(url) => setForm((p) => ({ ...p, musicUrl: url ?? "" }))}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -479,6 +512,29 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                     />
                   </div>
                 </div>
+              </div>
+            </LedgerCard>
+            )}
+
+            {activeTab === "media" && (
+            <LedgerCard>
+              <div className="flex items-center gap-3 mb-4">
+                <IconBadge className="border-[var(--dusty-rose)]/60 text-[var(--dusty-rose)]">
+                  <ImageIcon size={18} />
+                </IconBadge>
+                <h2 className="font-semibold text-[var(--text-primary)]">Media</h2>
+              </div>
+              <div className="space-y-6">
+                <div>
+                  <UploadField
+                    label="Musik Latar (MP3)"
+                    value={form.musicUrl}
+                    accept="audio/mpeg,audio/mp3,audio/wav"
+                    folder={`undangan-digital/${invitation.slug}`}
+                    hint="MP3, maksimal 5MB"
+                    onChange={(url) => setForm((p) => ({ ...p, musicUrl: url ?? "" }))}
+                  />
+                </div>
 
                 <div>
                   <div className="flex justify-between items-center mb-2">
@@ -503,6 +559,34 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                         />
                         <Button
                           type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={i === 0}
+                          onClick={() => {
+                            const arr = [...gallery];
+                            [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]];
+                            setGallery(arr);
+                          }}
+                          className="mt-1"
+                        >
+                          ↑
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={i === gallery.length - 1}
+                          onClick={() => {
+                            const arr = [...gallery];
+                            [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+                            setGallery(arr);
+                          }}
+                          className="mt-1"
+                        >
+                          ↓
+                        </Button>
+                        <Button
+                          type="button"
                           variant="destructive"
                           size="sm"
                           onClick={() => removeGalleryItem(i)}
@@ -520,72 +604,48 @@ export default function DashboardClient({ invitation, accountEmail }: Props) {
                     )}
                   </div>
                 </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <Label className="text-xs font-medium text-[var(--text-muted)]">
-                      Amplop Digital / Info Rekening
-                    </Label>
-                    <button
-                      type="button"
-                      onClick={addBankAccount}
-                      className="text-xs text-[var(--foil-gold)] hover:underline"
-                    >
-                      + Tambah Rekening
-                    </button>
-                  </div>
-                  <div className="space-y-3">
-                    {bankAccounts.map((acc, i) => (
-                      <div key={i} className="flex gap-2 items-end border border-[var(--ink-border)] p-3 rounded-lg bg-[var(--ink-surface-raised)]/50">
-                        <div className="flex-1 grid grid-cols-3 gap-2">
-                          <div>
-                            <Label className="text-[10px] text-[var(--text-muted)] mb-0.5 block">Nama Bank</Label>
-                            <Input
-                              value={acc.bank}
-                              onChange={(e) => handleBankChange(i, "bank", e.target.value)}
-                              placeholder="BCA / Mandiri / GoPay"
-                              className="text-xs"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-[10px] text-[var(--text-muted)] mb-0.5 block">No. Rekening / No. HP</Label>
-                            <Input
-                              value={acc.accountNumber}
-                              onChange={(e) => handleBankChange(i, "accountNumber", e.target.value)}
-                              placeholder="12345678"
-                              className="text-xs"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-[10px] text-[var(--text-muted)] mb-0.5 block">Atas Nama</Label>
-                            <Input
-                              value={acc.accountName}
-                              onChange={(e) => handleBankChange(i, "accountName", e.target.value)}
-                              placeholder="Budi"
-                              className="text-xs"
-                            />
-                          </div>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeBankAccount(i)}
-                        >
-                          Hapus
-                        </Button>
-                      </div>
-                    ))}
-                    {bankAccounts.length === 0 && (
-                      <div className="flex flex-col items-center gap-2 py-6 text-[var(--text-muted)]">
-                        <Banknote size={32} className="text-[var(--text-muted)]" />
-                        <p className="text-xs">Belum ada rekening / amplop digital.</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
             </LedgerCard>
+            )}
+
+            {activeTab === "amplop" && (
+            <LedgerCard>
+              <div className="flex items-center gap-3 mb-4">
+                <IconBadge>
+                  <Banknote size={18} />
+                </IconBadge>
+                <h2 className="font-semibold text-[var(--text-primary)]">Amplop Digital</h2>
+              </div>
+              <div className="space-y-3">
+                {bankAccounts.map((acc, i) => (
+                  <div key={i} className="flex gap-2 items-end border border-[var(--ink-border)] p-3 rounded-lg bg-[var(--ink-surface-raised)]/50">
+                    <div className="flex-1 grid grid-cols-3 gap-2">
+                      <div>
+                        <Label className="text-[10px] text-[var(--text-muted)] mb-0.5 block">Nama Bank</Label>
+                        <Input value={acc.bank} onChange={(e) => handleBankChange(i, "bank", e.target.value)} placeholder="BCA / Mandiri / GoPay" className="text-xs" />
+                      </div>
+                      <div>
+                        <Label className="text-[10px] text-[var(--text-muted)] mb-0.5 block">No. Rekening / No. HP</Label>
+                        <Input value={acc.accountNumber} onChange={(e) => handleBankChange(i, "accountNumber", e.target.value)} placeholder="12345678" className="text-xs" />
+                      </div>
+                      <div>
+                        <Label className="text-[10px] text-[var(--text-muted)] mb-0.5 block">Atas Nama</Label>
+                        <Input value={acc.accountName} onChange={(e) => handleBankChange(i, "accountName", e.target.value)} placeholder="Budi" className="text-xs" />
+                      </div>
+                    </div>
+                    <Button type="button" variant="destructive" size="sm" onClick={() => removeBankAccount(i)}>Hapus</Button>
+                  </div>
+                ))}
+                {bankAccounts.length === 0 && (
+                  <div className="flex flex-col items-center gap-2 py-6 text-[var(--text-muted)]">
+                    <Banknote size={32} className="text-[var(--text-muted)]" />
+                    <p className="text-xs">Belum ada rekening / amplop digital.</p>
+                  </div>
+                )}
+                <button type="button" onClick={addBankAccount} className="text-xs text-[var(--foil-gold)] hover:underline">+ Tambah Rekening</button>
+              </div>
+            </LedgerCard>
+            )}
 
             <Toast toast={toast} onClose={() => setToast(null)} />
 
