@@ -20,6 +20,12 @@ export const guestSchema = z.object({
   group: z.string().optional().default(""),
 });
 
+export const guestUpdateSchema = z.object({
+  name: z.string().trim().min(1, "Nama wajib diisi"),
+  phone: z.string().optional().default(""),
+  group: z.string().optional().default(""),
+});
+
 export const guestImportSchema = z.object({
   invitationId: z.string().min(1),
   guests: z.array(z.object({
