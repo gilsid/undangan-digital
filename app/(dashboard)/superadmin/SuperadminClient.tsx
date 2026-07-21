@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Mail, Plus, List, Users, MessageSquareHeart, CheckCircle2, XCircle, Trash2, Archive, RotateCcw, MoreVertical } from "lucide-react";
+import { Mail, Plus, List, Users, MessageSquareHeart, CheckCircle2, XCircle, Trash2, Archive, RotateCcw, MoreVertical, Search, Pencil } from "lucide-react";
 import Toast from "@/components/Toast";
 import Sidebar from "@/components/admin/Sidebar";
 import type { SidebarNavItem } from "@/components/admin/Sidebar";
@@ -48,6 +48,11 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
     rsvpCount: number;
   } | null>(null);
   const [confirmSlugInput, setConfirmSlugInput] = useState("");
+  const [editTarget, setEditTarget] = useState<Invitation | null>(null);
+  const [editForm, setEditForm] = useState({ groomName: "", brideName: "", slug: "" });
+  const [editSaving, setEditSaving] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -117,6 +122,39 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
     }
     setDeleteTarget(null);
     setConfirmSlugInput("");
+  }
+
+  const filteredInvitations = invitations.filter((inv) => {
+    const q = search.toLowerCase();
+    const matchesSearch = !q || inv.groomName.toLowerCase().includes(q) || inv.brideName.toLowerCase().includes(q) || inv.slug.toLowerCase().includes(q) || inv.owner.email.toLowerCase().includes(q);
+    const matchesStatus = !statusFilter || statusFilter === "all" || (statusFilter === "published" && inv.isPublished && !inv.isArchived) || (statusFilter === "draft" && !inv.isPublished && !inv.isArchived) || (statusFilter === "archived" && inv.isArchived);
+    return matchesSearch && matchesStatus;
+  });
+
+  function openEdit(inv: Invitation) {
+    setEditTarget(inv);
+    setEditForm({ groomName: inv.groomName, brideName: inv.brideName, slug: inv.slug });
+  }
+
+  async function saveEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editTarget) return;
+    setEditSaving(true);
+    const res = await fetch(`/api/invitations/${editTarget.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editForm),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setInvitations((p) => p.map((i) => (i.id === updated.id ? { ...i, ...updated } : i)));
+      setEditTarget(null);
+      setToast({ message: "Invitation berhasil diperbarui.", type: "success" });
+    } else {
+      const data = await res.json().catch(() => null);
+      setToast({ message: data?.error ?? "Gagal memperbarui invitation.", type: "error" });
+    }
+    setEditSaving(false);
   }
 
   const navItems: SidebarNavItem[] = [
@@ -206,11 +244,29 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
 
           {/* Invitation list */}
           <LedgerCard className="p-0">
-            <div className="px-6 py-4 border-b border-[var(--ink-border)] flex items-center gap-3">
-              <IconBadge className="border-[var(--dusty-rose)]/60 text-[var(--dusty-rose)]">
-                <List size={18} />
-              </IconBadge>
-              <h2 className="font-semibold text-[var(--text-primary)]">Semua Invitation ({invitations.length})</h2>
+            <div className="px-6 py-4 border-b border-[var(--ink-border)]">
+              <div className="flex items-center gap-3 mb-3">
+                <IconBadge className="border-[var(--dusty-rose)]/60 text-[var(--dusty-rose)]">
+                  <List size={18} />
+                </IconBadge>
+                <h2 className="font-semibold text-[var(--text-primary)]">Semua Invitation ({filteredInvitations.length})</h2>
+              </div>
+              <div className="flex gap-2">
+                <div className="relative flex-1 max-w-xs">
+                  <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                  <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari nama/slug/email..." className="pl-7 text-xs" />
+                </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="text-xs border border-[var(--ink-border)] rounded-md px-2.5 py-1.5 bg-[var(--ink-surface)] text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--foil-gold)]"
+                >
+                  <option value="">Semua Status</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Diarsipkan</option>
+                </select>
+              </div>
             </div>
             <Table>
               <TableHeader>
@@ -225,7 +281,7 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {invitations.map((inv) => (
+                {filteredInvitations.map((inv) => (
                   <TableRow key={inv.id} className="border-b border-[var(--ink-border)]">
                     <TableCell className="font-medium text-[var(--text-primary)]">
                       {inv.groomName} & {inv.brideName}
@@ -255,6 +311,10 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
                           <MoreVertical size={16} />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="bottom" align="end" sideOffset={4}>
+                          <DropdownMenuItem onClick={() => openEdit(inv)}>
+                            <Pencil size={14} className="text-[var(--foil-gold)]" />
+                            Edit
+                          </DropdownMenuItem>
                           {inv.isArchived ? (
                             <DropdownMenuItem onClick={() => toggleArchive(inv.id, false)} disabled={archivingId === inv.id}>
                               <RotateCcw size={14} className="text-[var(--status-success)]" />
@@ -292,6 +352,35 @@ export default function SuperadminClient({ invitations: initialInvitations, acco
       </main>
 
       <Toast toast={toast} onClose={() => setToast(null)} />
+
+      <Dialog open={!!editTarget} onOpenChange={(open) => { if (!open) setEditTarget(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Invitation</DialogTitle>
+            <DialogDescription>
+              Ubah data <span className="font-medium text-[var(--text-primary)]">{editTarget?.groomName} & {editTarget?.brideName}</span>.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={saveEdit} className="space-y-4 py-2">
+            <div>
+              <Label className="text-xs text-[var(--text-muted)] mb-1 block">Nama Pria</Label>
+              <Input value={editForm.groomName} onChange={(e) => setEditForm((p) => ({ ...p, groomName: e.target.value }))} required />
+            </div>
+            <div>
+              <Label className="text-xs text-[var(--text-muted)] mb-1 block">Nama Wanita</Label>
+              <Input value={editForm.brideName} onChange={(e) => setEditForm((p) => ({ ...p, brideName: e.target.value }))} required />
+            </div>
+            <div>
+              <Label className="text-xs text-[var(--text-muted)] mb-1 block">Slug</Label>
+              <Input value={editForm.slug} onChange={(e) => setEditForm((p) => ({ ...p, slug: e.target.value }))} required />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)}>Batal</Button>
+              <Button type="submit" disabled={editSaving}>{editSaving ? "Menyimpan..." : "Simpan"}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) { setDeleteTarget(null); setConfirmSlugInput(""); } }}>
         <DialogContent>
